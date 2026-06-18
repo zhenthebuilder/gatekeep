@@ -26,7 +26,7 @@ trustworthy as the rules you write.
 Download one file and run it with any Python 3.9+:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/REPLACE_ME/gatekeep/main/gatekeep_single.py -o gatekeep_single.py
+curl -fsSL https://raw.githubusercontent.com/zhenthebuilder/gatekeep/main/gatekeep_single.py -o gatekeep_single.py
 python3 gatekeep_single.py init        # writes an example gatekeep.yml
 python3 gatekeep_single.py check       # runs it, prints a report, exits 1 on fail
 ```
@@ -39,7 +39,7 @@ copy the file from this repo; it is fully self-contained.
 ### Path 2 — pip install (full CLI, `gatekeep` on PATH)
 
 ```bash
-git clone https://github.com/REPLACE_ME/gatekeep.git
+git clone https://github.com/zhenthebuilder/gatekeep.git
 cd gatekeep/gatekeep
 pip install .
 gatekeep init
