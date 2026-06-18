@@ -1,0 +1,17 @@
+diff --git a/sympy/printing/latex.py b/sympy/printing/latex.py
+index a0eb97792e..310480cff2 100644
+--- a/sympy/printing/latex.py
++++ b/sympy/printing/latex.py
+@@ -1701,6 +1701,12 @@ def _print_SingularityFunction(self, expr):
+         power = self._print(expr.args[2])
+         tex = r"{\langle %s \rangle}^{%s}" % (shift, power)
+         return tex
++        
++    def _print_Trace(self, expr):
++        # Print the trace using proper LaTeX notation
++        # The inner expression should be printed using LaTeX as well
++        inner = self._print(expr.arg)
++        return r"\operatorname{Trace}\left(%s\right)" % inner
+ 
+     def _print_Heaviside(self, expr, exp=None):
+         tex = r"\theta\left(%s\right)" % self._print(expr.args[0])

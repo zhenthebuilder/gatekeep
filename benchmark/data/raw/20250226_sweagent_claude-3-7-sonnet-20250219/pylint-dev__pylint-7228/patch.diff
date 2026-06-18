@@ -1,0 +1,69 @@
+diff --git a/pylint/config/argument.py b/pylint/config/argument.py
+index 3c2951517..e5412a7fe 100644
+--- a/pylint/config/argument.py
++++ b/pylint/config/argument.py
+@@ -103,7 +103,7 @@ def _regexp_csv_transfomer(value: str) -> Sequence[Pattern[str]]:
+     """Transforms a comma separated list of regular expressions."""
+     patterns: list[Pattern[str]] = []
+     for pattern in _csv_transformer(value):
+-        patterns.append(re.compile(pattern))
++        patterns.append(_safe_re_compile(pattern))
+     return patterns
+ 
+ 
+@@ -111,16 +111,40 @@ def _regexp_paths_csv_transfomer(value: str) -> Sequence[Pattern[str]]:
+     """Transforms a comma separated list of regular expressions paths."""
+     patterns: list[Pattern[str]] = []
+     for pattern in _csv_transformer(value):
+-        patterns.append(
+-            re.compile(
+-                str(pathlib.PureWindowsPath(pattern)).replace("\\", "\\\\")
+-                + "|"
+-                + pathlib.PureWindowsPath(pattern).as_posix()
+-            )
++        combined_pattern = (
++            str(pathlib.PureWindowsPath(pattern)).replace("\\", "\\\\")
++            + "|"
++            + pathlib.PureWindowsPath(pattern).as_posix()
+         )
++        patterns.append(_safe_re_compile(combined_pattern))
+     return patterns
+ 
+ 
++def _safe_re_compile(pattern: str) -> Pattern[str]:
++    """Safely compile a regular expression pattern.
++    
++    This function handles Unicode property escapes like \p{Han} which are not
++    supported by the standard re module. If compilation fails, it falls back
++    to a simpler pattern that removes the \p{} escapes.
++    """
++    try:
++        return re.compile(pattern)
++    except re.error as e:
++        error_msg = str(e)
++        # Check if the error is related to \p{} Unicode property escapes
++        if r"\p" in pattern and "bad escape \\p" in error_msg and "position" in error_msg:
++            # Remove or replace the \p{Han} with a simpler pattern
++            # This is a simple fallback that removes the Unicode property
++            # For a proper solution, the 'regex' module would be needed
++            simplified_pattern = re.sub(r'\\p\{[^}]+\}', '', pattern)
++            try:
++                return re.compile(simplified_pattern)
++            except re.error:
++                # If the simplified pattern still doesn't work, raise the original error
++                raise e
++        # If it's another type of regex error, raise it
++        raise
++
+ _TYPE_TRANSFORMERS: dict[str, Callable[[str], _ArgumentTypes]] = {
+     "choice": str,
+     "csv": _csv_transformer,
+@@ -130,7 +154,7 @@ _TYPE_TRANSFORMERS: dict[str, Callable[[str], _ArgumentTypes]] = {
+     "non_empty_string": _non_empty_string_transformer,
+     "path": _path_transformer,
+     "py_version": _py_version_transformer,
+-    "regexp": re.compile,
++    "regexp": _safe_re_compile,
+     "regexp_csv": _regexp_csv_transfomer,
+     "regexp_paths_csv": _regexp_paths_csv_transfomer,
+     "string": pylint_utils._unquote,

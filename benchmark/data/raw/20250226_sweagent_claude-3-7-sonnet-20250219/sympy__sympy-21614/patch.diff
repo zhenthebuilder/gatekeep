@@ -1,0 +1,26 @@
+diff --git a/sympy/core/function.py b/sympy/core/function.py
+index 69df976b8b..da0cfd0b63 100644
+--- a/sympy/core/function.py
++++ b/sympy/core/function.py
+@@ -1706,6 +1706,21 @@ def free_symbols(self):
+         for var, count in self.variable_count:
+             ret.update(count.free_symbols)
+         return ret
++        
++    @property
++    def kind(self):
++        """Return the kind of the expression being differentiated.
++        
++        Examples
++        ========
++        
++        >>> from sympy import Derivative, MatrixSymbol
++        >>> from sympy.abc import x
++        >>> A = MatrixSymbol('A', 2, 2)
++        >>> Derivative(A, x).kind
++        MatrixKind(NumberKind)
++        """
++        return self.expr.kind
+ 
+     def _eval_subs(self, old, new):
+         # The substitution (old, new) cannot be done inside

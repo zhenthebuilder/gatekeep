@@ -1,0 +1,1952 @@
+diff --git a/final_test.py b/final_test.py
+new file mode 100644
+index 000000000..21a9c2eba
+--- /dev/null
++++ b/final_test.py
+@@ -0,0 +1,131 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++Test
++====
++
++.. autosummary::
++   :toctree: generated
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the module.rst template
++    module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   .. autosummary::
++   {% for item in members %}
++      {{ item }}
++   {%- endfor %}
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "module.rst", "w") as f:
++        f.write(module_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nISSUE NOT FIXED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nISSUE FIXED: The imported module 'os' is not included in the members list when autosummary_imported_members=False")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++    # Now test with autosummary_imported_members=True
++    conf_py_with_imported = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = True
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py_with_imported)
++
++    # Run sphinx-build again
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"\nRunning with autosummary_imported_members=True: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    # Check the generated file
++    if generated_file.exists():
++        print(f"\nContents of {generated_file} with autosummary_imported_members=True:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nCORRECT BEHAVIOR: The imported module 'os' is included in the members list when autosummary_imported_members=True")
++        else:
++            print("\nINCORRECT BEHAVIOR: The imported module 'os' is not included in the members list even though autosummary_imported_members=True")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/final_test2.py b/final_test2.py
+new file mode 100644
+index 000000000..c9c8e2eb2
+--- /dev/null
++++ b/final_test2.py
+@@ -0,0 +1,127 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++Test
++====
++
++.. autosummary::
++   :toctree: generated
++   :template: custom_module.rst
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the custom_module.rst template
++    custom_module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   .. rubric:: Members
++
++   {% for item in members %}
++   * {{ item }}
++   {%- endfor %}
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "custom_module.rst", "w") as f:
++        f.write(custom_module_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "* os" in content:
++            print("\nISSUE NOT FIXED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nISSUE FIXED: The imported module 'os' is not included in the members list when autosummary_imported_members=False")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++    # Now test with autosummary_imported_members=True
++    conf_py_with_imported = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = True
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py_with_imported)
++
++    # Run sphinx-build again
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"\nRunning with autosummary_imported_members=True: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    # Check the generated file
++    if generated_file.exists():
++        print(f"\nContents of {generated_file} with autosummary_imported_members=True:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "* os" in content:
++            print("\nCORRECT BEHAVIOR: The imported module 'os' is included in the members list when autosummary_imported_members=True")
++        else:
++            print("\nINCORRECT BEHAVIOR: The imported module 'os' is not included in the members list even though autosummary_imported_members=True")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/final_test3.py b/final_test3.py
+new file mode 100644
+index 000000000..f1900b7e6
+--- /dev/null
++++ b/final_test3.py
+@@ -0,0 +1,119 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++Test
++====
++
++.. autosummary::
++   :toctree: generated
++
++   example
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir, "-v"]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nISSUE NOT FIXED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nISSUE FIXED: The imported module 'os' is not included in the members list when autosummary_imported_members=False")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++    # Now test with autosummary_imported_members=True
++    conf_py_with_imported = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = True
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py_with_imported)
++
++    # Run sphinx-build again
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir, "-v"]
++    print(f"\nRunning with autosummary_imported_members=True: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated file
++    if generated_file.exists():
++        print(f"\nContents of {generated_file} with autosummary_imported_members=True:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nCORRECT BEHAVIOR: The imported module 'os' is included in the members list when autosummary_imported_members=True")
++        else:
++            print("\nINCORRECT BEHAVIOR: The imported module 'os' is not included in the members list even though autosummary_imported_members=True")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/final_test4.py b/final_test4.py
+new file mode 100644
+index 000000000..e4df08628
+--- /dev/null
++++ b/final_test4.py
+@@ -0,0 +1,111 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++Test
++====
++
++.. autosummary::
++   :toctree: generated
++
++   example
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir, "-v"]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nISSUE NOT FIXED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nISSUE FIXED: The imported module 'os' is not included in the members list when autosummary_imported_members=False")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++    # Now test with autosummary_imported_members=True
++    conf_py_with_imported = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = True
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py_with_imported)
++
++    # Remove the generated file to force regeneration
++    if generated_file.exists():
++        os.remove(generated_file)
++
++    # Run sphinx-build again
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir, "-v"]
++    print(f"\nRunning with autosummary_imported_members=True: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    # Check the generated file
++    if generated_file.exists():
++        print(f"\nContents of {generated_file} with autosummary_imported_members=True:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nCORRECT BEHAVIOR: The imported module 'os' is included in the members list when autosummary_imported_members=True")
++        else:
++            print("\nINCORRECT BEHAVIOR: The imported module 'os' is not included in the members list even though autosummary_imported_members=True")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/final_test5.py b/final_test5.py
+new file mode 100644
+index 000000000..af5956d57
+--- /dev/null
++++ b/final_test5.py
+@@ -0,0 +1,145 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++templates_path = ['_templates']
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++Test
++====
++
++.. autosummary::
++   :toctree: generated
++   :template: custom_module.rst
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the custom_module.rst template
++    custom_module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   .. rubric:: Members
++
++   {% for item in members %}
++   * {{ item }}
++   {%- endfor %}
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "custom_module.rst", "w") as f:
++        f.write(custom_module_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir, "-v"]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "* os" in content:
++            print("\nISSUE NOT FIXED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nISSUE FIXED: The imported module 'os' is not included in the members list when autosummary_imported_members=False")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++    # Now test with autosummary_imported_members=True
++    conf_py_with_imported = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = True
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++templates_path = ['_templates']
++"""
++
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py_with_imported)
++
++    # Remove the generated file to force regeneration
++    if generated_file.exists():
++        os.remove(generated_file)
++
++    # Run sphinx-build again
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir, "-v"]
++    print(f"\nRunning with autosummary_imported_members=True: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated file
++    if generated_file.exists():
++        print(f"\nContents of {generated_file} with autosummary_imported_members=True:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "* os" in content:
++            print("\nCORRECT BEHAVIOR: The imported module 'os' is included in the members list when autosummary_imported_members=True")
++        else:
++            print("\nINCORRECT BEHAVIOR: The imported module 'os' is not included in the members list even though autosummary_imported_members=True")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/final_test_default_template.py b/final_test_default_template.py
+new file mode 100644
+index 000000000..1d909a1b5
+--- /dev/null
++++ b/final_test_default_template.py
+@@ -0,0 +1,111 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++Test
++====
++
++.. autosummary::
++   :toctree: generated
++
++   example
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nISSUE NOT FIXED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nISSUE FIXED: The imported module 'os' is not included in the members list when autosummary_imported_members=False")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++    # Now test with autosummary_imported_members=True
++    conf_py_with_imported = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = True
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py_with_imported)
++
++    # Remove the generated file to force regeneration
++    if generated_file.exists():
++        os.remove(generated_file)
++
++    # Run sphinx-build again
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"\nRunning with autosummary_imported_members=True: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    # Check the generated file
++    if generated_file.exists():
++        print(f"\nContents of {generated_file} with autosummary_imported_members=True:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nCORRECT BEHAVIOR: The imported module 'os' is included in the members list when autosummary_imported_members=True")
++        else:
++            print("\nINCORRECT BEHAVIOR: The imported module 'os' is not included in the members list even though autosummary_imported_members=True")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/final_verification.py b/final_verification.py
+new file mode 100644
+index 000000000..87368a46c
+--- /dev/null
++++ b/final_verification.py
+@@ -0,0 +1,133 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++templates_path = ['_templates']
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++Test
++====
++
++.. autosummary::
++   :toctree: generated
++   :template: custom_module.rst
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the custom_module.rst template
++    custom_module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   .. rubric:: All Members
++   
++   {% for item in members %}
++   * {{ item }}
++   {%- endfor %}
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "custom_module.rst", "w") as f:
++        f.write(custom_module_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "* os" in content:
++            print("\nISSUE NOT FIXED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nISSUE FIXED: The imported module 'os' is not included in the members list when autosummary_imported_members=False")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++    # Now test with autosummary_imported_members=True
++    conf_py_with_imported = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = True
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++templates_path = ['_templates']
++"""
++
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py_with_imported)
++
++    # Remove the generated file to force regeneration
++    if generated_file.exists():
++        os.remove(generated_file)
++
++    # Run sphinx-build again
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"\nRunning with autosummary_imported_members=True: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    # Check the generated file
++    if generated_file.exists():
++        print(f"\nContents of {generated_file} with autosummary_imported_members=True:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "* os" in content:
++            print("\nCORRECT BEHAVIOR: The imported module 'os' is included in the members list when autosummary_imported_members=True")
++        else:
++            print("\nINCORRECT BEHAVIOR: The imported module 'os' is not included in the members list even though autosummary_imported_members=True")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/output.txt b/output.txt
+new file mode 100644
+index 000000000..1610f4566
+--- /dev/null
++++ b/output.txt
+@@ -0,0 +1,61 @@
++Created temporary directory: /tmp/tmp3ev61jx0
++Running: sphinx-build -b html /tmp/tmp3ev61jx0 /tmp/tmp3ev61jx0/_build -v
++
++Contents of /tmp/tmp3ev61jx0/generated/example.rst:
++example
++=======
++
++.. automodule:: example
++
++   
++   
++   
++
++   
++   
++   
++
++   
++   
++   
++
++   
++   
++   
++
++
++
++
++
++ISSUE FIXED: The imported module 'os' is not included in the members list when autosummary_imported_members=False
++
++Running with autosummary_imported_members=True: sphinx-build -b html /tmp/tmp3ev61jx0 /tmp/tmp3ev61jx0/_build -v
++
++Contents of /tmp/tmp3ev61jx0/generated/example.rst with autosummary_imported_members=True:
++example
++=======
++
++.. automodule:: example
++
++   
++   
++   
++
++   
++   
++   
++
++   
++   
++   
++
++   
++   
++   
++
++
++
++
++
++INCORRECT BEHAVIOR: The imported module 'os' is not included in the members list even though autosummary_imported_members=True
++Removed temporary directory: /tmp/tmp3ev61jx0
+diff --git a/reproduce_issue.py b/reproduce_issue.py
+new file mode 100644
+index 000000000..a21c66078
+--- /dev/null
++++ b/reproduce_issue.py
+@@ -0,0 +1,84 @@
++import os
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++.. autosummary::
++   :toctree: generated
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the module.rst template
++    module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   .. autosummary::
++   {% for item in members %}
++      {{ item }}
++   {%- endfor %}
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "module.rst", "w") as f:
++        f.write(module_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"Running: {' '.join(cmd)}")
++    subprocess.run(cmd, check=True)
++
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nISSUE CONFIRMED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nNo issue: The imported module 'os' is not included in the members list")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/reproduce_issue2.py b/reproduce_issue2.py
+new file mode 100644
+index 000000000..652204ff1
+--- /dev/null
++++ b/reproduce_issue2.py
+@@ -0,0 +1,97 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++.. autosummary::
++   :toctree: generated
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the module.rst template
++    module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   .. autosummary::
++   {% for item in members %}
++      {{ item }}
++   {%- endfor %}
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "module.rst", "w") as f:
++        f.write(module_rst)
++
++    # Change to the temp directory
++    original_dir = os.getcwd()
++    os.chdir(temp_dir)
++    
++    # Add the temp directory to sys.path
++    sys.path.insert(0, temp_dir)
++    
++    # Run sphinx-build using the API
++    from sphinx.cmd.build import build_main
++    build_args = ['-b', 'html', '.', '_build']
++    print(f"Running: sphinx-build {' '.join(build_args)}")
++    build_main(build_args)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nISSUE CONFIRMED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nNo issue: The imported module 'os' is not included in the members list")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++    # Restore the original directory
++    os.chdir(original_dir)
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/reproduce_issue3.py b/reproduce_issue3.py
+new file mode 100644
+index 000000000..e2e825688
+--- /dev/null
++++ b/reproduce_issue3.py
+@@ -0,0 +1,81 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++import importlib
++
++# Add the testbed directory to sys.path
++sys.path.insert(0, '/testbed')
++
++# Import the necessary functions from Sphinx
++from sphinx.ext.autosummary.generate import generate_autosummary_content, AutosummaryRenderer
++from sphinx.ext.autosummary import get_documenter
++from sphinx.application import Sphinx
++from sphinx.config import Config
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the example.py file
++    example_py = """
++import os
++"""
++
++    # Write the file
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    # Add the temp directory to sys.path
++    sys.path.insert(0, temp_dir)
++
++    # Create a minimal Sphinx application
++    class DummySphinx:
++        def __init__(self):
++            self.config = Config()
++            self.config.autosummary_imported_members = False
++            self.registry = None
++        
++        def emit_firstresult(self, *args, **kwargs):
++            return None
++
++    app = DummySphinx()
++
++    # Import the example module
++    sys.path.insert(0, temp_dir)
++    spec = importlib.util.spec_from_file_location("example", Path(temp_dir) / "example.py")
++    example_module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(example_module)
++
++    # Create a template renderer
++    template_dir = Path('/testbed/sphinx/ext/autosummary/templates')
++    renderer = AutosummaryRenderer(app, template_dir)
++
++    # Generate the content
++    content = generate_autosummary_content(
++        "example", 
++        example_module, 
++        None, 
++        renderer, 
++        "module", 
++        imported_members=False, 
++        app=app, 
++        recursive=False,
++        context={}
++    )
++
++    print("\nGenerated content:")
++    print(content)
++
++    # Check if 'os' is in the generated content
++    if "os" in content:
++        print("\nISSUE CONFIRMED: The imported module 'os' is included in the members list even though imported_members=False")
++    else:
++        print("\nNo issue: The imported module 'os' is not included in the members list")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/reproduce_issue4.py b/reproduce_issue4.py
+new file mode 100644
+index 000000000..9271ed473
+--- /dev/null
++++ b/reproduce_issue4.py
+@@ -0,0 +1,94 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++.. autosummary::
++   :toctree: generated
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the module.rst template
++    module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   .. autosummary::
++   {% for item in members %}
++      {{ item }}
++   {%- endfor %}
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "module.rst", "w") as f:
++        f.write(module_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nISSUE CONFIRMED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nNo issue: The imported module 'os' is not included in the members list")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/reproduce_issue5.py b/reproduce_issue5.py
+new file mode 100644
+index 000000000..2de70843a
+--- /dev/null
++++ b/reproduce_issue5.py
+@@ -0,0 +1,94 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++.. autosummary::
++   :toctree: generated
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the module.rst template with direct members printing
++    module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   Members:
++   {% for item in members %}
++   * {{ item }}
++   {%- endfor %}
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "module.rst", "w") as f:
++        f.write(module_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "* os" in content:
++            print("\nISSUE CONFIRMED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nNo issue: The imported module 'os' is not included in the members list")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/reproduce_issue6.py b/reproduce_issue6.py
+new file mode 100644
+index 000000000..3f8b8fc52
+--- /dev/null
++++ b/reproduce_issue6.py
+@@ -0,0 +1,114 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++Test
++====
++
++.. autosummary::
++   :toctree: generated
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the module.rst template
++    module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   .. raw:: html
++
++      <h2>Members</h2>
++      <ul>
++      {% for item in members %}
++         <li>{{ item }}</li>
++      {% endfor %}
++      </ul>
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "module.rst", "w") as f:
++        f.write(module_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "os" in content:
++            print("\nISSUE CONFIRMED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nNo issue: The imported module 'os' is not included in the members list")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++    
++    # Check the generated HTML file
++    html_file = Path(temp_dir) / "_build" / "generated" / "example.html"
++    if html_file.exists():
++        print(f"\nContents of {html_file}:")
++        with open(html_file, "r") as f:
++            content = f.read()
++            if "<li>os</li>" in content:
++                print("\nISSUE CONFIRMED in HTML: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++            else:
++                print("\nNo issue in HTML: The imported module 'os' is not included in the members list")
++    else:
++        print(f"Error: Generated HTML file {html_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/reproduce_issue7.py b/reproduce_issue7.py
+new file mode 100644
+index 000000000..f6b7279a8
+--- /dev/null
++++ b/reproduce_issue7.py
+@@ -0,0 +1,99 @@
++import os
++import sys
++import tempfile
++import shutil
++from pathlib import Path
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the necessary files
++    conf_py = """
++import sys
++import os
++sys.path.insert(0, os.path.abspath('.'))
++autosummary_generate = True
++autosummary_imported_members = False
++extensions = ['sphinx.ext.autosummary']
++master_doc = 'index'
++"""
++
++    example_py = """
++import os
++"""
++
++    index_rst = """
++Test
++====
++
++.. autosummary::
++   :toctree: generated
++   :template: custom_module.rst
++
++   example
++"""
++
++    # Create the _templates/autosummary directory
++    templates_dir = Path(temp_dir) / "_templates" / "autosummary"
++    templates_dir.mkdir(parents=True, exist_ok=True)
++
++    # Create the custom_module.rst template
++    custom_module_rst = """{{ fullname | escape | underline }}
++
++.. automodule:: {{ fullname }}
++
++   .. rubric:: Members
++
++   {% for item in members %}
++   * {{ item }}
++   {%- endfor %}
++"""
++
++    # Write the files
++    with open(Path(temp_dir) / "conf.py", "w") as f:
++        f.write(conf_py)
++
++    with open(Path(temp_dir) / "example.py", "w") as f:
++        f.write(example_py)
++
++    with open(Path(temp_dir) / "index.rst", "w") as f:
++        f.write(index_rst)
++
++    with open(templates_dir / "custom_module.rst", "w") as f:
++        f.write(custom_module_rst)
++
++    # Run sphinx-build
++    import subprocess
++    build_dir = str(Path(temp_dir) / "_build")
++    cmd = ["sphinx-build", "-b", "html", temp_dir, build_dir]
++    print(f"Running: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated file
++    generated_file = Path(temp_dir) / "generated" / "example.rst"
++    if generated_file.exists():
++        print(f"\nContents of {generated_file}:")
++        with open(generated_file, "r") as f:
++            content = f.read()
++            print(content)
++        
++        # Check if 'os' is in the generated file
++        if "* os" in content:
++            print("\nISSUE CONFIRMED: The imported module 'os' is included in the members list even though autosummary_imported_members=False")
++        else:
++            print("\nNo issue: The imported module 'os' is not included in the members list")
++    else:
++        print(f"Error: Generated file {generated_file} does not exist")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/sphinx/ext/autosummary/generate.py b/sphinx/ext/autosummary/generate.py
+index a57c73fb7..2e33b8deb 100644
+--- a/sphinx/ext/autosummary/generate.py
++++ b/sphinx/ext/autosummary/generate.py
+@@ -246,7 +246,34 @@ def generate_autosummary_content(name: str, obj: Any, parent: Any,
+     ns.update(context)
+ 
+     if doc.objtype == 'module':
+-        ns['members'] = dir(obj)
++        # Get all members
++        all_members = dir(obj)
++        
++        # Filter out imported members if imported_members is False
++        if not imported_members:
++            # Only include members that are defined in this module
++            filtered_members = []
++            for member in all_members:
++                try:
++                    value = getattr(obj, member)
++                    # Check if the member is a module
++                    if isinstance(value, type(os)):
++                        # Skip imported modules
++                        if value.__name__ != obj.__name__:
++                            continue
++                    # For other types, check the __module__ attribute
++                    elif hasattr(value, '__module__'):
++                        if value.__module__ != obj.__name__:
++                            continue
++                    filtered_members.append(member)
++                except (AttributeError, ImportError):
++                    # If we can't get the attribute, include it
++                    filtered_members.append(member)
++            
++            ns['members'] = filtered_members
++        else:
++            ns['members'] = all_members
++        
+         ns['functions'], ns['all_functions'] = \
+             get_members(obj, {'function'}, imported=imported_members)
+         ns['classes'], ns['all_classes'] = \
+diff --git a/test_filtering_logic.py b/test_filtering_logic.py
+new file mode 100644
+index 000000000..6bc41427d
+--- /dev/null
++++ b/test_filtering_logic.py
+@@ -0,0 +1,43 @@
++import os
++import sys
++import importlib.util
++from types import ModuleType
++
++# Create a simple module with an imported member
++module_code = """
++import os
++"""
++
++# Create a temporary module
++spec = importlib.util.spec_from_loader('example', loader=None)
++example_module = importlib.util.module_from_spec(spec)
++exec(module_code, example_module.__dict__)
++
++# Get all members
++all_members = dir(example_module)
++print("All members:", all_members)
++print("'os' in all_members:", 'os' in all_members)
++
++# Filter out imported members
++filtered_members = []
++for member in all_members:
++    try:
++        value = getattr(example_module, member)
++        # Check if the member is a module
++        if isinstance(value, type(os)):
++            # Skip imported modules
++            if value.__name__ != example_module.__name__:
++                print(f"Skipping module: {member}")
++                continue
++        # For other types, check the __module__ attribute
++        elif hasattr(value, '__module__'):
++            if value.__module__ != example_module.__name__:
++                print(f"Skipping member with different module: {member} (module: {value.__module__}, expected: {example_module.__name__})")
++                continue
++        filtered_members.append(member)
++    except (AttributeError, ImportError):
++        # If we can't get the attribute, include it
++        filtered_members.append(member)
++
++print("\nFiltered members:", filtered_members)
++print("'os' in filtered_members:", 'os' in filtered_members)
+\ No newline at end of file
+diff --git a/test_fix.py b/test_fix.py
+new file mode 100644
+index 000000000..9d70b947d
+--- /dev/null
++++ b/test_fix.py
+@@ -0,0 +1,68 @@
++import os
++import sys
++import importlib.util
++from types import ModuleType
++
++# Add the testbed directory to sys.path
++sys.path.insert(0, '/testbed')
++
++# Create a simple module with an imported member
++module_code = """
++import os
++"""
++
++# Create a temporary module
++spec = importlib.util.spec_from_loader('example', loader=None)
++example_module = importlib.util.module_from_spec(spec)
++exec(module_code, example_module.__dict__)
++
++# Import the function we want to test
++from sphinx.ext.autosummary.generate import generate_autosummary_content
++
++# Create a mock app and template renderer
++class MockApp:
++    def emit_firstresult(self, *args, **kwargs):
++        return None
++
++class MockRenderer:
++    def render(self, template_name, context):
++        return f"Template: {template_name}\nContext: {context}"
++
++# Test with imported_members=False
++print("Testing with imported_members=False")
++app = MockApp()
++renderer = MockRenderer()
++
++result = generate_autosummary_content(
++    "example", 
++    example_module, 
++    None, 
++    renderer, 
++    "module", 
++    imported_members=False, 
++    app=app, 
++    recursive=False,
++    context={}
++)
++
++print(result)
++print("\nMembers:", example_module.__dict__.get('members', []))
++print("'os' in members:", 'os' in example_module.__dict__.get('members', []))
++
++# Test with imported_members=True
++print("\nTesting with imported_members=True")
++result = generate_autosummary_content(
++    "example", 
++    example_module, 
++    None, 
++    renderer, 
++    "module", 
++    imported_members=True, 
++    app=app, 
++    recursive=False,
++    context={}
++)
++
++print(result)
++print("\nMembers:", example_module.__dict__.get('members', []))
++print("'os' in members:", 'os' in example_module.__dict__.get('members', []))
+\ No newline at end of file
+diff --git a/test_generate_autosummary_content.py b/test_generate_autosummary_content.py
+new file mode 100644
+index 000000000..24f62fd53
+--- /dev/null
++++ b/test_generate_autosummary_content.py
+@@ -0,0 +1,75 @@
++import os
++import sys
++import importlib.util
++from types import ModuleType
++
++# Add the testbed directory to sys.path
++sys.path.insert(0, '/testbed')
++
++# Create a simple module with an imported member
++module_code = """
++import os
++"""
++
++# Create a temporary module
++spec = importlib.util.spec_from_loader('example', loader=None)
++example_module = importlib.util.module_from_spec(spec)
++exec(module_code, example_module.__dict__)
++
++# Import the function we want to test
++from sphinx.ext.autosummary.generate import generate_autosummary_content
++
++# Create a mock app and template renderer
++class MockApp:
++    def __init__(self):
++        self.registry = None
++    
++    def emit_firstresult(self, *args, **kwargs):
++        return None
++
++class MockRenderer:
++    def render(self, template_name, context):
++        return f"Template: {template_name}\nContext members: {context.get('members', [])}"
++
++# Test with imported_members=False
++print("Testing with imported_members=False")
++app = MockApp()
++renderer = MockRenderer()
++
++try:
++    result = generate_autosummary_content(
++        "example", 
++        example_module, 
++        None, 
++        renderer, 
++        "module", 
++        imported_members=False, 
++        app=app, 
++        recursive=False,
++        context={}
++    )
++    
++    print(result)
++    print("'os' in members:", 'os' in result)
++except Exception as e:
++    print(f"Error: {e}")
++
++# Test with imported_members=True
++print("\nTesting with imported_members=True")
++try:
++    result = generate_autosummary_content(
++        "example", 
++        example_module, 
++        None, 
++        renderer, 
++        "module", 
++        imported_members=True, 
++        app=app, 
++        recursive=False,
++        context={}
++    )
++    
++    print(result)
++    print("'os' in members:", 'os' in result)
++except Exception as e:
++    print(f"Error: {e}")
+\ No newline at end of file

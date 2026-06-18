@@ -1,0 +1,437 @@
+diff --git a/debug_transform.py b/debug_transform.py
+new file mode 100755
+index 000000000..4a07c26e9
+--- /dev/null
++++ b/debug_transform.py
+@@ -0,0 +1,87 @@
++#!/usr/bin/env python3
++import os
++import sys
++import shutil
++import subprocess
++from sphinx.transforms import MoveModuleTargets
++from docutils import nodes
++
++# Save the original apply method
++original_apply = MoveModuleTargets.apply
++
++# Create a debug version of the apply method
++def debug_apply(self, **kwargs):
++    print("DEBUG: MoveModuleTargets.apply called")
++    print("DEBUG: Document structure before transform:")
++    for i, node in enumerate(self.document.findall()):
++        if isinstance(node, nodes.section):
++            print(f"DEBUG: Section node at index {i}")
++            for j, child in enumerate(node.children):
++                print(f"DEBUG:   Child {j}: {child.__class__.__name__}")
++                if isinstance(child, nodes.target) and 'ismod' in child:
++                    print(f"DEBUG:     Module target found with ids: {child['ids']}")
++    
++    # Call the original method
++    result = original_apply(self, **kwargs)
++    
++    print("DEBUG: Document structure after transform:")
++    for i, node in enumerate(self.document.findall()):
++        if isinstance(node, nodes.section):
++            print(f"DEBUG: Section node at index {i} with ids: {node.get('ids', [])}")
++            for j, child in enumerate(node.children):
++                print(f"DEBUG:   Child {j}: {child.__class__.__name__}")
++    
++    return result
++
++# Replace the apply method with our debug version
++MoveModuleTargets.apply = debug_apply
++
++# Create a test directory
++test_dir = "/tmp/sphinx_test_debug"
++if os.path.exists(test_dir):
++    shutil.rmtree(test_dir)
++os.makedirs(test_dir)
++
++# Change to the test directory
++os.chdir(test_dir)
++
++# Create the necessary files as described in the PR
++subprocess.run(["sphinx-quickstart", "--no-sep", "--project", "mypackage", "--author", "me", 
++                "-v", "0.1.0", "--release", "0.1.0", "--language", "en", "docs"], check=True)
++
++# Create index.rst
++with open("docs/index.rst", "w") as f:
++    f.write("Welcome\n=======\n\n.. toctree::\n\n   mypackage\n")
++
++# Create mypackage.rst with domain directive in heading
++with open("docs/mypackage.rst", "w") as f:
++    f.write(":mod:`mypackage2`\n=================\n\nContent\n\nSubheading\n----------\n")
++
++# Add rst_prolog to conf.py
++with open("docs/conf.py", "a") as f:
++    f.write('\nrst_prolog = """\n.. |psf| replace:: Python Software Foundation\n"""\n')
++
++# Build the documentation
++print("Building documentation with rst_prolog...")
++os.chdir("docs")
++result = subprocess.run(["sphinx-build", "-b", "html", ".", "_build"], 
++                        capture_output=True, text=True)
++print(result.stdout)
++print(result.stderr)
++
++# Now test without rst_prolog
++print("\n\nTesting WITHOUT rst_prolog...")
++# Remove rst_prolog from conf.py
++with open("conf.py", "r") as f:
++    lines = f.readlines()
++with open("conf.py", "w") as f:
++    for line in lines:
++        if not line.startswith('rst_prolog = '):
++            f.write(line)
++
++# Build again
++print("Building documentation without rst_prolog...")
++result = subprocess.run(["sphinx-build", "-b", "html", ".", "_build_no_prolog"], 
++                        capture_output=True, text=True)
++print(result.stdout)
++print(result.stderr)
+\ No newline at end of file
+diff --git a/reproduce_issue.py b/reproduce_issue.py
+new file mode 100755
+index 000000000..26e9a2cc5
+--- /dev/null
++++ b/reproduce_issue.py
+@@ -0,0 +1,91 @@
++#!/usr/bin/env python3
++import os
++import shutil
++import subprocess
++import sys
++
++# Create a test directory
++test_dir = "/tmp/sphinx_test"
++if os.path.exists(test_dir):
++    shutil.rmtree(test_dir)
++os.makedirs(test_dir)
++
++# Change to the test directory
++os.chdir(test_dir)
++
++# Create the necessary files as described in the PR
++subprocess.run(["sphinx-quickstart", "--no-sep", "--project", "mypackage", "--author", "me", 
++                "-v", "0.1.0", "--release", "0.1.0", "--language", "en", "docs"], check=True)
++
++# Create index.rst
++with open("docs/index.rst", "w") as f:
++    f.write("Welcome\n=======\n\n.. toctree::\n\n   mypackage\n")
++
++# Create mypackage.rst with domain directive in heading
++with open("docs/mypackage.rst", "w") as f:
++    f.write(":mod:`mypackage2`\n=================\n\nContent\n\nSubheading\n----------\n")
++
++# Add rst_prolog to conf.py
++with open("docs/conf.py", "a") as f:
++    f.write('\nrst_prolog = """\n.. |psf| replace:: Python Software Foundation\n"""\n')
++
++# Build the documentation
++print("Building documentation...")
++os.chdir("docs")
++result = subprocess.run(["sphinx-build", "-b", "html", ".", "_build"], 
++                        capture_output=True, text=True)
++print(result.stdout)
++print(result.stderr)
++
++# Check if mypackage2 is in the index.html
++print("\nChecking for 'mypackage2' in index.html...")
++grep_result = subprocess.run(["grep", "mypackage2", "_build/index.html"], 
++                             capture_output=True, text=True)
++print(grep_result.stdout)
++
++# Also check the generated mypackage.html
++print("\nContents of _build/mypackage.html (if it exists):")
++if os.path.exists("_build/mypackage.html"):
++    with open("_build/mypackage.html", "r") as f:
++        content = f.read()
++        print("File exists. Checking for 'mypackage2' in mypackage.html...")
++        if "mypackage2" in content:
++            print("Found 'mypackage2' in mypackage.html")
++        else:
++            print("Did NOT find 'mypackage2' in mypackage.html")
++else:
++    print("mypackage.html does not exist")
++
++# Now test without rst_prolog to show the difference
++print("\n\nTesting WITHOUT rst_prolog...")
++# Remove rst_prolog from conf.py
++with open("conf.py", "r") as f:
++    lines = f.readlines()
++with open("conf.py", "w") as f:
++    for line in lines:
++        if not line.startswith('rst_prolog = '):
++            f.write(line)
++
++# Build again
++print("Building documentation without rst_prolog...")
++result = subprocess.run(["sphinx-build", "-b", "html", ".", "_build_no_prolog"], 
++                        capture_output=True, text=True)
++
++# Check if mypackage2 is in the index.html
++print("\nChecking for 'mypackage2' in index.html (without rst_prolog)...")
++grep_result = subprocess.run(["grep", "mypackage2", "_build_no_prolog/index.html"], 
++                             capture_output=True, text=True)
++print(grep_result.stdout)
++
++# Also check the generated mypackage.html
++print("\nContents of _build_no_prolog/mypackage.html (if it exists):")
++if os.path.exists("_build_no_prolog/mypackage.html"):
++    with open("_build_no_prolog/mypackage.html", "r") as f:
++        content = f.read()
++        print("File exists. Checking for 'mypackage2' in mypackage.html...")
++        if "mypackage2" in content:
++            print("Found 'mypackage2' in mypackage.html")
++        else:
++            print("Did NOT find 'mypackage2' in mypackage.html")
++else:
++    print("mypackage.html does not exist")
+\ No newline at end of file
+diff --git a/sphinx/util/rst.py b/sphinx/util/rst.py
+index 7a1538325..eb809f2dc 100644
+--- a/sphinx/util/rst.py
++++ b/sphinx/util/rst.py
+@@ -78,6 +78,11 @@ def default_role(docname: str, name: str) -> Generator[None, None, None]:
+ def prepend_prolog(content: StringList, prolog: str) -> None:
+     """Prepend a string to content body as prolog."""
+     if prolog:
++        print("DEBUG: prepend_prolog called")
++        print("DEBUG: Content before prolog insertion:")
++        for i, line in enumerate(content):
++            print(f"DEBUG: {i}: {line}")
++            
+         pos = 0
+         for line in content:
+             if docinfo_re.match(line):
+@@ -85,16 +90,55 @@ def prepend_prolog(content: StringList, prolog: str) -> None:
+             else:
+                 break
+ 
++        # Check if the first non-docinfo line starts with a domain directive
++        # (e.g., ":mod:`...`")
++        has_domain_directive_heading = False
++        if pos < len(content):
++            first_content_line = content[pos]
++            print(f"DEBUG: First content line: '{first_content_line}'")
++            if first_content_line.startswith(':') and ':' in first_content_line and '`' in first_content_line:
++                print(f"DEBUG: Line starts with domain directive")
++                # Check if the next line is a heading underline
++                if pos + 1 < len(content) and content[pos + 1] and all(c == content[pos + 1][0] for c in content[pos + 1].strip()):
++                    has_domain_directive_heading = True
++                    print(f"DEBUG: Found domain directive heading")
++
+         if pos > 0:
+             # insert a blank line after docinfo
+             content.insert(pos, '', '<generated>', 0)
+             pos += 1
+-
+-        # insert prolog (after docinfo if exists)
+-        for lineno, line in enumerate(prolog.splitlines()):
+-            content.insert(pos + lineno, line, '<rst_prolog>', lineno)
+-
+-        content.insert(pos + lineno + 1, '', '<generated>', 0)
++            print(f"DEBUG: Inserted blank line after docinfo at position {pos-1}")
++
++        # If we have a domain directive heading, we need to insert the prolog
++        # after the heading to preserve it
++        if has_domain_directive_heading:
++            # Skip the heading (title + underline)
++            heading_end = pos + 2
++            print(f"DEBUG: Heading end position: {heading_end}")
++            
++            # Skip any blank lines after the heading
++            while heading_end < len(content) and not content[heading_end].strip():
++                heading_end += 1
++                
++            print(f"DEBUG: After skipping blank lines, heading end position: {heading_end}")
++                
++            # Insert prolog after the heading
++            for lineno, line in enumerate(prolog.splitlines()):
++                content.insert(heading_end + lineno, line, '<rst_prolog>', lineno)
++                
++            content.insert(heading_end + lineno + 1, '', '<generated>', 0)
++            print(f"DEBUG: Inserted prolog after heading at position {heading_end}")
++        else:
++            # Standard behavior - insert after docinfo
++            for lineno, line in enumerate(prolog.splitlines()):
++                content.insert(pos + lineno, line, '<rst_prolog>', lineno)
++                
++            content.insert(pos + lineno + 1, '', '<generated>', 0)
++            print(f"DEBUG: Inserted prolog at standard position {pos}")
++            
++        print("DEBUG: Content after prolog insertion:")
++        for i, line in enumerate(content):
++            print(f"DEBUG: {i}: {line}")
+ 
+ 
+ def append_epilog(content: StringList, epilog: str) -> None:
+diff --git a/test_final_fix.py b/test_final_fix.py
+new file mode 100755
+index 000000000..51a165aa4
+--- /dev/null
++++ b/test_final_fix.py
+@@ -0,0 +1,98 @@
++#!/usr/bin/env python3
++import os
++import shutil
++import subprocess
++import sys
++
++# Create a test directory
++test_dir = "/tmp/sphinx_test_final"
++if os.path.exists(test_dir):
++    shutil.rmtree(test_dir)
++os.makedirs(test_dir)
++
++# Change to the test directory
++os.chdir(test_dir)
++
++# Create the necessary files as described in the PR
++subprocess.run(["sphinx-quickstart", "--no-sep", "--project", "mypackage", "--author", "me", 
++                "-v", "0.1.0", "--release", "0.1.0", "--language", "en", "docs"], check=True)
++
++# Create index.rst
++with open("docs/index.rst", "w") as f:
++    f.write("Welcome\n=======\n\n.. toctree::\n\n   mypackage\n")
++
++# Create mypackage.rst with domain directive in heading
++with open("docs/mypackage.rst", "w") as f:
++    f.write(":mod:`mypackage2`\n=================\n\nContent\n\nSubheading\n----------\n")
++
++# Add rst_prolog to conf.py
++with open("docs/conf.py", "a") as f:
++    f.write('\nrst_prolog = """\n.. |psf| replace:: Python Software Foundation\n"""\n')
++
++# Build the documentation
++print("Building documentation with rst_prolog...")
++os.chdir("docs")
++result = subprocess.run(["sphinx-build", "-b", "html", ".", "_build"], 
++                        capture_output=True, text=True)
++print(result.stdout)
++print(result.stderr)
++
++# Check if mypackage2 is in the index.html
++print("\nChecking for 'mypackage2' in index.html...")
++grep_result = subprocess.run(["grep", "-A", "5", "mypackage2", "_build/index.html"], 
++                             capture_output=True, text=True)
++if grep_result.stdout:
++    print("Found 'mypackage2' in index.html:")
++    print(grep_result.stdout)
++else:
++    print("Not found in index.html")
++
++# Also check the generated mypackage.html
++print("\nChecking mypackage.html title:")
++title_result = subprocess.run(["grep", "<title>", "_build/mypackage.html"], 
++                             capture_output=True, text=True)
++print(title_result.stdout)
++
++print("\nChecking mypackage.html h1:")
++h1_result = subprocess.run(["grep", "-A", "5", "<h1>", "_build/mypackage.html"], 
++                          capture_output=True, text=True)
++print(h1_result.stdout)
++
++# Now test without rst_prolog
++print("\n\nTesting WITHOUT rst_prolog...")
++# Create a new conf.py without rst_prolog
++with open("conf.py", "r") as f:
++    content = f.read()
++    
++# Remove the rst_prolog lines
++content = content.split('rst_prolog = """')[0]
++with open("conf.py", "w") as f:
++    f.write(content)
++
++# Build again
++print("Building documentation without rst_prolog...")
++result = subprocess.run(["sphinx-build", "-b", "html", ".", "_build_no_prolog"], 
++                        capture_output=True, text=True)
++print(result.stdout)
++print(result.stderr)
++
++# Check if mypackage2 is in the index.html
++print("\nChecking for 'mypackage2' in index.html (without rst_prolog)...")
++grep_result = subprocess.run(["grep", "-A", "5", "mypackage2", "_build_no_prolog/index.html"], 
++                             capture_output=True, text=True)
++if grep_result.stdout:
++    print("Found 'mypackage2' in index.html:")
++    print(grep_result.stdout)
++else:
++    print("Not found in index.html")
++
++# Also check the generated mypackage.html
++print("\nChecking mypackage.html title (without rst_prolog):")
++title_result = subprocess.run(["grep", "<title>", "_build_no_prolog/mypackage.html"], 
++                             capture_output=True, text=True)
++print(title_result.stdout)
++
++print("\nChecking mypackage.html h1 (without rst_prolog):")
++h1_result = subprocess.run(["grep", "-A", "5", "<h1>", "_build_no_prolog/mypackage.html"], 
++                          capture_output=True, text=True)
++print(h1_result.stdout)
+\ No newline at end of file
+diff --git a/test_fix.py b/test_fix.py
+new file mode 100755
+index 000000000..84cf5112b
+--- /dev/null
++++ b/test_fix.py
+@@ -0,0 +1,55 @@
++#!/usr/bin/env python3
++import os
++import shutil
++import subprocess
++import sys
++
++# Create a test directory
++test_dir = "/tmp/sphinx_test_fix"
++if os.path.exists(test_dir):
++    shutil.rmtree(test_dir)
++os.makedirs(test_dir)
++
++# Change to the test directory
++os.chdir(test_dir)
++
++# Create the necessary files as described in the PR
++subprocess.run(["sphinx-quickstart", "--no-sep", "--project", "mypackage", "--author", "me", 
++                "-v", "0.1.0", "--release", "0.1.0", "--language", "en", "docs"], check=True)
++
++# Create index.rst
++with open("docs/index.rst", "w") as f:
++    f.write("Welcome\n=======\n\n.. toctree::\n\n   mypackage\n")
++
++# Create mypackage.rst with domain directive in heading
++with open("docs/mypackage.rst", "w") as f:
++    f.write(":mod:`mypackage2`\n=================\n\nContent\n\nSubheading\n----------\n")
++
++# Add rst_prolog to conf.py
++with open("docs/conf.py", "a") as f:
++    f.write('\nrst_prolog = """\n.. |psf| replace:: Python Software Foundation\n"""\n')
++
++# Build the documentation
++print("Building documentation with rst_prolog...")
++os.chdir("docs")
++result = subprocess.run(["sphinx-build", "-b", "html", ".", "_build"], 
++                        capture_output=True, text=True)
++print(result.stdout)
++print(result.stderr)
++
++# Check if mypackage2 is in the index.html
++print("\nChecking for 'mypackage2' in index.html...")
++grep_result = subprocess.run(["grep", "mypackage2", "_build/index.html"], 
++                             capture_output=True, text=True)
++print(grep_result.stdout)
++
++# Also check the generated mypackage.html
++print("\nChecking mypackage.html title:")
++title_result = subprocess.run(["grep", "<title>", "_build/mypackage.html"], 
++                             capture_output=True, text=True)
++print(title_result.stdout)
++
++print("\nChecking mypackage.html h1:")
++h1_result = subprocess.run(["grep", -A5, "<h1>", "_build/mypackage.html"], 
++                          capture_output=True, text=True)
++print(h1_result.stdout)
+\ No newline at end of file

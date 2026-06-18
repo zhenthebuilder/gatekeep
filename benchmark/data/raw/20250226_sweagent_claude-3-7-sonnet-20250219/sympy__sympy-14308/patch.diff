@@ -1,0 +1,102 @@
+diff --git a/sympy/printing/pretty/pretty.py b/sympy/printing/pretty/pretty.py
+index 09e2b00735..fa6d31cdd5 100644
+--- a/sympy/printing/pretty/pretty.py
++++ b/sympy/printing/pretty/pretty.py
+@@ -887,13 +887,37 @@ def _print_FunctionMatrix(self, X):
+         return D
+ 
+     def _print_BasisDependent(self, expr):
+-        from sympy.vector import Vector
++        from sympy.vector import Vector, VectorMul
++        from sympy.core.power import Pow
+ 
+         if not self._use_unicode:
+             raise NotImplementedError("ASCII pretty printing of BasisDependent is not implemented")
+ 
+         if expr == expr.zero:
+             return prettyForm(expr.zero._pretty_form)
++            
++        # Special case for VectorMul with a complex measure number (like a power)
++        if isinstance(expr, VectorMul):
++            measure_number = expr.measure_number
++            base_vector = expr.base_vector
++            
++            # Check if the measure number is a power or has newlines in its pretty form
++            measure_pform = self._print(measure_number)
++            
++            # Handle special cases: powers, fractions, or any expression with newlines
++            if '\n' in str(measure_pform) or isinstance(measure_number, Pow):
++                # Create a pretty form for the base vector
++                base_pform = prettyForm(base_vector._pretty_form)
++                
++                # Add a space between the measure number and the base vector
++                pform = prettyForm(*measure_pform.right(' ' + base_vector._pretty_form))
++                
++                # Set the baseline to the center
++                pform.baseline = pform.height() // 2
++                
++                return pform
++        
++        # Standard processing for other cases
+         o1 = []
+         vectstrs = []
+         if isinstance(expr, Vector):
+@@ -917,9 +941,7 @@ def _print_BasisDependent(self, expr):
+                 else:
+                     #We always wrap the measure numbers in
+                     #parentheses
+-                    arg_str = self._print(
+-                        v).parens()[0]
+-
++                    arg_str = self._print(v).parens()[0]
+                     o1.append(arg_str + ' ' + k._pretty_form)
+                 vectstrs.append(k._pretty_form)
+ 
+@@ -932,14 +954,25 @@ def _print_BasisDependent(self, expr):
+         lengths = []
+         strs = ['']
+         for i, partstr in enumerate(o1):
+-            # XXX: What is this hack?
++            # Handle expressions with newlines (like powers)
+             if '\n' in partstr:
+-                tempstr = partstr
+-                tempstr = tempstr.replace(vectstrs[i], '')
+-                tempstr = tempstr.replace(u'\N{RIGHT PARENTHESIS UPPER HOOK}',
+-                                          u'\N{RIGHT PARENTHESIS UPPER HOOK}'
+-                                          + ' ' + vectstrs[i])
+-                o1[i] = tempstr
++                # Split the string by newlines
++                parts = partstr.split('\n')
++                
++                # Find the vector string in the last part
++                vector_pos = parts[-1].find(vectstrs[i])
++                
++                # If the vector string is found, remove it from all parts
++                if vector_pos != -1:
++                    # Remove the vector string from the last part
++                    parts[-1] = parts[-1].replace(vectstrs[i], '', 1)
++                    
++                    # Rejoin the parts
++                    o1[i] = '\n'.join(parts)
++                    
++                    # Append the vector string to the end of the expression
++                    o1[i] += ' ' + vectstrs[i]
++                
+         o1 = [x.split('\n') for x in o1]
+         n_newlines = max([len(x) for x in o1])
+         for parts in o1:
+@@ -961,7 +994,13 @@ def _print_BasisDependent(self, expr):
+                                            3*(len(lengths)-1)))
+                     strs[j] += ' '*(lengths[-1]+3)
+ 
+-        return prettyForm(u'\n'.join([s[:-3] for s in strs]))
++        # Create the pretty form
++        pform = prettyForm(u'\n'.join([s[:-3] for s in strs]))
++        
++        # Set the baseline to the center of the expression
++        pform.baseline = pform.height() // 2
++        
++        return pform
+ 
+     def _print_NDimArray(self, expr):
+         from sympy import ImmutableMatrix

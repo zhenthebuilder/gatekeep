@@ -1,0 +1,49 @@
+diff --git a/django/contrib/admin/checks.py b/django/contrib/admin/checks.py
+index 0fefe65e48..d8f72bae30 100644
+--- a/django/contrib/admin/checks.py
++++ b/django/contrib/admin/checks.py
+@@ -900,6 +900,21 @@ class ModelAdminChecks(BaseModelAdminChecks):
+         except FieldDoesNotExist:
+             try:
+                 field = getattr(obj.model, item)
++                # Check if the field is a property created with @property
++                # Properties created with @property are not supported in list_display
++                if isinstance(field, property):
++                    return [
++                        checks.Error(
++                            "The value of '%s' refers to '%s', which is a property. "
++                            "Properties cannot be used in 'list_display'."
++                            % (
++                                label,
++                                item,
++                            ),
++                            obj=obj.__class__,
++                            id="admin.E108",
++                        )
++                    ]
+             except AttributeError:
+                 return [
+                     checks.Error(
+diff --git a/django/contrib/admin/utils.py b/django/contrib/admin/utils.py
+index 5e6a400b6c..592cf79810 100644
+--- a/django/contrib/admin/utils.py
++++ b/django/contrib/admin/utils.py
+@@ -364,6 +364,18 @@ def label_for_field(name, model, model_admin=None, return_attr=False, form=None)
+                 attr = getattr(model_admin, name)
+             elif hasattr(model, name):
+                 attr = getattr(model, name)
++                # Check if the attribute is a property created with @property
++                # Properties created with @property are not supported
++                if isinstance(attr, property):
++                    message = "Unable to lookup '%s' on %s (property not supported)" % (
++                        name,
++                        model._meta.object_name,
++                    )
++                    if model_admin:
++                        message += " or %s" % model_admin.__class__.__name__
++                    if form:
++                        message += " or %s" % form.__class__.__name__
++                    raise AttributeError(message)
+             elif form and name in form.fields:
+                 attr = form.fields[name]
+             else:

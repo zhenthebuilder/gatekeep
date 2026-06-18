@@ -1,0 +1,309 @@
+diff --git a/comprehensive_test.py b/comprehensive_test.py
+new file mode 100644
+index 0000000000..3039b7a81f
+--- /dev/null
++++ b/comprehensive_test.py
+@@ -0,0 +1,39 @@
++import matplotlib.pyplot as plt
++from matplotlib.colors import LogNorm, Normalize
++import numpy as np
++
++# Test different scenarios
++def test_update_colorbar(title, norm):
++    """Test updating a colorbar with a new norm"""
++    print(f"\n--- Testing {title} ---")
++    
++    # Create a test image with positive values
++    img = 10**np.random.normal(1, 1, size=(50, 50))
++    
++    fig, ax = plt.subplots(1, 1)
++    plot = ax.imshow(img, cmap='gray')
++    cb = fig.colorbar(plot, ax=ax)
++    
++    print(f"Original norm: {plot.norm}")
++    print(f"Original norm vmin, vmax: {plot.norm.vmin}, {plot.norm.vmax}")
++    
++    # Now change the norm of the plot
++    print(f"Setting plot.norm to {norm}")
++    plot.norm = norm
++    
++    # Try to update the colorbar
++    print("Calling update_normal...")
++    cb.update_normal(plot)
++    print(f"After update_normal, colorbar norm: {cb.norm}")
++    print(f"After update_normal, colorbar norm vmin, vmax: {cb.norm.vmin}, {cb.norm.vmax}")
++    
++    plt.close(fig)
++
++# Test with different norms
++test_update_colorbar("LogNorm with positive vmin", LogNorm(vmin=0.01, vmax=100))
++test_update_colorbar("LogNorm with zero vmin", LogNorm(vmin=0, vmax=100))
++test_update_colorbar("LogNorm with negative vmin", LogNorm(vmin=-1, vmax=100))
++test_update_colorbar("Normalize with standard range", Normalize(vmin=0, vmax=1))
++test_update_colorbar("Normalize with custom range", Normalize(vmin=-10, vmax=10))
++
++print("\nAll tests completed successfully!")
+\ No newline at end of file
+diff --git a/lib/matplotlib/colorbar.py b/lib/matplotlib/colorbar.py
+index d3d53e3d98..126620bb03 100644
+--- a/lib/matplotlib/colorbar.py
++++ b/lib/matplotlib/colorbar.py
+@@ -1102,13 +1102,56 @@ class Colorbar:
+ 
+         # transform from 0-1 to vmin-vmax:
+         if not self.norm.scaled():
+-            self.norm.vmin = 0
+-            self.norm.vmax = 1
+-        self.norm.vmin, self.norm.vmax = mtransforms.nonsingular(
+-            self.norm.vmin, self.norm.vmax, expander=0.1)
++            # For LogNorm, we need to ensure vmin is not 0
++            if isinstance(self.norm, colors.LogNorm) and self.norm.vmin <= 0:
++                # Set vmin to a small positive value
++                # Temporarily block callbacks to avoid recursion
++                with cbook._setattr_cm(self.norm, _changed=lambda: None):
++                    self.norm.vmin = 1e-10
++            else:
++                # Temporarily block callbacks to avoid recursion
++                with cbook._setattr_cm(self.norm, _changed=lambda: None):
++                    self.norm.vmin = 0
++                    self.norm.vmax = 1
++        
++        # Temporarily block callbacks to avoid recursion
++        with cbook._setattr_cm(self.norm, _changed=lambda: None):
++            try:
++                vmin, vmax = float(self.norm.vmin), float(self.norm.vmax)
++                # Ensure vmin and vmax are valid numbers
++                if not np.isfinite(vmin) or (isinstance(self.norm, colors.LogNorm) and vmin <= 0):
++                    vmin = 1e-10 if isinstance(self.norm, colors.LogNorm) else 0
++                if not np.isfinite(vmax) or (isinstance(self.norm, colors.LogNorm) and vmax <= 0):
++                    vmax = 1
++            except (TypeError, ValueError):
++                # If vmin or vmax are not valid numbers, use defaults
++                vmin = 1e-10 if isinstance(self.norm, colors.LogNorm) else 0
++                vmax = 1
++            
++            vmin, vmax = mtransforms.nonsingular(vmin, vmax, expander=0.1)
++            self.norm.vmin, self.norm.vmax = vmin, vmax
++        
+         if (not isinstance(self.norm, colors.BoundaryNorm) and
+                 (self.boundaries is None)):
+-            b = self.norm.inverse(b)
++            # For LogNorm, we need to ensure we don't pass 0 to inverse
++            if isinstance(self.norm, colors.LogNorm):
++                # Replace 0 with a small positive value to avoid log(0)
++                # Use a value smaller than the smallest non-zero value in the array
++                if np.any(b == 0):
++                    # Find the smallest non-zero value in b
++                    min_nonzero = np.min(b[b > 0])
++                    # Replace 0 with a value smaller than the smallest non-zero value
++                    b[b == 0] = min_nonzero * 0.1
++            try:
++                b = self.norm.inverse(b)
++            except ValueError as e:
++                if isinstance(self.norm, colors.LogNorm) and "Invalid vmin or vmax" in str(e):
++                    # If we still have an issue with LogNorm, use a safer approach
++                    # Create a new array with logarithmically spaced values
++                    vmin, vmax = self.norm.vmin, self.norm.vmax
++                    b = np.logspace(np.log10(vmin), np.log10(vmax), len(b))
++                else:
++                    raise
+ 
+         self._boundaries = np.asarray(b, dtype=float)
+         self._values = 0.5 * (self._boundaries[:-1] + self._boundaries[1:])
+diff --git a/pr_example.py b/pr_example.py
+new file mode 100644
+index 0000000000..80db1d30f8
+--- /dev/null
++++ b/pr_example.py
+@@ -0,0 +1,14 @@
++import matplotlib.pyplot as plt
++from matplotlib.colors import LogNorm
++import numpy as np
++
++img = 10**np.random.normal(1, 1, size=(50, 50))
++
++fig, ax = plt.subplots(1, 1)
++plot = ax.imshow(img, cmap='gray')
++cb = fig.colorbar(plot, ax=ax)
++plot.norm = LogNorm()
++print("Calling update_normal...")
++cb.update_normal(plot)  # This should now work
++print("update_normal completed successfully")
++plt.show()
+\ No newline at end of file
+diff --git a/reproduce_error.py b/reproduce_error.py
+new file mode 100644
+index 0000000000..2d3a3716e0
+--- /dev/null
++++ b/reproduce_error.py
+@@ -0,0 +1,141 @@
++import matplotlib.pyplot as plt
++from matplotlib.colors import LogNorm, Normalize, BoundaryNorm, NoNorm
++import matplotlib.transforms as mtransforms
++import numpy as np
++import matplotlib.cbook as cbook
++
++# Create a modified version of the _process_values method to debug the issue
++def debug_process_values(self):
++    """Debug version of _process_values to understand the issue"""
++    print("In debug_process_values")
++    if self.values is not None:
++        # set self._boundaries from the values...
++        self._values = np.array(self.values)
++        if self.boundaries is None:
++            # bracket values by 1/2 dv:
++            b = np.zeros(len(self.values) + 1)
++            b[1:-1] = 0.5 * (self._values[:-1] + self._values[1:])
++            b[0] = 2.0 * b[1] - b[2]
++            b[-1] = 2.0 * b[-2] - b[-3]
++            self._boundaries = b
++            return
++        self._boundaries = np.array(self.boundaries)
++        return
++
++    # otherwise values are set from the boundaries
++    if isinstance(self.norm, BoundaryNorm):
++        b = self.norm.boundaries
++    elif isinstance(self.norm, NoNorm):
++        # NoNorm has N blocks, so N+1 boundaries, centered on integers:
++        b = np.arange(self.cmap.N + 1) - .5
++    elif self.boundaries is not None:
++        b = self.boundaries
++    else:
++        # otherwise make the boundaries from the size of the cmap:
++        N = self.cmap.N + 1
++        print(f"Using _uniform_y with N={N}")
++        b, _ = self._uniform_y(N)
++        print(f"b from _uniform_y: {b}")
++    # add extra boundaries if needed:
++    if self._extend_lower():
++        b = np.hstack((b[0] - 1, b))
++    if self._extend_upper():
++        b = np.hstack((b, b[-1] + 1))
++
++    # transform from 0-1 to vmin-vmax:
++    if not self.norm.scaled():
++        print(f"Norm not scaled, setting vmin=0, vmax=1")
++        self.norm.vmin = 0
++        self.norm.vmax = 1
++    print(f"Before nonsingular: vmin={self.norm.vmin}, vmax={self.norm.vmax}")
++    self.norm.vmin, self.norm.vmax = mtransforms.nonsingular(
++        self.norm.vmin, self.norm.vmax, expander=0.1)
++    print(f"After nonsingular: vmin={self.norm.vmin}, vmax={self.norm.vmax}")
++    
++    if (not isinstance(self.norm, BoundaryNorm) and
++            (self.boundaries is None)):
++        print(f"Calling norm.inverse on b: {b}")
++        try:
++            b = self.norm.inverse(b)
++            print(f"After inverse: {b}")
++        except Exception as e:
++            print(f"Error in norm.inverse: {type(e).__name__}: {e}")
++            raise
++
++    self._boundaries = np.asarray(b, dtype=float)
++    self._values = 0.5 * (self._boundaries[:-1] + self._boundaries[1:])
++    if isinstance(self.norm, NoNorm):
++        self._values = (self._values + 0.00001).astype(np.int16)
++
++# Add a bruteforce update method to the Colorbar class
++def update_bruteforce(self, mappable):
++    """
++    Update the colorbar using a brute-force approach.
++    This method is meant to be called when the norm of the image or contour plot
++    to which this colorbar belongs changes.
++    """
++    self.mappable = mappable
++    self.set_alpha(mappable.get_alpha())
++    self.cmap = mappable.cmap
++    self.norm = mappable.norm
++    
++    # Use our debug version of _process_values
++    original_process_values = self._process_values
++    self._process_values = lambda: debug_process_values(self)
++    
++    try:
++        self._reset_locator_formatter_scale()
++        self.draw_all()
++    finally:
++        # Restore the original method
++        self._process_values = original_process_values
++
++# Add the method to the Colorbar class
++import matplotlib.colorbar
++matplotlib.colorbar.Colorbar.update_bruteforce = update_bruteforce
++
++# Create a test image with positive values
++img = 10**np.random.normal(1, 1, size=(50, 50))
++
++fig, ax = plt.subplots(1, 1)
++plot = ax.imshow(img, cmap='gray')
++cb = fig.colorbar(plot, ax=ax)
++
++# Print the current norm
++print(f"Original norm: {plot.norm}")
++print(f"Original norm vmin, vmax: {plot.norm.vmin}, {plot.norm.vmax}")
++
++# Create a LogNorm with appropriate vmin/vmax
++data_min, data_max = np.min(img), np.max(img)
++print(f"Data min, max: {data_min}, {data_max}")
++
++# Now change the norm of the plot to LogNorm
++# We'll use a context manager to temporarily block callbacks
++print("Setting plot.norm to LogNorm()...")
++log_norm = LogNorm(vmin=data_min, vmax=data_max)
++print(f"New norm: {log_norm}")
++print(f"New norm vmin, vmax: {log_norm.vmin}, {log_norm.vmax}")
++
++# Temporarily disconnect callbacks to avoid recursive updates
++cbs = plot.callbacks
++plot.callbacks = cbook.CallbackRegistry()
++plot._norm = log_norm  # Set norm directly to avoid triggering callbacks
++plot.callbacks = cbs
++
++# Try to update the colorbar
++print("\nCalling update_normal...")
++cb.update_normal(plot)  # This should have no effect
++print("After update_normal, colorbar norm:", cb.norm)
++print(f"After update_normal, colorbar norm vmin, vmax: {cb.norm.vmin}, {cb.norm.vmax}")
++
++# Now try the bruteforce update
++print("\nCalling update_bruteforce...")
++try:
++    cb.update_bruteforce(plot)  # This should throw ZeroDivisionError
++    print("update_bruteforce completed without error")
++except Exception as e:
++    print(f"Error in update_bruteforce: {type(e).__name__}: {e}")
++    import traceback
++    traceback.print_exc()
++
++plt.show()
+\ No newline at end of file
+diff --git a/test_zero_division.py b/test_zero_division.py
+new file mode 100644
+index 0000000000..16cd93416e
+--- /dev/null
++++ b/test_zero_division.py
+@@ -0,0 +1,21 @@
++import matplotlib.pyplot as plt
++from matplotlib.colors import LogNorm
++import numpy as np
++
++# Create a test image with positive values
++img = 10**np.random.normal(1, 1, size=(50, 50))
++
++fig, ax = plt.subplots(1, 1)
++plot = ax.imshow(img, cmap='gray')
++cb = fig.colorbar(plot, ax=ax)
++
++# Now change the norm of the plot to LogNorm with vmin=0
++# This should cause a division by zero in the inverse method
++print("Setting plot.norm to LogNorm(vmin=0)...")
++plot.norm = LogNorm(vmin=0)  # This should cause problems
++
++# Try to update the colorbar
++print("Calling update_normal...")
++cb.update_normal(plot)
++
++plt.show()
+\ No newline at end of file

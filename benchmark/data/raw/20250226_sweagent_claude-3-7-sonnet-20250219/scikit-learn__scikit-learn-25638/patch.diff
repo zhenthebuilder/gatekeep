@@ -1,0 +1,88 @@
+diff --git a/sklearn/utils/multiclass.py b/sklearn/utils/multiclass.py
+index 5eaef2fde..caf4408a2 100644
+--- a/sklearn/utils/multiclass.py
++++ b/sklearn/utils/multiclass.py
+@@ -76,9 +76,21 @@ def unique_labels(*ys):
+     xp, is_array_api = get_namespace(*ys)
+     if not ys:
+         raise ValueError("No argument has been passed.")
++    
++    # Handle pandas nullable dtypes with NA values
++    processed_ys = []
++    for y in ys:
++        # Check if this is a pandas Series
++        if hasattr(y, 'dropna') and hasattr(y, 'isna') and hasattr(y, 'dtype'):
++            # Check if this is a pandas nullable dtype (Int64, Float64, boolean)
++            dtype_name = str(y.dtype)
++            if dtype_name in ['Int64', 'Float64', 'boolean'] and y.isna().any():
++                # Drop NA values
++                y = y.dropna()
++        processed_ys.append(y)
++    
+     # Check that we don't mix label format
+-
+-    ys_types = set(type_of_target(x) for x in ys)
++    ys_types = set(type_of_target(x) for x in processed_ys)
+     if ys_types == {"binary", "multiclass"}:
+         ys_types = {"multiclass"}
+ 
+@@ -92,7 +104,7 @@ def unique_labels(*ys):
+         label_type == "multilabel-indicator"
+         and len(
+             set(
+-                check_array(y, accept_sparse=["csr", "csc", "coo"]).shape[1] for y in ys
++                check_array(y, accept_sparse=["csr", "csc", "coo"]).shape[1] for y in processed_ys
+             )
+         )
+         > 1
+@@ -104,14 +116,14 @@ def unique_labels(*ys):
+     # Get the unique set of labels
+     _unique_labels = _FN_UNIQUE_LABELS.get(label_type, None)
+     if not _unique_labels:
+-        raise ValueError("Unknown label type: %s" % repr(ys))
++        raise ValueError("Unknown label type: %s" % repr(processed_ys))
+ 
+     if is_array_api:
+         # array_api does not allow for mixed dtypes
+-        unique_ys = xp.concat([_unique_labels(y) for y in ys])
++        unique_ys = xp.concat([_unique_labels(y) for y in processed_ys])
+         return xp.unique_values(unique_ys)
+ 
+-    ys_labels = set(chain.from_iterable((i for i in _unique_labels(y)) for y in ys))
++    ys_labels = set(chain.from_iterable((i for i in _unique_labels(y)) for y in processed_ys))
+     # Check that we don't mix string type with number type
+     if len(set(isinstance(label, str) for label in ys_labels)) > 1:
+         raise ValueError("Mix of label input types (string and number)")
+@@ -294,6 +306,32 @@ def type_of_target(y, input_name=""):
+     sparse_pandas = y.__class__.__name__ in ["SparseSeries", "SparseArray"]
+     if sparse_pandas:
+         raise ValueError("y cannot be class 'SparseSeries' or 'SparseArray'")
++    
++    # Handle pandas nullable dtypes
++    if hasattr(y, 'dtype') and hasattr(y, 'dropna') and str(y.dtype) in ['Int64', 'Float64', 'boolean']:
++        # For pandas nullable dtypes, we'll determine the type based on the values
++        if str(y.dtype) == 'Int64':
++            # For Int64, treat as binary or multiclass
++            unique_values = y.dropna().unique()
++            if len(unique_values) <= 2:
++                return "binary"
++            else:
++                return "multiclass"
++        elif str(y.dtype) == 'Float64':
++            # For Float64, check if all values are integers
++            values = y.dropna().to_numpy()
++            if len(values) > 0 and np.all(values == values.astype(int)):
++                # All values are integers
++                if len(np.unique(values)) <= 2:
++                    return "binary"
++                else:
++                    return "multiclass"
++            else:
++                # Contains non-integer values
++                return "continuous"
++        elif str(y.dtype) == 'boolean':
++            # For boolean, always binary
++            return "binary"
+ 
+     if is_multilabel(y):
+         return "multilabel-indicator"

@@ -1,0 +1,190 @@
+diff --git a/django/forms/widgets.py b/django/forms/widgets.py
+index 02aa32b207..0edffc352c 100644
+--- a/django/forms/widgets.py
++++ b/django/forms/widgets.py
+@@ -59,22 +59,111 @@ class Media:
+ 
+     @property
+     def _css(self):
+-        css = self._css_lists[0]
+-        # filter(None, ...) avoids calling merge with empty dicts.
+-        for obj in filter(None, self._css_lists[1:]):
+-            css = {
+-                medium: self.merge(css.get(medium, []), obj.get(medium, []))
+-                for medium in css.keys() | obj.keys()
+-            }
++        """
++        Return a dictionary of all CSS files defined in all media lists.
++        The order is determined by the order in which the media lists were added,
++        with the exception that if a file is defined in more than one list, 
++        it will be included in the position defined by the first list.
++        
++        Additionally, if a file A appears before file B in any media list,
++        and both files are included in the final result, file A will always
++        appear before file B in the final result.
++        """
++        if not self._css_lists:
++            return {}
++            
++        # Process each medium separately
++        css = {}
++        
++        # Find all media types
++        media_types = set()
++        for css_dict in self._css_lists:
++            media_types.update(css_dict.keys())
++            
++        # Process each medium
++        for medium in media_types:
++            # Build a dependency graph for this medium
++            dependencies = {}
++            all_paths = set()
++            
++            for css_dict in self._css_lists:
++                if medium not in css_dict:
++                    continue
++                    
++                paths = css_dict[medium]
++                for i, path in enumerate(paths):
++                    all_paths.add(path)
++                    if path not in dependencies:
++                        dependencies[path] = set()
++                    # Add dependencies: path depends on all paths that come before it in this list
++                    for j in range(i):
++                        dependencies[path].add(paths[j])
++            
++            # Topologically sort the paths based on dependencies
++            result = []
++            visited = set()
++            
++            def visit(path):
++                if path in visited:
++                    return
++                visited.add(path)
++                for dep in dependencies.get(path, set()):
++                    visit(dep)
++                result.append(path)
++            
++            # Visit all paths
++            for path in all_paths:
++                visit(path)
++                
++            css[medium] = result
++        
+         return css
+ 
+     @property
+     def _js(self):
+-        js = self._js_lists[0]
+-        # filter(None, ...) avoids calling merge() with empty lists.
+-        for obj in filter(None, self._js_lists[1:]):
+-            js = self.merge(js, obj)
+-        return js
++        """
++        Return a list of all JavaScript files defined in all media lists.
++        The order is determined by the order in which the media lists were added,
++        with the exception that if a file is defined in more than one list, 
++        it will be included in the position defined by the first list.
++        
++        Additionally, if a file A appears before file B in any media list,
++        and both files are included in the final result, file A will always
++        appear before file B in the final result.
++        """
++        if not self._js_lists:
++            return []
++            
++        # Build a dependency graph: if A comes before B in any list, A should come before B in the result
++        dependencies = {}
++        all_paths = set()
++        
++        for js_list in self._js_lists:
++            for i, path in enumerate(js_list):
++                all_paths.add(path)
++                if path not in dependencies:
++                    dependencies[path] = set()
++                # Add dependencies: path depends on all paths that come before it in this list
++                for j in range(i):
++                    dependencies[path].add(js_list[j])
++        
++        # Topologically sort the paths based on dependencies
++        result = []
++        visited = set()
++        
++        def visit(path):
++            if path in visited:
++                return
++            visited.add(path)
++            for dep in dependencies.get(path, set()):
++                visit(dep)
++            result.append(path)
++        
++        # Visit all paths
++        for path in all_paths:
++            visit(path)
++            
++        return result
+ 
+     def render(self):
+         return mark_safe('\n'.join(chain.from_iterable(getattr(self, 'render_' + name)() for name in MEDIA_TYPES)))
+@@ -125,29 +214,38 @@ class Media:
+         in a certain order. In JavaScript you may not be able to reference a
+         global or in CSS you might want to override a style.
+         """
+-        # Start with a copy of list_1.
+-        combined_list = list(list_1)
+-        last_insert_index = len(list_1)
+-        # Walk list_2 in reverse, inserting each element into combined_list if
+-        # it doesn't already exist.
+-        for path in reversed(list_2):
+-            try:
+-                # Does path already exist in the list?
+-                index = combined_list.index(path)
+-            except ValueError:
+-                # Add path to combined_list since it doesn't exist.
+-                combined_list.insert(last_insert_index, path)
+-            else:
+-                if index > last_insert_index:
+-                    warnings.warn(
+-                        'Detected duplicate Media files in an opposite order:\n'
+-                        '%s\n%s' % (combined_list[last_insert_index], combined_list[index]),
+-                        MediaOrderConflictWarning,
+-                    )
+-                # path already exists in the list. Update last_insert_index so
+-                # that the following elements are inserted in front of this one.
+-                last_insert_index = index
+-        return combined_list
++        # Build a dict of path -> index for list_1
++        path_indices = {path: idx for idx, path in enumerate(list_1)}
++        
++        # Check for conflicts between list_1 and list_2
++        conflicts = []
++        for i, path_i in enumerate(list_2):
++            if path_i in path_indices:
++                idx_i = path_indices[path_i]
++                for j, path_j in enumerate(list_2):
++                    if j > i and path_j in path_indices:
++                        idx_j = path_indices[path_j]
++                        if idx_j < idx_i:
++                            # Found a conflict: path_i comes before path_j in list_2,
++                            # but path_j comes before path_i in list_1
++                            conflicts.append((path_i, path_j))
++        
++        if conflicts:
++            warnings.warn(
++                'Detected duplicate Media files in an opposite order:\n%s' % 
++                '\n'.join('%s\n%s' % (a, b) for a, b in conflicts),
++                MediaOrderConflictWarning,
++            )
++        
++        # Start with a copy of list_1
++        combined = list(list_1)
++        
++        # Add items from list_2 that aren't in list_1
++        for path in list_2:
++            if path not in path_indices:
++                combined.append(path)
++                
++        return combined
+ 
+     def __add__(self, other):
+         combined = Media()

@@ -1,0 +1,126 @@
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index b28dc925ba..fa32da9131 100644
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -990,8 +990,16 @@ class SQLCompiler:
+                 # parent model data is already present in the SELECT clause,
+                 # and we want to avoid reloading the same data again.
+                 continue
+-            if select_mask and field not in select_mask:
+-                continue
++            if select_mask:
++                # For reverse relations, the field might be in a nested dictionary in the select mask
++                if field not in select_mask:
++                    # Check if this is a reverse relation field
++                    if hasattr(field, 'remote_field') and field.remote_field and field.remote_field.related_name:
++                        related_name = field.remote_field.related_name
++                        if related_name not in select_mask:
++                            continue
++                    else:
++                        continue
+             alias = self.query.join_parent_model(opts, model, start_alias, seen_models)
+             column = field.get_col(alias)
+             result.append(column)
+@@ -1250,7 +1258,10 @@ class SQLCompiler:
+                 if o.field.unique and not o.many_to_many
+             ]
+             for related_field, model in related_fields:
+-                related_select_mask = select_mask.get(related_field) or {}
++                related_field_name = related_field.related_query_name()
++                # For reverse relations, the select_mask will have the field under
++                # the related_query_name, not the field itself
++                related_select_mask = select_mask.get(related_field_name, {})
+                 if not select_related_descend(
+                     related_field,
+                     restricted,
+@@ -1260,7 +1271,7 @@ class SQLCompiler:
+                 ):
+                     continue
+ 
+-                related_field_name = related_field.related_query_name()
++                # related_field_name is already defined above
+                 fields_found.add(related_field_name)
+ 
+                 join_info = self.query.setup_joins(
+diff --git a/reproduce_bug.py b/reproduce_bug.py
+new file mode 100644
+index 0000000000..bd45c186d0
+--- /dev/null
++++ b/reproduce_bug.py
+@@ -0,0 +1,53 @@
++import os
++import sys
++import django
++from django.conf import settings
++
++# Configure Django settings
++settings.configure(
++    DEBUG=True,
++    DATABASES={
++        'default': {
++            'ENGINE': 'django.db.backends.sqlite3',
++            'NAME': ':memory:',
++        }
++    },
++    INSTALLED_APPS=[
++        'django.contrib.contenttypes',
++        'django.contrib.auth',
++        'test_project',
++    ],
++)
++
++django.setup()
++
++from django.db import connection
++from test_project.models import Main, Secondary
++
++# Create the tables
++with connection.schema_editor() as schema_editor:
++    schema_editor.create_model(Main)
++    schema_editor.create_model(Secondary)
++
++# Create some test data
++main = Main.objects.create(
++    main_field_1='main1',
++    main_field_2='main2',
++    main_field_3='main3'
++)
++secondary = Secondary.objects.create(
++    main=main,
++    secondary_field_1='secondary1',
++    secondary_field_2='secondary2',
++    secondary_field_3='secondary3'
++)
++
++# Execute the query and print the SQL
++query = Main.objects.select_related('secondary').only('main_field_1', 'secondary__secondary_field_1')
++print("Django version:", django.__version__)
++print("\nQuery SQL:")
++sql, params = query.query.get_compiler(connection=connection).as_sql()
++print(sql)
++
++# The issue is that the SQL includes all fields from the Secondary model, not just secondary_field_1
++# We should see secondary_field_2 and secondary_field_3 in the SQL, which is incorrect
+\ No newline at end of file
+diff --git a/test_project/__init__.py b/test_project/__init__.py
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test_project/models.py b/test_project/models.py
+new file mode 100644
+index 0000000000..9a4c249570
+--- /dev/null
++++ b/test_project/models.py
+@@ -0,0 +1,12 @@
++from django.db import models
++
++class Main(models.Model):
++    main_field_1 = models.CharField(blank=True, max_length=45)
++    main_field_2 = models.CharField(blank=True, max_length=45)
++    main_field_3 = models.CharField(blank=True, max_length=45)
++
++class Secondary(models.Model):
++    main = models.OneToOneField(Main, primary_key=True, related_name='secondary', on_delete=models.CASCADE)
++    secondary_field_1 = models.CharField(blank=True, max_length=45)
++    secondary_field_2 = models.CharField(blank=True, max_length=45)
++    secondary_field_3 = models.CharField(blank=True, max_length=45)
+\ No newline at end of file

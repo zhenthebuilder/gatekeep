@@ -1,0 +1,46 @@
+diff --git a/seaborn/_stats/regression.py b/seaborn/_stats/regression.py
+index 7b7ddc8d..ed38b49b 100644
+--- a/seaborn/_stats/regression.py
++++ b/seaborn/_stats/regression.py
+@@ -23,15 +23,33 @@ class PolyFit(Stat):
+ 
+         x = data["x"]
+         y = data["y"]
+-        if x.nunique() <= self.order:
+-            # TODO warn?
+-            xx = yy = []
+-        else:
+-            p = np.polyfit(x, y, self.order)
+-            xx = np.linspace(x.min(), x.max(), self.gridsize)
++        
++        # Create a mask for non-null values in both x and y
++        valid_mask = ~(pd.isna(x) | pd.isna(y))
++        
++        # Filter out missing values
++        x_valid = x[valid_mask]
++        y_valid = y[valid_mask]
++        
++        # Check if we have enough valid data points
++        if len(x_valid) <= self.order:
++            # Not enough valid data points to fit polynomial of the given order
++            # Return empty DataFrame with correct columns
++            return pd.DataFrame(columns=["x", "y"])
++        
++        try:
++            # Fit polynomial to valid data points
++            p = np.polyfit(x_valid, y_valid, self.order)
++            
++            # Use min/max of valid data for the range
++            xx = np.linspace(x_valid.min(), x_valid.max(), self.gridsize)
+             yy = np.polyval(p, xx)
+-
+-        return pd.DataFrame(dict(x=xx, y=yy))
++            
++            return pd.DataFrame({"x": xx, "y": yy})
++        except Exception:
++            # Handle any other numerical errors that might occur
++            # (e.g., if all x values are the same)
++            return pd.DataFrame(columns=["x", "y"])
+ 
+     # TODO we should have a way of identifying the method that will be applied
+     # and then only define __call__ on a base-class of stats with this pattern

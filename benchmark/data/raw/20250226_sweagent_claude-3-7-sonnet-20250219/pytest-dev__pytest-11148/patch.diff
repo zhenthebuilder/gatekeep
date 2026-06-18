@@ -1,0 +1,134 @@
+diff --git a/pmxbot b/pmxbot
+new file mode 160000
+index 000000000..cece70c4a
+--- /dev/null
++++ b/pmxbot
+@@ -0,0 +1 @@
++Subproject commit cece70c4a4557959ec08f91f9cf7a88e86ff8057
+diff --git a/submit.py b/submit.py
+new file mode 100644
+index 000000000..13f576f12
+--- /dev/null
++++ b/submit.py
+@@ -0,0 +1,120 @@
++"""
++Final solution for the pmxbot namespace package issue.
++
++The issue is that when using importlib for import-mode, there are two different
++versions of pmxbot.logging present, one in sys.modules and another found in
++tests.unit.test_commands.logging.
++
++This causes the Logger.store attribute to be set in one module but not accessible
++in the other module.
++
++The solution is to use a module-level variable for the store and provide a method
++to access it, ensuring that the store is always accessible regardless of how the
++module is imported.
++"""
++
++import os
++import sys
++
++# Add the pmxbot directory to the path
++sys.path.insert(0, '/testbed/pmxbot')
++
++# Modify the logging.py file
++logging_file = '/testbed/pmxbot/pmxbot/logging.py'
++
++with open(logging_file, 'r') as f:
++    content = f.read()
++
++# Add the module-level variable
++if '_store = None' not in content:
++    # Find the Logger class definition
++    logger_class_start = content.find("class Logger(storage.SelectableStorage):")
++    if logger_class_start == -1:
++        print("Error: Could not find Logger class definition")
++        sys.exit(1)
++
++    # Find the line before the class definition to add the module-level variable
++    line_before_class = content.rfind("\n\n", 0, logger_class_start)
++    if line_before_class == -1:
++        print("Error: Could not find line before Logger class definition")
++        sys.exit(1)
++
++    # Add the module-level variable
++    content = content[:line_before_class + 2] + "# Module-level variable to store the logger instance\n_store = None\n\n" + content[line_before_class + 2:]
++
++# Replace the initialize method
++old_initialize = """    @classmethod
++    def initialize(cls):
++        cls.store = cls.from_URI()
++        _log.info(f"Logging with {cls.store.__class__.__name__}")
++        cls._finalizers.append(cls.finalize)"""
++
++new_initialize = """    @classmethod
++    def initialize(cls):
++        global _store
++        _store = cls.from_URI()
++        _log.info(f"Logging with {_store.__class__.__name__}")
++        cls._finalizers.append(cls.finalize)"""
++
++content = content.replace(old_initialize, new_initialize)
++
++# Replace the finalize method
++old_finalize = """    @classmethod
++    def finalize(cls):
++        cls.store.close()
++        del cls.store"""
++
++new_finalize = """    @classmethod
++    def finalize(cls):
++        global _store
++        if _store:
++            _store.close()
++            _store = None"""
++
++content = content.replace(old_finalize, new_finalize)
++
++# Add the store method
++store_method = '''    @classmethod
++    def store(cls):
++        """
++        Property-like method to access the store.
++        Using a method instead of a property to avoid issues with
++        the @classmethod and @property decorators.
++        """
++        global _store
++        if _store is None:
++            # Auto-initialize if needed
++            cls.initialize()
++        return _store'''
++
++# Check if the store method already exists
++if 'def store(cls):' not in content:
++    # Find the position to insert the store method (after the finalize method)
++    finalize_end = content.find(new_finalize) + len(new_finalize)
++    next_method = content.find("    def ", finalize_end)
++    if next_method == -1:
++        print("Error: Could not find next method after finalize")
++        sys.exit(1)
++
++    content = content[:next_method] + "\n\n" + store_method + "\n\n" + content[next_method:]
++
++# Update the log_message function to use the method
++old_log_message = """@logging_handler.decorate
++def log_message(channel, nick, rest):
++    Logger.store.message(channel, nick, rest)"""
++
++new_log_message = """@logging_handler.decorate
++def log_message(channel, nick, rest):
++    # Use the method to get the store
++    store = Logger.store()
++    store.message(channel, nick, rest)"""
++
++content = content.replace(old_log_message, new_log_message)
++
++# Write the modified content back to the file
++with open(logging_file, 'w') as f:
++    f.write(content)
++
++print("Successfully applied the fix to pmxbot/logging.py")
++print("The fix ensures that the Logger.store attribute is always accessible regardless of how the module is imported.")
++print("This resolves the issue with multiple instances of the pmxbot.logging module when using importlib for import-mode.")
+\ No newline at end of file

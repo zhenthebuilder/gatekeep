@@ -1,0 +1,98 @@
+diff --git a/sympy/concrete/summations.py b/sympy/concrete/summations.py
+index 372487664c..14bfc4bc5c 100644
+--- a/sympy/concrete/summations.py
++++ b/sympy/concrete/summations.py
+@@ -174,7 +174,33 @@ def doit(self, **hints):
+         else:
+             f = self.function
+ 
++        # Special case for double sum of KroneckerDelta
++        from sympy.functions import KroneckerDelta
++        if isinstance(f, KroneckerDelta) and len(self.limits) == 2:
++            i_var, i_start, i_end = self.limits[0]
++            j_var, j_start, j_end = self.limits[1]
++            
++            # Check if we're summing KroneckerDelta(i, j) over all i and j
++            if (f.args[0] == i_var and f.args[1] == j_var and
++                i_start == j_start and i_end == j_end):
++                # The sum is equal to the number of elements on the diagonal
++                return i_end - i_start + 1
++
+         if self.function.is_Matrix:
++            # Special case for Identity matrix
++            if getattr(f, 'is_Identity', False):
++                # For double sum over all elements of Identity matrix
++                if len(self.limits) == 2:
++                    i_var, i_start, i_end = self.limits[0]
++                    j_var, j_start, j_end = self.limits[1]
++                    
++                    # Check if we're summing over all elements
++                    if (i_start == 0 and j_start == 0 and 
++                        i_end == f.rows - 1 and 
++                        j_end == f.cols - 1):
++                        # Sum of all elements in Identity matrix is the trace (which is n)
++                        return f.rows
++            
+             return self.expand().doit()
+ 
+         for n, limit in enumerate(self.limits):
+@@ -302,6 +328,42 @@ def _eval_simplify(self, ratio=1.7, measure=None):
+         return factor_sum(result, limits=self.limits)
+ 
+     def _eval_summation(self, f, x):
++        from sympy.functions import KroneckerDelta
++        
++        # Special case for double sum of KroneckerDelta
++        if isinstance(f, KroneckerDelta) and len(self.limits) == 2:
++            i_var, i_start, i_end = self.limits[0]
++            j_var, j_start, j_end = self.limits[1]
++            
++            # Check if we're summing KroneckerDelta(i, j) over all i and j
++            if (f.args[0] == i_var and f.args[1] == j_var and
++                i_start == j_start and i_end == j_end):
++                # The sum is equal to the number of elements on the diagonal
++                return i_end - i_start + 1
++        
++        # Handle the case where we've already evaluated the inner sum to a Piecewise
++        if isinstance(f, Piecewise) and len(f.args) == 2:
++            # Check if it's the pattern from KroneckerDelta inner sum
++            cond_expr, cond = f.args[0]
++            else_expr, else_cond = f.args[1]
++            
++            if (cond_expr == 1 and else_expr == 0 and else_cond is S.true and
++                isinstance(cond, And) and len(cond.args) == 2):
++                
++                # Extract the bounds from the condition
++                lower_cond, upper_cond = cond.args
++                
++                # Check if the condition matches our summation bounds
++                j_var = self.limits[0][0]
++                j_start = self.limits[0][1]
++                j_end = self.limits[0][2]
++                
++                # If the condition is (j_start <= j_var) & (j_var <= j_end)
++                # then the sum is just j_end - j_start + 1
++                if (lower_cond.lhs == j_start and lower_cond.rhs == j_var and
++                    upper_cond.lhs == j_var and upper_cond.rhs == j_end):
++                    return j_end - j_start + 1
++        
+         return None
+ 
+     def is_convergent(self):
+diff --git a/sympy/matrices/expressions/matexpr.py b/sympy/matrices/expressions/matexpr.py
+index b4d759836e..72f1460300 100644
+--- a/sympy/matrices/expressions/matexpr.py
++++ b/sympy/matrices/expressions/matexpr.py
+@@ -476,10 +476,8 @@ def conjugate(self):
+         return self
+ 
+     def _entry(self, i, j):
+-        if i == j:
+-            return S.One
+-        else:
+-            return S.Zero
++        from sympy.functions import KroneckerDelta
++        return KroneckerDelta(i, j)
+ 
+     def _eval_determinant(self):
+         return S.One

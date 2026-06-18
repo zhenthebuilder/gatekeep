@@ -1,0 +1,73 @@
+diff --git a/sklearn/preprocessing/_encoders.py b/sklearn/preprocessing/_encoders.py
+index 1e05aba59..69d88e04a 100644
+--- a/sklearn/preprocessing/_encoders.py
++++ b/sklearn/preprocessing/_encoders.py
+@@ -97,23 +97,51 @@ class _BaseEncoder(BaseEstimator, TransformerMixin):
+ 
+         for i in range(n_features):
+             Xi = X[:, i]
+-            diff, valid_mask = _encode_check_unknown(Xi, self.categories_[i],
+-                                                     return_mask=True)
+-
+-            if not np.all(valid_mask):
+-                if handle_unknown == 'error':
+-                    msg = ("Found unknown categories {0} in column {1}"
+-                           " during transform".format(diff, i))
+-                    raise ValueError(msg)
+-                else:
+-                    # Set the problematic rows to an acceptable value and
+-                    # continue `The rows are marked `X_mask` and will be
+-                    # removed later.
+-                    X_mask[:, i] = valid_mask
+-                    Xi = Xi.copy()
+-                    Xi[~valid_mask] = self.categories_[i][0]
+-            _, encoded = _encode(Xi, self.categories_[i], encode=True)
+-            X_int[:, i] = encoded
++            
++            # For string arrays, always convert to object dtype to avoid truncation issues
++            # when handling unknown values
++            if (handle_unknown == 'ignore' and 
++                hasattr(Xi, 'dtype') and 
++                np.issubdtype(Xi.dtype, np.character)):
++                # Create a copy with object dtype to avoid truncation
++                Xi_object = np.array(Xi, dtype=np.object)
++                diff, valid_mask = _encode_check_unknown(Xi_object, self.categories_[i],
++                                                        return_mask=True)
++                
++                if not np.all(valid_mask):
++                    if handle_unknown == 'error':
++                        msg = ("Found unknown categories {0} in column {1}"
++                               " during transform".format(diff, i))
++                        raise ValueError(msg)
++                    else:
++                        # Set the problematic rows to an acceptable value and
++                        # continue. The rows are marked `X_mask` and will be
++                        # removed later.
++                        X_mask[:, i] = valid_mask
++                        Xi_object[~valid_mask] = self.categories_[i][0]
++                
++                _, encoded = _encode(Xi_object, self.categories_[i], encode=True)
++                X_int[:, i] = encoded
++            else:
++                # Original behavior for non-string arrays
++                diff, valid_mask = _encode_check_unknown(Xi, self.categories_[i],
++                                                        return_mask=True)
++                
++                if not np.all(valid_mask):
++                    if handle_unknown == 'error':
++                        msg = ("Found unknown categories {0} in column {1}"
++                               " during transform".format(diff, i))
++                        raise ValueError(msg)
++                    else:
++                        # Set the problematic rows to an acceptable value and
++                        # continue. The rows are marked `X_mask` and will be
++                        # removed later.
++                        X_mask[:, i] = valid_mask
++                        Xi = Xi.copy()
++                        Xi[~valid_mask] = self.categories_[i][0]
++                
++                _, encoded = _encode(Xi, self.categories_[i], encode=True)
++                X_int[:, i] = encoded
+ 
+         return X_int, X_mask
+ 

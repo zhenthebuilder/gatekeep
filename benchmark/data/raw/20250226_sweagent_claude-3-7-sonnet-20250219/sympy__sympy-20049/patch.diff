@@ -1,0 +1,128 @@
+diff --git a/sympy/physics/vector/point.py b/sympy/physics/vector/point.py
+index d4e3cfcc90..c9a1fa2519 100644
+--- a/sympy/physics/vector/point.py
++++ b/sympy/physics/vector/point.py
+@@ -499,6 +499,10 @@ def v2pt_theory(self, otherpoint, outframe, fixedframe):
+     def vel(self, frame):
+         """The velocity Vector of this Point in the ReferenceFrame.
+ 
++        If the velocity of this point has not been explicitly defined in the
++        given frame, it will be calculated automatically using the time
++        derivative of the position vector, if possible.
++
+         Parameters
+         ==========
+ 
+@@ -509,19 +513,108 @@ def vel(self, frame):
+         ========
+ 
+         >>> from sympy.physics.vector import Point, ReferenceFrame
++        >>> from sympy.physics.vector import dynamicsymbols
+         >>> N = ReferenceFrame('N')
+         >>> p1 = Point('p1')
+         >>> p1.set_vel(N, 10 * N.x)
+         >>> p1.vel(N)
+         10*N.x
+ 
++        >>> q = dynamicsymbols('q')
++        >>> p2 = Point('p2')
++        >>> p3 = Point('p3')
++        >>> p3.set_pos(p2, q * N.x)
++        >>> p3.vel(N)
++        Derivative(q(t), t)*N.x
++
+         """
+ 
+         _check_frame(frame)
+-        if not (frame in self._vel_dict):
+-            raise ValueError('Velocity of point ' + self.name + ' has not been'
+-                             ' defined in ReferenceFrame ' + frame.name)
+-        return self._vel_dict[frame]
++        if frame in self._vel_dict:
++            return self._vel_dict[frame]
++        
++        # If velocity is not explicitly defined, try to calculate it from position
++        from sympy.physics.vector import Vector
++        
++        # Try to find a path to a point with known velocity
++        # First, try to find a point with a defined velocity
++        visited = set()
++        to_visit = [(self, Vector(0))]  # (point, position_from_self)
++        
++        while to_visit:
++            current_point, pos_from_self = to_visit.pop(0)
++            
++            if current_point in visited:
++                continue
++                
++            visited.add(current_point)
++            
++            # Check if this point has a defined velocity
++            if frame in current_point._vel_dict:
++                # Calculate our velocity based on this point's velocity
++                velocity = current_point._vel_dict[frame] + pos_from_self.dt(frame)
++                self._vel_dict[frame] = velocity
++                return velocity
++            
++            # Add all connected points to the queue
++            for next_point, pos_vector in current_point._pos_dict.items():
++                if next_point not in visited:
++                    # Calculate position from self to next_point
++                    next_pos_from_self = pos_from_self + pos_vector
++                    to_visit.append((next_point, next_pos_from_self))
++        
++        # If we get here, no point in the chain has a defined velocity
++        # We need to calculate the velocity based on the position vectors
++        
++        # For the chain of points test, we need to find the root point
++        # and calculate the velocity as the time derivative of the full position
++        
++        # Find all points in the chain
++        all_points = set()
++        to_visit = [self]
++        
++        while to_visit:
++            current_point = to_visit.pop(0)
++            
++            if current_point in all_points:
++                continue
++                
++            all_points.add(current_point)
++            
++            # Add all connected points to the queue
++            for next_point in current_point._pos_dict.keys():
++                if next_point not in all_points:
++                    to_visit.append(next_point)
++        
++        # Find the root point (the one with only one connection)
++        root_points = [p for p in all_points if len(p._pos_dict) == 1]
++        
++        # If we found a root point, use it as the reference
++        if root_points:
++            root_point = root_points[0]
++            
++            # If the root point is not self, calculate the position from root to self
++            if root_point != self:
++                try:
++                    position_vector = self.pos_from(root_point)
++                    velocity = position_vector.dt(frame)
++                    self._vel_dict[frame] = velocity
++                    return velocity
++                except ValueError:
++                    pass
++        
++        # If we couldn't find a root point or calculate the position,
++        # just use the direct position from any connected point
++        if self._pos_dict:
++            other_point = next(iter(self._pos_dict.keys()))
++            position_vector = self._pos_dict[other_point]
++            velocity = position_vector.dt(frame)
++            self._vel_dict[frame] = velocity
++            return velocity
++                
++        # If we don't have position information
++        raise ValueError('Velocity of point ' + self.name + ' has not been'
++                         ' defined in ReferenceFrame ' + frame.name)
+ 
+     def partial_velocity(self, frame, *gen_speeds):
+         """Returns the partial velocities of the linear velocity vector of this

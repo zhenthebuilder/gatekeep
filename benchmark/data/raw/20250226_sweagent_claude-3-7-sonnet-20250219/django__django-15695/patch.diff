@@ -1,0 +1,18 @@
+diff --git a/django/db/migrations/operations/models.py b/django/db/migrations/operations/models.py
+index d17232e4ec..6262622411 100644
+--- a/django/db/migrations/operations/models.py
++++ b/django/db/migrations/operations/models.py
+@@ -945,6 +945,13 @@ class RenameIndex(IndexOperation):
+                 from_model, column_names=columns, index=True
+             )
+             if len(matching_index_name) != 1:
++                # If we're trying to rename an index that's already been renamed,
++                # we should check if the target index name already exists
++                if self.new_name in schema_editor._constraint_names(
++                    from_model, index=True
++                ):
++                    # The index has already been renamed, so we can skip this operation
++                    return
+                 raise ValueError(
+                     "Found wrong number (%s) of indexes for %s(%s)."
+                     % (

@@ -1,0 +1,226 @@
+diff --git a/sympy/printing/latex.py b/sympy/printing/latex.py
+index 1edc712358..a463a3ccc1 100644
+--- a/sympy/printing/latex.py
++++ b/sympy/printing/latex.py
+@@ -12,6 +12,8 @@
+ from sympy.core.alphabets import greeks
+ from sympy.core.operations import AssocOp
+ from sympy.core.containers import Tuple
++from sympy.core.numbers import Rational
++from sympy.core.power import Pow
+ from sympy.logic.boolalg import true
+ 
+ ## sympy.printing imports
+@@ -356,27 +358,126 @@ def _print_Mul(self, expr):
+         else:
+             tex = ""
+ 
+-        from sympy.simplify import fraction
+-        numer, denom = fraction(expr, exact=True)
+-        separator = self._settings['mul_symbol_latex']
+-        numbersep = self._settings['mul_symbol_latex_numbers']
++        # Process the arguments similar to how pretty printer does it
++        a = []  # items in the numerator
++        b = []  # items that are in the denominator (if any)
+ 
+-        def convert(expr):
+-            if not expr.is_Mul:
+-                return str(self._print(expr))
+-            else:
+-                _tex = last_term_tex = ""
++        if self.order not in ('old', 'none'):
++            args = expr.as_ordered_factors()
++        else:
++            args = expr.args
+ 
+-                if self.order not in ('old', 'none'):
+-                    args = expr.as_ordered_factors()
++        # Gather terms for numerator/denominator
++        for item in args:
++            if item.is_commutative and item.is_Pow and item.exp.is_Rational and item.exp.is_negative:
++                if item.exp != -1:
++                    b.append(Pow(item.base, -item.exp, evaluate=False))
++                else:
++                    b.append(Pow(item.base, -item.exp))
++            elif item.is_Rational and item is not S.Infinity:
++                if item.p != 1:
++                    a.append(Rational(item.p))
++                if item.q != 1:
++                    b.append(Rational(item.q))
++            else:
++                a.append(item)
++
++        # If we have no denominator, we can use the original method
++        if len(b) == 0:
++            from sympy.simplify import fraction
++            numer, denom = fraction(expr, exact=True)
++            separator = self._settings['mul_symbol_latex']
++            numbersep = self._settings['mul_symbol_latex_numbers']
++
++            def convert(expr):
++                if not expr.is_Mul:
++                    return str(self._print(expr))
+                 else:
+-                    args = expr.args
++                    _tex = last_term_tex = ""
+ 
+-                for i, term in enumerate(args):
++                    if self.order not in ('old', 'none'):
++                        args = expr.as_ordered_factors()
++                    else:
++                        args = expr.args
++
++                    for i, term in enumerate(args):
++                        term_tex = self._print(term)
++
++                        if self._needs_mul_brackets(term, first=(i == 0),
++                                                    last=(i == len(args) - 1)):
++                            term_tex = r"\left(%s\right)" % term_tex
++
++                        if _between_two_numbers_p[0].search(last_term_tex) and \
++                                _between_two_numbers_p[1].match(term_tex):
++                            # between two numbers
++                            _tex += numbersep
++                        elif _tex:
++                            _tex += separator
++
++                        _tex += term_tex
++                        last_term_tex = term_tex
++                    return _tex
++
++            if denom is S.One:
++                # use the original expression here, since fraction() may have
++                # altered it when producing numer and denom
++                tex += convert(expr)
++            else:
++                snumer = convert(numer)
++                sdenom = convert(denom)
++                ldenom = len(sdenom.split())
++                ratio = self._settings['long_frac_ratio']
++                if self._settings['fold_short_frac'] \
++                        and ldenom <= 2 and not "^" in sdenom:
++                    # handle short fractions
++                    if self._needs_mul_brackets(numer, last=False):
++                        tex += r"\left(%s\right) / %s" % (snumer, sdenom)
++                    else:
++                        tex += r"%s / %s" % (snumer, sdenom)
++                elif len(snumer.split()) > ratio*ldenom:
++                    # handle long fractions
++                    if self._needs_mul_brackets(numer, last=True):
++                        tex += r"\frac{1}{%s}%s\left(%s\right)" \
++                            % (sdenom, separator, snumer)
++                    elif numer.is_Mul:
++                        # split a long numerator
++                        a = S.One
++                        b = S.One
++                        for x in numer.args:
++                            if self._needs_mul_brackets(x, last=False) or \
++                                    len(convert(a*x).split()) > ratio*ldenom or \
++                                    (b.is_commutative is x.is_commutative is False):
++                                b *= x
++                            else:
++                                a *= x
++                        if self._needs_mul_brackets(b, last=True):
++                            tex += r"\frac{%s}{%s}%s\left(%s\right)" \
++                                % (convert(a), sdenom, separator, convert(b))
++                        else:
++                            tex += r"\frac{%s}{%s}%s%s" \
++                                % (convert(a), sdenom, separator, convert(b))
++                    else:
++                        tex += r"\frac{1}{%s}%s%s" % (sdenom, separator, snumer)
++                else:
++                    tex += r"\frac{%s}{%s}" % (snumer, sdenom)
++        else:
++            # We have a denominator, so we use a fraction
++            separator = self._settings['mul_symbol_latex']
++            numbersep = self._settings['mul_symbol_latex_numbers']
++
++            def convert(expr_list):
++                if not expr_list:
++                    return str(self._print(S.One))
++                
++                if len(expr_list) == 1:
++                    return str(self._print(expr_list[0]))
++                
++                _tex = last_term_tex = ""
++                for i, term in enumerate(expr_list):
+                     term_tex = self._print(term)
+ 
+                     if self._needs_mul_brackets(term, first=(i == 0),
+-                                                last=(i == len(args) - 1)):
++                                                last=(i == len(expr_list) - 1)):
+                         term_tex = r"\left(%s\right)" % term_tex
+ 
+                     if _between_two_numbers_p[0].search(last_term_tex) and \
+@@ -390,48 +491,12 @@ def convert(expr):
+                     last_term_tex = term_tex
+                 return _tex
+ 
+-        if denom is S.One:
+-            # use the original expression here, since fraction() may have
+-            # altered it when producing numer and denom
+-            tex += convert(expr)
+-        else:
+-            snumer = convert(numer)
+-            sdenom = convert(denom)
+-            ldenom = len(sdenom.split())
+-            ratio = self._settings['long_frac_ratio']
+-            if self._settings['fold_short_frac'] \
+-                    and ldenom <= 2 and not "^" in sdenom:
+-                # handle short fractions
+-                if self._needs_mul_brackets(numer, last=False):
+-                    tex += r"\left(%s\right) / %s" % (snumer, sdenom)
+-                else:
+-                    tex += r"%s / %s" % (snumer, sdenom)
+-            elif len(snumer.split()) > ratio*ldenom:
+-                # handle long fractions
+-                if self._needs_mul_brackets(numer, last=True):
+-                    tex += r"\frac{1}{%s}%s\left(%s\right)" \
+-                        % (sdenom, separator, snumer)
+-                elif numer.is_Mul:
+-                    # split a long numerator
+-                    a = S.One
+-                    b = S.One
+-                    for x in numer.args:
+-                        if self._needs_mul_brackets(x, last=False) or \
+-                                len(convert(a*x).split()) > ratio*ldenom or \
+-                                (b.is_commutative is x.is_commutative is False):
+-                            b *= x
+-                        else:
+-                            a *= x
+-                    if self._needs_mul_brackets(b, last=True):
+-                        tex += r"\frac{%s}{%s}%s\left(%s\right)" \
+-                            % (convert(a), sdenom, separator, convert(b))
+-                    else:
+-                        tex += r"\frac{%s}{%s}%s%s" \
+-                            % (convert(a), sdenom, separator, convert(b))
+-                else:
+-                    tex += r"\frac{1}{%s}%s%s" % (sdenom, separator, snumer)
+-            else:
+-                tex += r"\frac{%s}{%s}" % (snumer, sdenom)
++            # Convert numerator and denominator to LaTeX
++            snumer = convert(a)
++            sdenom = convert(b)
++            
++            # Create the fraction
++            tex += r"\frac{%s}{%s}" % (snumer, sdenom)
+ 
+         if include_parens:
+             tex += ")"
+@@ -883,7 +948,15 @@ def _print_polar_lift(self, expr, exp=None):
+     def _print_ExpBase(self, expr, exp=None):
+         # TODO should exp_polar be printed differently?
+         #      what about exp_polar(0), exp_polar(1)?
+-        tex = r"e^{%s}" % self._print(expr.args[0])
++        arg = expr.args[0]
++        
++        # Handle negative exponents in a way that's consistent with pretty printer
++        if arg.is_Mul and arg.args[0] == -1:
++            # For exp(-x), print as e^{-x} not as 1/e^{x}
++            tex = r"e^{%s}" % self._print(arg)
++        else:
++            tex = r"e^{%s}" % self._print(arg)
++            
+         return self._do_exponent(tex, exp)
+ 
+     def _print_elliptic_k(self, expr, exp=None):

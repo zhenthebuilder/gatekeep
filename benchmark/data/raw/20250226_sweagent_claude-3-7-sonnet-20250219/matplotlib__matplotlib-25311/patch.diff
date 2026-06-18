@@ -1,0 +1,127 @@
+diff --git a/lib/matplotlib/legend.py b/lib/matplotlib/legend.py
+index ff6abdb958..831248ad48 100644
+--- a/lib/matplotlib/legend.py
++++ b/lib/matplotlib/legend.py
+@@ -1207,6 +1207,41 @@ class Legend(Artist):
+     def get_draggable(self):
+         """Return ``True`` if the legend is draggable, ``False`` otherwise."""
+         return self._draggable is not None
++        
++    def __getstate__(self):
++        """
++        Return a picklable state for the legend.
++        
++        We need to handle the _draggable attribute specially to ensure
++        proper pickling.
++        """
++        state = super().__getstate__()
++        # Store whether the legend is draggable and its update mode
++        if self._draggable is not None:
++            state['_draggable_info'] = {
++                'use_blit': self._draggable._use_blit,
++                'update': self._draggable._update
++            }
++        return state
++        
++    def __setstate__(self, state):
++        """
++        Restore the legend state after unpickling.
++        
++        Recreate the _draggable attribute if it was set before pickling.
++        """
++        # Extract draggable info before updating the state
++        draggable_info = state.pop('_draggable_info', None)
++        
++        # Update the state
++        # Handle the case where the parent class doesn't have __setstate__
++        self.__dict__.update(state)
++        
++        # Restore draggable state if it was enabled
++        if draggable_info is not None:
++            self.set_draggable(True, 
++                              use_blit=draggable_info.get('use_blit', False),
++                              update=draggable_info.get('update', 'loc'))
+ 
+ 
+ # Helper functions to parse legend arguments for both `figure.legend` and
+diff --git a/lib/matplotlib/offsetbox.py b/lib/matplotlib/offsetbox.py
+index 1dee8a23d9..ccd6a4acc6 100644
+--- a/lib/matplotlib/offsetbox.py
++++ b/lib/matplotlib/offsetbox.py
+@@ -1513,6 +1513,30 @@ class DraggableBase:
+             self.canvas.callbacks._connect_picklable(
+                 'button_release_event', self.on_release),
+         ]
++        
++    def __getstate__(self):
++        """
++        Return a picklable state for the draggable artist.
++        
++        Canvas and callbacks are not picklable, so we remove them from the state.
++        """
++        state = self.__dict__.copy()
++        # These attributes are not picklable
++        for key in ['canvas', 'cids', '_c1']:
++            state.pop(key, None)
++        return state
++        
++    def __setstate__(self, state):
++        """
++        Restore the draggable artist state after unpickling.
++        
++        We don't reconnect callbacks here because the figure's canvas
++        might not be available yet. Instead, we'll set up minimal state
++        and let the normal connection happen when the figure is properly set up.
++        """
++        self.__dict__.update(state)
++        # Initialize with empty callbacks list
++        self.cids = []
+ 
+     def on_motion(self, evt):
+         if self._check_still_parented() and self.got_artist:
+diff --git a/lib/matplotlib/text.py b/lib/matplotlib/text.py
+index 0f874ba33d..5300ab204a 100644
+--- a/lib/matplotlib/text.py
++++ b/lib/matplotlib/text.py
+@@ -1668,6 +1668,41 @@ class Annotation(Text, _AnnotationBase):
+ 
+     def __str__(self):
+         return f"Annotation({self.xy[0]:g}, {self.xy[1]:g}, {self._text!r})"
++        
++    def __getstate__(self):
++        """
++        Return a picklable state for the annotation.
++        
++        We need to handle the _draggable attribute specially to ensure
++        proper pickling.
++        """
++        state = super().__getstate__()
++        # Store whether the annotation is draggable
++        if self._draggable is not None:
++            state['_draggable_info'] = {
++                'use_blit': self._draggable._use_blit
++            }
++        return state
++        
++    def __setstate__(self, state):
++        """
++        Restore the annotation state after unpickling.
++        
++        Recreate the _draggable attribute if it was set before pickling.
++        """
++        # Extract draggable info before updating the state
++        draggable_info = state.pop('_draggable_info', None)
++        
++        # Update the state
++        # First try the parent's __setstate__, if it fails, update the dict directly
++        try:
++            super().__setstate__(state)
++        except AttributeError:
++            self.__dict__.update(state)
++        
++        # Restore draggable state if it was enabled
++        if draggable_info is not None:
++            self.draggable(True, use_blit=draggable_info.get('use_blit', False))
+ 
+     def __init__(self, text, xy,
+                  xytext=None,

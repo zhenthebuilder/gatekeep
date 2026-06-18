@@ -1,0 +1,1377 @@
+diff --git a/debug_annotations.py b/debug_annotations.py
+new file mode 100644
+index 000000000..e68b851fe
+--- /dev/null
++++ b/debug_annotations.py
+@@ -0,0 +1,51 @@
++#!/usr/bin/env python3
++
++import os
++import sys
++import tempfile
++import shutil
++from sphinx.ext.autodoc import ModuleDocumenter
++from sphinx.pycode import ModuleAnalyzer
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the example.py file
++    with open(os.path.join(temp_dir, "example.py"), "w") as f:
++        f.write("""from __future__ import annotations
++
++
++#: blah blah blah
++var: String
++
++
++class MyString:
++    "mystring"
++
++    #: blah blah blah
++    var: String
++""")
++
++    # Add the temp_dir to sys.path so we can import the module
++    sys.path.insert(0, temp_dir)
++
++    # Analyze the module
++    analyzer = ModuleAnalyzer.for_module("example")
++    analyzer.parse()
++
++    # Print the annotations
++    print("Annotations from ModuleAnalyzer:")
++    for key, value in analyzer.annotations.items():
++        print(f"  {key}: {value}")
++
++    # Print the attribute docs
++    print("\nAttribute docs from ModuleAnalyzer:")
++    for key, value in analyzer.attr_docs.items():
++        print(f"  {key}: {value}")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/debug_autodoc.py b/debug_autodoc.py
+new file mode 100644
+index 000000000..a176df3ee
+--- /dev/null
++++ b/debug_autodoc.py
+@@ -0,0 +1,105 @@
++#!/usr/bin/env python3
++
++import os
++import sys
++import tempfile
++import shutil
++from sphinx.ext.autodoc import ModuleDocumenter, DataDocumenter
++from sphinx.pycode import ModuleAnalyzer
++from sphinx.util.docutils import LoggingReporter
++from sphinx.util.typing import stringify as stringify_typehint
++from docutils.utils import Reporter
++from docutils.statemachine import StringList
++from typing import Dict, Any, List, Tuple
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the example.py file
++    with open(os.path.join(temp_dir, "example.py"), "w") as f:
++        f.write("""from __future__ import annotations
++
++
++#: blah blah blah
++var: String
++
++
++class MyString:
++    "mystring"
++
++    #: blah blah blah
++    var: String
++""")
++
++    # Add the temp_dir to sys.path so we can import the module
++    sys.path.insert(0, temp_dir)
++
++    # Create a mock DocumenterBridge
++    class MockDocumenterBridge:
++        def __init__(self):
++            self.env = MockEnvironment()
++            self.result = StringList()
++            self.reporter = LoggingReporter('', 0, 4)
++            self.genopt = {}
++
++    class MockEnvironment:
++        def __init__(self):
++            self.app = MockApp()
++            self.config = MockConfig()
++
++    class MockApp:
++        def __init__(self):
++            self.config = MockConfig()
++
++    class MockConfig:
++        def __init__(self):
++            self.autodoc_type_aliases = {'String': 'example.MyString'}
++            self.autodoc_typehints_format = 'short'
++            self.autodoc_inherit_docstrings = True
++            self.autodoc_warningiserror = False
++            self.autodoc_default_options = {}
++
++    # Create a DataDocumenter for the module variable
++    bridge = MockDocumenterBridge()
++    data_documenter = DataDocumenter(bridge, 'example.var')
++    data_documenter.parse_name()
++    data_documenter.import_object()
++
++    # Print information about the DataDocumenter
++    print("DataDocumenter:")
++    print(f"  objpath: {data_documenter.objpath}")
++    print(f"  modname: {data_documenter.modname}")
++    print(f"  fullname: {data_documenter.fullname}")
++    
++    # Get the analyzer
++    analyzer = ModuleAnalyzer.for_module("example")
++    analyzer.parse()
++    
++    # Print the annotations
++    print("\nAnnotations from ModuleAnalyzer:")
++    for key, value in analyzer.annotations.items():
++        print(f"  {key}: {value}")
++    
++    # Test the get_annotation_with_aliases method
++    print("\nTesting get_annotation_with_aliases:")
++    key = ('', 'var')
++    type_aliases = {'String': 'example.MyString'}
++    annotation = analyzer.get_annotation_with_aliases(key, type_aliases)
++    print(f"  get_annotation_with_aliases({key}, {type_aliases}) = {annotation}")
++    
++    # Test the DataDocumenter's add_directive_header method
++    print("\nTesting DataDocumenter.add_directive_header:")
++    data_documenter.analyzer = analyzer
++    data_documenter.add_directive_header('')
++    
++    # Print the result
++    print("\nResult from DataDocumenter:")
++    for line in data_documenter.directive.result:
++        print(f"  {line}")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/debug_final.py b/debug_final.py
+new file mode 100644
+index 000000000..9178ea0d7
+--- /dev/null
++++ b/debug_final.py
+@@ -0,0 +1,122 @@
++#!/usr/bin/env python3
++
++import os
++import sys
++import tempfile
++import shutil
++import subprocess
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the example.py file
++    with open(os.path.join(temp_dir, "example.py"), "w") as f:
++        f.write("""from __future__ import annotations
++
++
++#: blah blah blah
++var: String
++
++
++class MyString:
++    "mystring"
++
++    #: blah blah blah
++    var: String
++""")
++
++    # Create the index.rst file
++    with open(os.path.join(temp_dir, "index.rst"), "w") as f:
++        f.write("""
++Test
++====
++
++.. automodule:: example
++   :members:
++   :undoc-members:
++""")
++
++    # Create the conf.py file
++    with open(os.path.join(temp_dir, "conf.py"), "w") as f:
++        f.write("""
++import os
++import sys
++
++sys.path.insert(0, os.path.abspath('.'))
++
++project = 'Test'
++copyright = '2023, Test'
++author = 'Test'
++
++extensions = ['sphinx.ext.autodoc']
++
++autodoc_type_aliases = {
++    'String': 'example.MyString'
++}
++""")
++
++    # Create a debug script
++    with open(os.path.join(temp_dir, "debug.py"), "w") as f:
++        f.write("""
++import sys
++import os
++from sphinx.ext.autodoc import setup as autodoc_setup
++from sphinx.application import Sphinx
++
++# Create a minimal Sphinx application
++app = Sphinx(
++    srcdir='.',
++    confdir='.',
++    outdir='html',
++    doctreedir='doctrees',
++    buildername='html',
++)
++
++# Set up autodoc extension
++autodoc_setup(app)
++
++# Print the autodoc_type_aliases config value
++print(f"autodoc_type_aliases: {app.config.autodoc_type_aliases}")
++
++# Import our module
++sys.path.insert(0, os.path.abspath('.'))
++import example
++
++# Analyze the module
++from sphinx.pycode import ModuleAnalyzer
++analyzer = ModuleAnalyzer.for_module("example")
++analyzer.parse()
++
++# Print the annotations
++print("\\nAnnotations from ModuleAnalyzer:")
++for key, value in analyzer.annotations.items():
++    print(f"  {key}: {value}")
++
++# Test the get_annotation_with_aliases method
++print("\\nTesting get_annotation_with_aliases:")
++for key, value in analyzer.annotations.items():
++    alias = analyzer.get_annotation_with_aliases(key, app.config.autodoc_type_aliases)
++    print(f"  get_annotation_with_aliases({key}, autodoc_type_aliases) = {alias}")
++""")
++
++    # Run the debug script
++    cmd = [
++        sys.executable,
++        os.path.join(temp_dir, "debug.py")
++    ]
++    
++    print(f"Running command: {' '.join(cmd)}")
++    result = subprocess.run(cmd, cwd=temp_dir, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/debug_simple.py b/debug_simple.py
+new file mode 100644
+index 000000000..e91d5fa9e
+--- /dev/null
++++ b/debug_simple.py
+@@ -0,0 +1,55 @@
++#!/usr/bin/env python3
++
++import os
++import sys
++import tempfile
++import shutil
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the example.py file
++    with open(os.path.join(temp_dir, "example.py"), "w") as f:
++        f.write("""from __future__ import annotations
++
++
++#: blah blah blah
++var: String
++
++
++class MyString:
++    "mystring"
++
++    #: blah blah blah
++    var: String
++""")
++
++    # Add the temp_dir to sys.path so we can import the module
++    sys.path.insert(0, temp_dir)
++
++    # Import our module
++    import example
++
++    # Analyze the module
++    from sphinx.pycode import ModuleAnalyzer
++    analyzer = ModuleAnalyzer.for_module("example")
++    analyzer.parse()
++
++    # Print the annotations
++    print("Annotations from ModuleAnalyzer:")
++    for key, value in analyzer.annotations.items():
++        print(f"  {key}: {value}")
++
++    # Test the get_annotation_with_aliases method
++    print("\nTesting get_annotation_with_aliases:")
++    type_aliases = {'String': 'example.MyString'}
++    for key, value in analyzer.annotations.items():
++        alias = analyzer.get_annotation_with_aliases(key, type_aliases)
++        print(f"  get_annotation_with_aliases({key}, {type_aliases}) = {alias}")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/final_fix.py b/final_fix.py
+new file mode 100644
+index 000000000..692e70ee9
+--- /dev/null
++++ b/final_fix.py
+@@ -0,0 +1,81 @@
++#!/usr/bin/env python3
++
++# This script implements a complete fix for the autodoc_type_aliases issue
++# by modifying the necessary files directly
++
++# 1. Add the get_annotation_with_aliases method to ModuleAnalyzer
++with open('/testbed/sphinx/pycode/__init__.py', 'r') as f:
++    content = f.read()
++
++if 'def get_annotation_with_aliases' not in content:
++    # Find the position to insert the new method
++    insert_pos = content.find('    @property\n    def encoding')
++    
++    # Define the new method
++    new_method = '''
++    def get_annotation_with_aliases(self, key: tuple, type_aliases: dict) -> str:
++        """Get an annotation with type aliases applied."""
++        if key not in self.annotations:
++            return None
++            
++        annotation = self.annotations[key]
++        if annotation in type_aliases:
++            return type_aliases[annotation]
++        return annotation
++
++'''
++    
++    # Insert the new method
++    content = content[:insert_pos] + new_method + content[insert_pos:]
++    
++    # Write the modified content back to the file
++    with open('/testbed/sphinx/pycode/__init__.py', 'w') as f:
++        f.write(content)
++    
++    print("Added get_annotation_with_aliases method to ModuleAnalyzer")
++
++# 2. Modify the DataDocumenter class
++with open('/testbed/sphinx/ext/autodoc/__init__.py', 'r') as f:
++    content = f.read()
++
++# Find the DataDocumenter.add_directive_header method
++data_start = content.find('class DataDocumenter(ModuleLevelDocumenter):')
++data_add_header_start = content.find('    def add_directive_header', data_start)
++data_add_header_end = content.find('    def document_members', data_add_header_start)
++
++# Find the part where annotations are handled
++data_annotations_start = content.find('                key = ', data_add_header_start, data_add_header_end)
++data_annotations_end = content.find('\n            try:', data_annotations_start, data_add_header_end)
++
++# Replace the annotations handling code
++old_code = content[data_annotations_start:data_annotations_end]
++new_code = '''                key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++                if self.analyzer and key in self.analyzer.annotations:
++                    annotation = self.analyzer.get_annotation_with_aliases(key, self.config.autodoc_type_aliases)
++                    self.add_line('   :type: ' + annotation, sourcename)'''
++
++content = content.replace(old_code, new_code)
++
++# 3. Modify the AttributeDocumenter class
++attr_start = content.find('class AttributeDocumenter(')
++attr_add_header_start = content.find('    def add_directive_header', attr_start)
++attr_add_header_end = content.find('    def get_doc', attr_add_header_start)
++
++# Find the part where annotations are handled
++attr_annotations_start = content.find('                key = ', attr_add_header_start, attr_add_header_end)
++attr_annotations_end = content.find('\n            # data descriptors', attr_annotations_start, attr_add_header_end)
++
++# Replace the annotations handling code
++old_code = content[attr_annotations_start:attr_annotations_end]
++new_code = '''                key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++                if self.analyzer and key in self.analyzer.annotations:
++                    annotation = self.analyzer.get_annotation_with_aliases(key, self.config.autodoc_type_aliases)
++                    self.add_line('   :type: ' + annotation, sourcename)'''
++
++content = content.replace(old_code, new_code)
++
++# Write the modified content back to the file
++with open('/testbed/sphinx/ext/autodoc/__init__.py', 'w') as f:
++    f.write(content)
++
++print("Modified DataDocumenter and AttributeDocumenter classes")
+\ No newline at end of file
+diff --git a/fix_autodoc.py b/fix_autodoc.py
+new file mode 100644
+index 000000000..4e6525321
+--- /dev/null
++++ b/fix_autodoc.py
+@@ -0,0 +1,69 @@
++#!/usr/bin/env python3
++
++import re
++
++# Read the file
++with open('/testbed/sphinx/ext/autodoc/__init__.py', 'r') as f:
++    content = f.read()
++
++# Define the patterns to replace
++data_pattern = r"""            if self.objpath\[-1\] in annotations:
++                objrepr = stringify_typehint\(annotations\.get\(self\.objpath\[-1\]\)\)
++                self\.add_line\('   :type: ' \+ objrepr, sourcename\)
++            else:
++                key = \('\.'.join\(self\.objpath\[:-1\]\), self\.objpath\[-1\]\)
++                if self\.analyzer and key in self\.analyzer\.annotations:
++                    self\.add_line\('   :type: ' \+ self\.analyzer\.annotations\[key\],
++                                  sourcename\)"""
++
++attr_pattern = r"""            if self.objpath\[-1\] in annotations:
++                objrepr = stringify_typehint\(annotations\.get\(self\.objpath\[-1\]\)\)
++                self\.add_line\('   :type: ' \+ objrepr, sourcename\)
++            else:
++                key = \('\.'.join\(self\.objpath\[:-1\]\), self\.objpath\[-1\]\)
++                if self\.analyzer and key in self\.analyzer\.annotations:
++                    self\.add_line\('   :type: ' \+ self\.analyzer\.annotations\[key\],
++                                  sourcename\)"""
++
++# Define the replacements
++replacement = """            if self.objpath[-1] in annotations:
++                objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
++                self.add_line('   :type: ' + objrepr, sourcename)
++            else:
++                key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++                if self.analyzer and key in self.analyzer.annotations:
++                    annotation = self.analyzer.annotations[key]
++                    # Try to apply type aliases to the annotation string
++                    for alias, replacement in self.config.autodoc_type_aliases.items():
++                        if alias == annotation:
++                            annotation = replacement
++                            break
++                    self.add_line('   :type: ' + annotation, sourcename)"""
++
++# Find all occurrences of the pattern
++data_matches = list(re.finditer(data_pattern, content))
++attr_matches = list(re.finditer(attr_pattern, content))
++
++print(f"Found {len(data_matches)} matches for data_pattern")
++print(f"Found {len(attr_matches)} matches for attr_pattern")
++
++# If we have exactly one match for each pattern, we can proceed
++if len(data_matches) == 1 and len(attr_matches) == 1:
++    # Replace the first occurrence (DataDocumenter)
++    content = content[:data_matches[0].start()] + replacement + content[data_matches[0].end():]
++    
++    # Adjust the second match position due to the first replacement
++    offset = len(replacement) - (data_matches[0].end() - data_matches[0].start())
++    attr_start = attr_matches[0].start() + offset
++    attr_end = attr_matches[0].end() + offset
++    
++    # Replace the second occurrence (AttributeDocumenter)
++    content = content[:attr_start] + replacement + content[attr_end:]
++    
++    # Write the modified content back to the file
++    with open('/testbed/sphinx/ext/autodoc/__init__.py', 'w') as f:
++        f.write(content)
++    
++    print("Successfully updated the file.")
++else:
++    print("Could not uniquely identify the patterns to replace.")
+\ No newline at end of file
+diff --git a/fix_autodoc_complete.py b/fix_autodoc_complete.py
+new file mode 100644
+index 000000000..01399dc84
+--- /dev/null
++++ b/fix_autodoc_complete.py
+@@ -0,0 +1,78 @@
++#!/usr/bin/env python3
++
++# This script adds a new method to the ModuleAnalyzer class to apply type aliases
++# to annotations, and modifies the DataDocumenter and AttributeDocumenter classes
++# to use this method.
++
++import re
++
++# Read the ModuleAnalyzer class
++with open('/testbed/sphinx/pycode/__init__.py', 'r') as f:
++    module_analyzer_content = f.read()
++
++# Add a new method to apply type aliases to annotations
++module_analyzer_pattern = r"    def find_tags\(self\) -> Dict\[str, Tuple\[str, int, int\]\]:\n        \"\"\"Find class, function and method definitions and their location.\"\"\"\n        self.parse\(\)\n        return self.tags"
++
++module_analyzer_replacement = '''    def find_tags(self) -> Dict[str, Tuple[str, int, int]]:
++        """Find class, function and method definitions and their location."""
++        self.parse()
++        return self.tags
++        
++    def get_annotation_with_aliases(self, key: Tuple[str, str], type_aliases: Dict[str, str]) -> str:
++        """Get an annotation with type aliases applied."""
++        if key not in self.annotations:
++            return None
++            
++        annotation = self.annotations[key]
++        if annotation in type_aliases:
++            return type_aliases[annotation]
++        return annotation'''
++
++# Apply the changes to ModuleAnalyzer
++module_analyzer_content = re.sub(module_analyzer_pattern, module_analyzer_replacement, module_analyzer_content)
++
++# Write the modified content back to the file
++with open('/testbed/sphinx/pycode/__init__.py', 'w') as f:
++    f.write(module_analyzer_content)
++
++# Read the autodoc file
++with open('/testbed/sphinx/ext/autodoc/__init__.py', 'r') as f:
++    autodoc_content = f.read()
++
++# Modify the DataDocumenter class
++data_pattern = r"""                key = \('\.'.join\(self\.objpath\[:-1\]\), self\.objpath\[-1\]\)
++                if self\.analyzer and key in self\.analyzer\.annotations:
++                    annotation = self\.analyzer\.annotations\[key\]
++                    # Try to apply type aliases to the annotation string
++                    if annotation in self\.config\.autodoc_type_aliases:
++                        annotation = self\.config\.autodoc_type_aliases\[annotation\]
++                    self\.add_line\('   :type: ' \+ annotation, sourcename\)"""
++
++data_replacement = """                key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++                if self.analyzer and key in self.analyzer.annotations:
++                    annotation = self.analyzer.get_annotation_with_aliases(key, self.config.autodoc_type_aliases)
++                    self.add_line('   :type: ' + annotation, sourcename)"""
++
++# Modify the AttributeDocumenter class
++attr_pattern = r"""                key = \('\.'.join\(self\.objpath\[:-1\]\), self\.objpath\[-1\]\)
++                if self\.analyzer and key in self\.analyzer\.annotations:
++                    annotation = self\.analyzer\.annotations\[key\]
++                    # Try to apply type aliases to the annotation string
++                    if annotation in self\.config\.autodoc_type_aliases:
++                        annotation = self\.config\.autodoc_type_aliases\[annotation\]
++                    self\.add_line\('   :type: ' \+ annotation, sourcename\)"""
++
++attr_replacement = """                key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++                if self.analyzer and key in self.analyzer.annotations:
++                    annotation = self.analyzer.get_annotation_with_aliases(key, self.config.autodoc_type_aliases)
++                    self.add_line('   :type: ' + annotation, sourcename)"""
++
++# Apply the changes to autodoc
++autodoc_content = re.sub(data_pattern, data_replacement, autodoc_content)
++autodoc_content = re.sub(attr_pattern, attr_replacement, autodoc_content)
++
++# Write the modified content back to the file
++with open('/testbed/sphinx/ext/autodoc/__init__.py', 'w') as f:
++    f.write(autodoc_content)
++
++print("Successfully updated the files.")
+\ No newline at end of file
+diff --git a/fix_autodoc_final.py b/fix_autodoc_final.py
+new file mode 100644
+index 000000000..db682dd5b
+--- /dev/null
++++ b/fix_autodoc_final.py
+@@ -0,0 +1,76 @@
++#!/usr/bin/env python3
++
++# This script completely rewrites the DataDocumenter and AttributeDocumenter classes
++# to apply autodoc_type_aliases to variable and attribute annotations
++
++import re
++
++# Read the file
++with open('/testbed/sphinx/ext/autodoc/__init__.py', 'r') as f:
++    content = f.read()
++
++# Define the patterns to replace for DataDocumenter
++data_pattern = r"""            if self.objpath\[-1\] in annotations:
++                objrepr = stringify_typehint\(annotations\.get\(self\.objpath\[-1\]\)\)
++                self\.add_line\('   :type: ' \+ objrepr, sourcename\)
++            else:
++                key = \('\.'.join\(self\.objpath\[:-1\]\), self\.objpath\[-1\]\)
++                if self\.analyzer and key in self\.analyzer\.annotations:
++                    annotation = self\.analyzer\.annotations\[key\]
++                    # Try to apply type aliases to the annotation string
++                    for alias, replacement in self\.config\.autodoc_type_aliases\.items\(\):
++                        if alias == annotation:
++                            annotation = replacement
++                            break
++                    self\.add_line\('   :type: ' \+ annotation, sourcename\)"""
++
++# Define the replacement for DataDocumenter
++data_replacement = """            if self.objpath[-1] in annotations:
++                objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
++                self.add_line('   :type: ' + objrepr, sourcename)
++            else:
++                key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++                if self.analyzer and key in self.analyzer.annotations:
++                    annotation = self.analyzer.annotations[key]
++                    # Try to apply type aliases to the annotation string
++                    if annotation in self.config.autodoc_type_aliases:
++                        annotation = self.config.autodoc_type_aliases[annotation]
++                    self.add_line('   :type: ' + annotation, sourcename)"""
++
++# Define the patterns to replace for AttributeDocumenter
++attr_pattern = r"""            if self.objpath\[-1\] in annotations:
++                objrepr = stringify_typehint\(annotations\.get\(self\.objpath\[-1\]\)\)
++                self\.add_line\('   :type: ' \+ objrepr, sourcename\)
++            else:
++                key = \('\.'.join\(self\.objpath\[:-1\]\), self\.objpath\[-1\]\)
++                if self\.analyzer and key in self\.analyzer\.annotations:
++                    annotation = self\.analyzer\.annotations\[key\]
++                    # Try to apply type aliases to the annotation string
++                    for alias, replacement in self\.config\.autodoc_type_aliases\.items\(\):
++                        if alias == annotation:
++                            annotation = replacement
++                            break
++                    self\.add_line\('   :type: ' \+ annotation, sourcename\)"""
++
++# Define the replacement for AttributeDocumenter
++attr_replacement = """            if self.objpath[-1] in annotations:
++                objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
++                self.add_line('   :type: ' + objrepr, sourcename)
++            else:
++                key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++                if self.analyzer and key in self.analyzer.annotations:
++                    annotation = self.analyzer.annotations[key]
++                    # Try to apply type aliases to the annotation string
++                    if annotation in self.config.autodoc_type_aliases:
++                        annotation = self.config.autodoc_type_aliases[annotation]
++                    self.add_line('   :type: ' + annotation, sourcename)"""
++
++# Replace the patterns
++content = re.sub(data_pattern, data_replacement, content)
++content = re.sub(attr_pattern, attr_replacement, content)
++
++# Write the modified content back to the file
++with open('/testbed/sphinx/ext/autodoc/__init__.py', 'w') as f:
++    f.write(content)
++
++print("Successfully updated the file.")
+\ No newline at end of file
+diff --git a/fix_autodoc_type_aliases.py b/fix_autodoc_type_aliases.py
+new file mode 100644
+index 000000000..74541f851
+--- /dev/null
++++ b/fix_autodoc_type_aliases.py
+@@ -0,0 +1,105 @@
++#!/usr/bin/env python3
++
++# This script modifies the DataDocumenter and AttributeDocumenter classes
++# to apply autodoc_type_aliases to variable and attribute annotations
++
++import re
++
++# Read the file
++with open('/testbed/sphinx/ext/autodoc/__init__.py', 'r') as f:
++    lines = f.readlines()
++
++# Find the DataDocumenter class
++data_documenter_start = 0
++for i, line in enumerate(lines):
++    if 'class DataDocumenter' in line:
++        data_documenter_start = i
++        break
++
++# Find the add_directive_header method in DataDocumenter
++data_add_header_start = 0
++for i in range(data_documenter_start, len(lines)):
++    if 'def add_directive_header' in lines[i]:
++        data_add_header_start = i
++        break
++
++# Find the AttributeDocumenter class
++attr_documenter_start = 0
++for i, line in enumerate(lines):
++    if 'class AttributeDocumenter' in line:
++        attr_documenter_start = i
++        break
++
++# Find the add_directive_header method in AttributeDocumenter
++attr_add_header_start = 0
++for i in range(attr_documenter_start, len(lines)):
++    if 'def add_directive_header' in lines[i]:
++        attr_add_header_start = i
++        break
++
++# Find the line with analyzer.annotations in DataDocumenter
++data_annotations_line = 0
++for i in range(data_add_header_start, data_add_header_start + 50):
++    if 'self.analyzer.annotations[key]' in lines[i]:
++        data_annotations_line = i
++        break
++
++# Find the line with analyzer.annotations in AttributeDocumenter
++attr_annotations_line = 0
++for i in range(attr_add_header_start, attr_add_header_start + 50):
++    if 'self.analyzer.annotations[key]' in lines[i]:
++        attr_annotations_line = i
++        break
++
++print(f"DataDocumenter class: line {data_documenter_start}")
++print(f"DataDocumenter.add_directive_header: line {data_add_header_start}")
++print(f"DataDocumenter analyzer.annotations: line {data_annotations_line}")
++print(f"AttributeDocumenter class: line {attr_documenter_start}")
++print(f"AttributeDocumenter.add_directive_header: line {attr_add_header_start}")
++print(f"AttributeDocumenter analyzer.annotations: line {attr_annotations_line}")
++
++# Modify the DataDocumenter class
++if data_annotations_line > 0:
++    # Replace the line with analyzer.annotations
++    old_line = lines[data_annotations_line]
++    indent = re.match(r'^(\s*)', old_line).group(1)
++    
++    # Create the new lines
++    new_lines = [
++        f"{indent}annotation = self.analyzer.annotations[key]\n",
++        f"{indent}# Try to apply type aliases to the annotation string\n",
++        f"{indent}for alias, replacement in self.config.autodoc_type_aliases.items():\n",
++        f"{indent}    if alias == annotation:\n",
++        f"{indent}        annotation = replacement\n",
++        f"{indent}        break\n",
++        f"{indent}self.add_line('   :type: ' + annotation, sourcename)\n"
++    ]
++    
++    # Replace the old line with the new lines
++    lines[data_annotations_line:data_annotations_line+1] = new_lines
++
++# Modify the AttributeDocumenter class
++if attr_annotations_line > 0:
++    # Replace the line with analyzer.annotations
++    old_line = lines[attr_annotations_line]
++    indent = re.match(r'^(\s*)', old_line).group(1)
++    
++    # Create the new lines
++    new_lines = [
++        f"{indent}annotation = self.analyzer.annotations[key]\n",
++        f"{indent}# Try to apply type aliases to the annotation string\n",
++        f"{indent}for alias, replacement in self.config.autodoc_type_aliases.items():\n",
++        f"{indent}    if alias == annotation:\n",
++        f"{indent}        annotation = replacement\n",
++        f"{indent}        break\n",
++        f"{indent}self.add_line('   :type: ' + annotation, sourcename)\n"
++    ]
++    
++    # Replace the old line with the new lines
++    lines[attr_annotations_line:attr_annotations_line+1] = new_lines
++
++# Write the modified file
++with open('/testbed/sphinx/ext/autodoc/__init__.py', 'w') as f:
++    f.writelines(lines)
++
++print("Successfully updated the file.")
+\ No newline at end of file
+diff --git a/reproduce.py b/reproduce.py
+new file mode 100644
+index 000000000..c4805f57d
+--- /dev/null
++++ b/reproduce.py
+@@ -0,0 +1,95 @@
++import os
++import shutil
++import subprocess
++import sys
++import tempfile
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the example.py file
++    with open(os.path.join(temp_dir, "example.py"), "w") as f:
++        f.write("""from __future__ import annotations
++
++
++#: blah blah blah
++var: String
++
++
++class MyString:
++    "mystring"
++
++    #: blah blah blah
++    var: String
++""")
++
++    # Create the index.rst file
++    with open(os.path.join(temp_dir, "index.rst"), "w") as f:
++        f.write("""
++Test
++====
++
++.. automodule:: example
++   :members:
++   :undoc-members:
++""")
++
++    # Create the conf.py file
++    with open(os.path.join(temp_dir, "conf.py"), "w") as f:
++        f.write("""
++import os
++import sys
++
++sys.path.insert(0, os.path.abspath('.'))
++
++project = 'Test'
++copyright = '2023, Test'
++author = 'Test'
++
++extensions = ['sphinx.ext.autodoc']
++
++autodoc_type_aliases = {
++    'String': 'example.MyString'
++}
++""")
++
++    # Run sphinx-build
++    cmd = [
++        sys.executable,
++        "-m", "sphinx",
++        "-b", "html",
++        "-d", os.path.join(temp_dir, "doctrees"),
++        temp_dir,
++        os.path.join(temp_dir, "html")
++    ]
++    
++    print(f"Running command: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated HTML to see if the type aliases were applied
++    with open(os.path.join(temp_dir, "html", "index.html"), "r") as f:
++        html_content = f.read()
++        print("\nChecking HTML content for type aliases:")
++        
++        if "example.MyString" in html_content:
++            print("Found 'example.MyString' in the HTML output")
++        else:
++            print("Did NOT find 'example.MyString' in the HTML output")
++            
++        if "String" in html_content:
++            print("Found 'String' in the HTML output (not replaced)")
++        else:
++            print("Did NOT find 'String' in the HTML output")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/reproduce_detailed.py b/reproduce_detailed.py
+new file mode 100644
+index 000000000..5a9bde94c
+--- /dev/null
++++ b/reproduce_detailed.py
+@@ -0,0 +1,112 @@
++import os
++import re
++import shutil
++import subprocess
++import sys
++import tempfile
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the example.py file
++    with open(os.path.join(temp_dir, "example.py"), "w") as f:
++        f.write("""from __future__ import annotations
++
++
++#: blah blah blah
++var: String
++
++
++class MyString:
++    "mystring"
++
++    #: blah blah blah
++    var: String
++""")
++
++    # Create the index.rst file
++    with open(os.path.join(temp_dir, "index.rst"), "w") as f:
++        f.write("""
++Test
++====
++
++.. automodule:: example
++   :members:
++   :undoc-members:
++""")
++
++    # Create the conf.py file
++    with open(os.path.join(temp_dir, "conf.py"), "w") as f:
++        f.write("""
++import os
++import sys
++
++sys.path.insert(0, os.path.abspath('.'))
++
++project = 'Test'
++copyright = '2023, Test'
++author = 'Test'
++
++extensions = ['sphinx.ext.autodoc']
++
++autodoc_type_aliases = {
++    'String': 'example.MyString'
++}
++""")
++
++    # Run sphinx-build
++    cmd = [
++        sys.executable,
++        "-m", "sphinx",
++        "-b", "html",
++        "-d", os.path.join(temp_dir, "doctrees"),
++        temp_dir,
++        os.path.join(temp_dir, "html")
++    ]
++    
++    print(f"Running command: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated HTML to see if the type aliases were applied
++    with open(os.path.join(temp_dir, "html", "index.html"), "r") as f:
++        html_content = f.read()
++        
++        # Extract the type annotations
++        module_var_match = re.search(r'<dt id="example\.var">.*?<em class="property">: (.*?)</em>', html_content, re.DOTALL)
++        class_var_match = re.search(r'<dt id="example\.MyString\.var">.*?<em class="property">: (.*?)</em>', html_content, re.DOTALL)
++        
++        if module_var_match:
++            module_var_type = module_var_match.group(1)
++            print(f"Module variable type: {module_var_type}")
++        else:
++            print("Module variable type not found")
++            
++        if class_var_match:
++            class_var_type = class_var_match.group(1)
++            print(f"Class variable type: {class_var_type}")
++        else:
++            print("Class variable type not found")
++        
++        # Check if the type aliases were applied
++        if "example.MyString" in html_content:
++            print("Found 'example.MyString' in the HTML output")
++        else:
++            print("Did NOT find 'example.MyString' in the HTML output")
++            
++        if "String" in html_content:
++            print("Found 'String' in the HTML output (not replaced)")
++        else:
++            print("Did NOT find 'String' in the HTML output")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/reproduce_with_output.py b/reproduce_with_output.py
+new file mode 100644
+index 000000000..af512b4cf
+--- /dev/null
++++ b/reproduce_with_output.py
+@@ -0,0 +1,90 @@
++import os
++import shutil
++import subprocess
++import sys
++import tempfile
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the example.py file
++    with open(os.path.join(temp_dir, "example.py"), "w") as f:
++        f.write("""from __future__ import annotations
++
++
++#: blah blah blah
++var: String
++
++
++class MyString:
++    "mystring"
++
++    #: blah blah blah
++    var: String
++""")
++
++    # Create the index.rst file
++    with open(os.path.join(temp_dir, "index.rst"), "w") as f:
++        f.write("""
++Test
++====
++
++.. automodule:: example
++   :members:
++   :undoc-members:
++""")
++
++    # Create the conf.py file
++    with open(os.path.join(temp_dir, "conf.py"), "w") as f:
++        f.write("""
++import os
++import sys
++
++sys.path.insert(0, os.path.abspath('.'))
++
++project = 'Test'
++copyright = '2023, Test'
++author = 'Test'
++
++extensions = ['sphinx.ext.autodoc']
++
++autodoc_type_aliases = {
++    'String': 'example.MyString'
++}
++""")
++
++    # Run sphinx-build
++    cmd = [
++        sys.executable,
++        "-m", "sphinx",
++        "-b", "html",
++        "-d", os.path.join(temp_dir, "doctrees"),
++        temp_dir,
++        os.path.join(temp_dir, "html")
++    ]
++    
++    print(f"Running command: {' '.join(cmd)}")
++    result = subprocess.run(cmd, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated HTML to see if the type aliases were applied
++    with open(os.path.join(temp_dir, "html", "index.html"), "r") as f:
++        html_content = f.read()
++        print("\nHTML content:")
++        print(html_content)
++
++    # Don't remove the temp directory so we can inspect it
++    print(f"Temporary directory for inspection: {temp_dir}")
++    
++except Exception as e:
++    print(f"Error: {e}")
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file
+diff --git a/sphinx/ext/autodoc/__init__.py b/sphinx/ext/autodoc/__init__.py
+index 171a3e7b0..d65eb6917 100644
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -1702,7 +1702,7 @@ class DataDocumenter(ModuleLevelDocumenter):
+         if not self.options.annotation:
+             # obtain annotation for this data
+             try:
+-                annotations = get_type_hints(self.parent)
++                annotations = get_type_hints(self.parent, None, self.config.autodoc_type_aliases)
+             except NameError:
+                 # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+                 annotations = safe_getattr(self.parent, '__annotations__', {})
+@@ -1721,9 +1721,8 @@ class DataDocumenter(ModuleLevelDocumenter):
+             else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
+-                    self.add_line('   :type: ' + self.analyzer.annotations[key],
+-                                  sourcename)
+-
++                    annotation = self.analyzer.get_annotation_with_aliases(key, self.config.autodoc_type_aliases)
++                    self.add_line('   :type: ' + annotation, sourcename)
+             try:
+                 if self.object is UNINITIALIZED_ATTR:
+                     pass
+@@ -2093,7 +2092,7 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+         if not self.options.annotation:
+             # obtain type annotation for this attribute
+             try:
+-                annotations = get_type_hints(self.parent)
++                annotations = get_type_hints(self.parent, None, self.config.autodoc_type_aliases)
+             except NameError:
+                 # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+                 annotations = safe_getattr(self.parent, '__annotations__', {})
+@@ -2112,9 +2111,8 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
+-                    self.add_line('   :type: ' + self.analyzer.annotations[key],
+-                                  sourcename)
+-
++                    annotation = self.analyzer.get_annotation_with_aliases(key, self.config.autodoc_type_aliases)
++                    self.add_line('   :type: ' + annotation, sourcename)
+             # data descriptors do not have useful values
+             if not self._datadescriptor:
+                 try:
+diff --git a/sphinx/pycode/__init__.py b/sphinx/pycode/__init__.py
+index c1c374bb9..8ce8e3e8e 100644
+--- a/sphinx/pycode/__init__.py
++++ b/sphinx/pycode/__init__.py
+@@ -186,6 +186,16 @@ class ModuleAnalyzer:
+         """Find class, function and method definitions and their location."""
+         self.parse()
+         return self.tags
++        
++    def get_annotation_with_aliases(self, key: Tuple[str, str], type_aliases: Dict[str, str]) -> str:
++        """Get an annotation with type aliases applied."""
++        if key not in self.annotations:
++            return None
++            
++        annotation = self.annotations[key]
++        if annotation in type_aliases:
++            return type_aliases[annotation]
++        return annotation
+ 
+     @property
+     def encoding(self) -> str:
+diff --git a/test_fix.py b/test_fix.py
+new file mode 100644
+index 000000000..738f0f9ec
+--- /dev/null
++++ b/test_fix.py
+@@ -0,0 +1,180 @@
++#!/usr/bin/env python3
++
++import os
++import sys
++import tempfile
++import shutil
++import subprocess
++
++# Create a temporary directory for our test
++temp_dir = tempfile.mkdtemp()
++print(f"Created temporary directory: {temp_dir}")
++
++try:
++    # Create the example.py file
++    with open(os.path.join(temp_dir, "example.py"), "w") as f:
++        f.write("""from __future__ import annotations
++
++
++#: blah blah blah
++var: String
++
++
++class MyString:
++    "mystring"
++
++    #: blah blah blah
++    var: String
++""")
++
++    # Create the index.rst file
++    with open(os.path.join(temp_dir, "index.rst"), "w") as f:
++        f.write("""
++Test
++====
++
++.. automodule:: example
++   :members:
++   :undoc-members:
++""")
++
++    # Create the conf.py file
++    with open(os.path.join(temp_dir, "conf.py"), "w") as f:
++        f.write("""
++import os
++import sys
++
++sys.path.insert(0, os.path.abspath('.'))
++
++project = 'Test'
++copyright = '2023, Test'
++author = 'Test'
++
++extensions = ['sphinx.ext.autodoc']
++
++autodoc_type_aliases = {
++    'String': 'example.MyString'
++}
++""")
++
++    # Create a modified version of the ModuleAnalyzer.get_annotation_with_aliases method
++    with open(os.path.join(temp_dir, "patch.py"), "w") as f:
++        f.write("""
++from sphinx.pycode import ModuleAnalyzer
++
++# Add the get_annotation_with_aliases method to ModuleAnalyzer
++def get_annotation_with_aliases(self, key, type_aliases):
++    '''Get an annotation with type aliases applied.'''
++    if key not in self.annotations:
++        return None
++        
++    annotation = self.annotations[key]
++    if annotation in type_aliases:
++        return type_aliases[annotation]
++    return annotation
++
++# Patch the ModuleAnalyzer class
++ModuleAnalyzer.get_annotation_with_aliases = get_annotation_with_aliases
++
++# Patch the DataDocumenter and AttributeDocumenter classes
++from sphinx.ext.autodoc import DataDocumenter, AttributeDocumenter
++
++# Save the original add_directive_header methods
++original_data_add_directive_header = DataDocumenter.add_directive_header
++original_attr_add_directive_header = AttributeDocumenter.add_directive_header
++
++# Define a new add_directive_header method for DataDocumenter
++def data_add_directive_header(self, sig):
++    original_data_add_directive_header(self, sig)
++    sourcename = self.get_sourcename()
++    
++    # Check if we already added a type annotation
++    for i, line in enumerate(self.directive.result):
++        if ':type:' in line[0]:
++            # Already has a type annotation, don't add another one
++            return
++    
++    # If we get here, we need to add a type annotation
++    if hasattr(self, 'analyzer') and self.analyzer:
++        key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++        if key in self.analyzer.annotations:
++            annotation = self.analyzer.get_annotation_with_aliases(key, self.config.autodoc_type_aliases)
++            self.add_line('   :type: ' + annotation, sourcename)
++
++# Define a new add_directive_header method for AttributeDocumenter
++def attr_add_directive_header(self, sig):
++    original_attr_add_directive_header(self, sig)
++    sourcename = self.get_sourcename()
++    
++    # Check if we already added a type annotation
++    for i, line in enumerate(self.directive.result):
++        if ':type:' in line[0]:
++            # Already has a type annotation, don't add another one
++            return
++    
++    # If we get here, we need to add a type annotation
++    if hasattr(self, 'analyzer') and self.analyzer:
++        key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++        if key in self.analyzer.annotations:
++            annotation = self.analyzer.get_annotation_with_aliases(key, self.config.autodoc_type_aliases)
++            self.add_line('   :type: ' + annotation, sourcename)
++
++# Apply the patches
++DataDocumenter.add_directive_header = data_add_directive_header
++AttributeDocumenter.add_directive_header = attr_add_directive_header
++""")
++
++    # Create a script to run Sphinx with the patch
++    with open(os.path.join(temp_dir, "run_sphinx.py"), "w") as f:
++        f.write("""
++import sys
++import os
++
++# Import the patch
++import patch
++
++# Run Sphinx
++from sphinx.cmd.build import build_main
++sys.exit(build_main(['-b', 'html', '.', 'html']))
++""")
++
++    # Run the script
++    cmd = [
++        sys.executable,
++        os.path.join(temp_dir, "run_sphinx.py")
++    ]
++    
++    print(f"Running command: {' '.join(cmd)}")
++    result = subprocess.run(cmd, cwd=temp_dir, capture_output=True, text=True)
++    
++    print("STDOUT:")
++    print(result.stdout)
++    
++    print("STDERR:")
++    print(result.stderr)
++    
++    # Check the generated HTML to see if the type aliases were applied
++    with open(os.path.join(temp_dir, "html", "index.html"), "r") as f:
++        html_content = f.read()
++        
++        # Extract the type annotations
++        import re
++        module_var_match = re.search(r'<dt id="example\.var">.*?<em class="property">: (.*?)</em>', html_content, re.DOTALL)
++        class_var_match = re.search(r'<dt id="example\.MyString\.var">.*?<em class="property">: (.*?)</em>', html_content, re.DOTALL)
++        
++        if module_var_match:
++            module_var_type = module_var_match.group(1)
++            print(f"Module variable type: {module_var_type}")
++        else:
++            print("Module variable type not found")
++            
++        if class_var_match:
++            class_var_type = class_var_match.group(1)
++            print(f"Class variable type: {class_var_type}")
++        else:
++            print("Class variable type not found")
++
++finally:
++    # Clean up
++    shutil.rmtree(temp_dir)
++    print(f"Removed temporary directory: {temp_dir}")
+\ No newline at end of file

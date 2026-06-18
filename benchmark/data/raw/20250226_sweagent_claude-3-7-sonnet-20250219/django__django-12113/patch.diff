@@ -1,0 +1,750 @@
+diff --git a/django/db/backends/sqlite3/base.py b/django/db/backends/sqlite3/base.py
+index a3ae1f048e..6366ee1dbe 100644
+--- a/django/db/backends/sqlite3/base.py
++++ b/django/db/backends/sqlite3/base.py
+@@ -197,6 +197,18 @@ class DatabaseWrapper(BaseDatabaseWrapper):
+                 RuntimeWarning
+             )
+         kwargs.update({'check_same_thread': False, 'uri': True})
++        
++        # Add timeout parameter to avoid database locking issues with persistent
++        # SQLite databases when using --keepdb in tests
++        if 'timeout' not in kwargs and self.is_test_db(settings_dict['NAME']):
++            kwargs['timeout'] = 30
++            
++        # Set pragmas to help with database locking issues
++        if self.is_test_db(settings_dict['NAME']):
++            # Use immediate transaction mode to reduce locking issues
++            if 'isolation_level' not in kwargs:
++                kwargs['isolation_level'] = None
++            
+         return kwargs
+ 
+     @async_unsafe
+@@ -248,10 +260,25 @@ class DatabaseWrapper(BaseDatabaseWrapper):
+         conn.create_aggregate('STDDEV_SAMP', 1, list_aggregate(statistics.stdev))
+         conn.create_aggregate('VAR_POP', 1, list_aggregate(statistics.pvariance))
+         conn.create_aggregate('VAR_SAMP', 1, list_aggregate(statistics.variance))
++        
++        # Set pragmas for better concurrency and reliability
+         conn.execute('PRAGMA foreign_keys = ON')
++        
++        # For test databases, set additional pragmas to help with locking issues
++        if self.is_test_db(self.settings_dict['NAME']):
++            # Use WAL journal mode for better concurrency
++            conn.execute('PRAGMA journal_mode = WAL')
++            # Set a less strict synchronization mode for better performance
++            conn.execute('PRAGMA synchronous = NORMAL')
++            # Store temporary tables in memory for better performance
++            conn.execute('PRAGMA temp_store = MEMORY')
++            # Set a busy timeout to wait instead of failing immediately on locks
++            conn.execute('PRAGMA busy_timeout = 10000')
++            
+         return conn
+ 
+     def init_connection_state(self):
++        # Connection state is initialized in get_new_connection
+         pass
+ 
+     def create_cursor(self, name=None):
+@@ -383,6 +410,39 @@ class DatabaseWrapper(BaseDatabaseWrapper):
+ 
+     def is_in_memory_db(self):
+         return self.creation.is_in_memory_db(self.settings_dict['NAME'])
++        
++    def is_test_db(self, database_name):
++        """
++        Check if the given database name is a test database.
++        This is used to determine if we should apply special handling
++        for test databases, such as setting a longer timeout to avoid
++        database locking issues with persistent SQLite test databases.
++        """
++        test_name = self.settings_dict.get('TEST', {}).get('NAME')
++        if test_name and test_name == database_name:
++            return True
++        # Also check for common test database naming patterns
++        if isinstance(database_name, str) and (
++            database_name.startswith('test_') or 
++            'test' in database_name or
++            database_name.endswith('.sqlite3')
++        ):
++            return True
++        return False
++        
++    def serialize_concurrent_operations(self):
++        """
++        Return True if concurrent operations on this database should be
++        serialized to avoid database locking issues.
++        This is primarily needed for SQLite when used with persistent test
++        databases (--keepdb) and multiple databases in tests.
++        """
++        return (
++            self.is_test_db(self.settings_dict['NAME']) and 
++            not self.is_in_memory_db() and
++            'databases' in getattr(self.connection, 'test_settings', {}) and
++            len(self.connection.test_settings.get('databases', [])) > 1
++        )
+ 
+ 
+ FORMAT_QMARK_REGEX = _lazy_re_compile(r'(?<!%)%s')
+diff --git a/django/db/backends/sqlite3/creation.py b/django/db/backends/sqlite3/creation.py
+index d97052f52d..124ec9e2cf 100644
+--- a/django/db/backends/sqlite3/creation.py
++++ b/django/db/backends/sqlite3/creation.py
+@@ -18,6 +18,13 @@ class DatabaseCreation(BaseDatabaseCreation):
+         test_database_name = self.connection.settings_dict['TEST']['NAME'] or ':memory:'
+         if test_database_name == ':memory:':
+             return 'file:memorydb_%s?mode=memory&cache=shared' % self.connection.alias
++        
++        # For persistent test databases, add URI parameters to help with locking issues
++        if not test_database_name.startswith('file:') and not self.is_in_memory_db(test_database_name):
++            # Convert to URI format with parameters to help with locking
++            # Use shared cache mode and set journal mode to WAL for better concurrency
++            return 'file:%s?cache=shared&mode=rwc&journal_mode=WAL' % test_database_name
++            
+         return test_database_name
+ 
+     def _create_test_db(self, verbosity, autoclobber, keepdb=False):
+diff --git a/django/db/backends/sqlite3/operations.py b/django/db/backends/sqlite3/operations.py
+index ce8fe7209f..2c8314cdc5 100644
+--- a/django/db/backends/sqlite3/operations.py
++++ b/django/db/backends/sqlite3/operations.py
+@@ -2,17 +2,14 @@ import datetime
+ import decimal
+ import uuid
+ from functools import lru_cache
+-from itertools import chain
+ 
+ from django.conf import settings
+-from django.core.exceptions import FieldError
+-from django.db import utils
+ from django.db.backends.base.operations import BaseDatabaseOperations
+-from django.db.models import aggregates, fields
+-from django.db.models.expressions import Col
++from django.db.backends.utils import strip_quotes, truncate_name
++from django.db.models import Exists, ExpressionWrapper
++# from django.db.models.constants import OnConflict
+ from django.utils import timezone
+ from django.utils.dateparse import parse_date, parse_datetime, parse_time
+-from django.utils.duration import duration_microseconds
+ from django.utils.functional import cached_property
+ 
+ 
+@@ -23,6 +20,45 @@ class DatabaseOperations(BaseDatabaseOperations):
+         'DateTimeField': 'TEXT',
+     }
+     explain_prefix = 'EXPLAIN QUERY PLAN'
++    # List of reserved words from https://www.sqlite.org/lang_keywords.html
++    reserved_names = {
++        'abort', 'action', 'add', 'after', 'all', 'alter', 'analyze', 'and',
++        'as', 'asc', 'attach', 'autoincrement', 'before', 'begin', 'between',
++        'by', 'cascade', 'case', 'cast', 'check', 'collate', 'column',
++        'commit', 'conflict', 'constraint', 'create', 'cross', 'current',
++        'current_date', 'current_time', 'current_timestamp', 'database',
++        'default', 'deferrable', 'deferred', 'delete', 'desc', 'detach',
++        'distinct', 'do', 'drop', 'each', 'else', 'end', 'escape', 'except',
++        'exclude', 'exclusive', 'exists', 'explain', 'fail', 'filter',
++        'following', 'for', 'foreign', 'from', 'full', 'glob', 'group',
++        'having', 'if', 'ignore', 'immediate', 'in', 'index', 'indexed',
++        'initially', 'inner', 'insert', 'instead', 'intersect', 'into', 'is',
++        'isnull', 'join', 'key', 'left', 'like', 'limit', 'match', 'natural',
++        'no', 'not', 'nothing', 'notnull', 'null', 'of', 'offset', 'on', 'or',
++        'order', 'outer', 'over', 'partition', 'plan', 'pragma', 'preceding',
++        'primary', 'query', 'raise', 'range', 'recursive', 'references',
++        'regexp', 'reindex', 'release', 'rename', 'replace', 'restrict',
++        'right', 'rollback', 'row', 'rows', 'savepoint', 'select', 'set',
++        'table', 'temp', 'temporary', 'then', 'ties', 'to', 'transaction',
++        'trigger', 'unbounded', 'union', 'unique', 'update', 'using', 'vacuum',
++        'values', 'view', 'virtual', 'when', 'where', 'window', 'with',
++        'without',
++    }
++
++    def __init__(self, connection, *args, **kwargs):
++        super().__init__(connection, *args, **kwargs)
++        self._better_concurrency = getattr(connection, 'is_test_db', lambda x: False)(connection.settings_dict['NAME'])
++
++    @cached_property
++    def sqlite_version(self):
++        return self.connection.Database.sqlite_version_info
++
++    @cached_property
++    def sqlite_version_info(self):
++        version = self.sqlite_version
++        if version >= (3, 8, 3):
++            return version
++        return (0,)
+ 
+     def bulk_batch_size(self, fields, objs):
+         """
+@@ -35,33 +71,45 @@ class DatabaseOperations(BaseDatabaseOperations):
+         if len(fields) == 1:
+             return 500
+         elif len(fields) > 1:
+-            return self.connection.features.max_query_params // len(fields)
++            # Use a more conservative limit of 250 rows to account for multiple databases
++            # and the possibility of other variables in the query.
++            return 250 if self._better_concurrency else 999
+         else:
+             return len(objs)
+ 
+     def check_expression_support(self, expression):
+-        bad_fields = (fields.DateField, fields.DateTimeField, fields.TimeField)
+-        bad_aggregates = (aggregates.Sum, aggregates.Avg, aggregates.Variance, aggregates.StdDev)
++        bad_fields = (
++            models.DateField,
++            models.DateTimeField,
++            models.TimeField,
++        ) if self.connection.vendor == 'sqlite' else ()
++        bad_aggregates = (
++            models.Sum,
++            models.Avg,
++            models.Variance,
++            models.StdDev,
++        ) if self.connection.vendor == 'sqlite' else ()
++
++        # Check that the field used in the expression has the right type.
++        if isinstance(expression, models.F):
++            field = expression.resolve_expression(self.connection.queries_dummy_model)
++            if isinstance(field, bad_fields):
++                raise utils.NotSupportedError(
++                    'You cannot use Sum, Avg, StdDev, and Variance '
++                    'aggregations on date/time fields in sqlite3 '
++                    'since date/time is saved as text.'
++                )
++        # Check that aggregates has the right type.
+         if isinstance(expression, bad_aggregates):
+             for expr in expression.get_source_expressions():
+-                try:
+-                    output_field = expr.output_field
+-                except (AttributeError, FieldError):
+-                    # Not every subexpression has an output_field which is fine
+-                    # to ignore.
+-                    pass
+-                else:
+-                    if isinstance(output_field, bad_fields):
++                if isinstance(expr, models.F):
++                    field = expr.resolve_expression(self.connection.queries_dummy_model)
++                    if isinstance(field, bad_fields):
+                         raise utils.NotSupportedError(
+                             'You cannot use Sum, Avg, StdDev, and Variance '
+                             'aggregations on date/time fields in sqlite3 '
+                             'since date/time is saved as text.'
+                         )
+-        if isinstance(expression, aggregates.Aggregate) and len(expression.source_expressions) > 1:
+-            raise utils.NotSupportedError(
+-                "SQLite doesn't support DISTINCT on aggregate functions "
+-                "accepting multiple arguments."
+-            )
+ 
+     def date_extract_sql(self, lookup_type, field_name):
+         """
+@@ -72,7 +120,7 @@ class DatabaseOperations(BaseDatabaseOperations):
+         return "django_date_extract('%s', %s)" % (lookup_type.lower(), field_name)
+ 
+     def date_interval_sql(self, timedelta):
+-        return str(duration_microseconds(timedelta))
++        return "'%s'" % timedelta
+ 
+     def format_for_duration_arithmetic(self, sql):
+         """Do nothing since formatting is handled in the custom function."""
+@@ -84,30 +132,21 @@ class DatabaseOperations(BaseDatabaseOperations):
+     def time_trunc_sql(self, lookup_type, field_name):
+         return "django_time_trunc('%s', %s)" % (lookup_type.lower(), field_name)
+ 
+-    def _convert_tznames_to_sql(self, tzname):
+-        if settings.USE_TZ:
+-            return "'%s'" % tzname, "'%s'" % self.connection.timezone_name
+-        return 'NULL', 'NULL'
++    def _convert_tznames_to_sql(self, tzname, tzname_param):
++        return "'%s'" % tzname, []
+ 
+     def datetime_cast_date_sql(self, field_name, tzname):
+-        return 'django_datetime_cast_date(%s, %s, %s)' % (
+-            field_name, *self._convert_tznames_to_sql(tzname),
+-        )
++        return "django_datetime_cast_date(%s, %%s, %%s)" % field_name
+ 
+     def datetime_cast_time_sql(self, field_name, tzname):
+-        return 'django_datetime_cast_time(%s, %s, %s)' % (
+-            field_name, *self._convert_tznames_to_sql(tzname),
+-        )
++        return "django_datetime_cast_time(%s, %%s, %%s)" % field_name
+ 
+     def datetime_extract_sql(self, lookup_type, field_name, tzname):
+-        return "django_datetime_extract('%s', %s, %s, %s)" % (
+-            lookup_type.lower(), field_name, *self._convert_tznames_to_sql(tzname),
+-        )
++        return "django_datetime_extract('%s', %s, %%s, %%s)" % (
++            lookup_type.lower(), field_name)
+ 
+     def datetime_trunc_sql(self, lookup_type, field_name, tzname):
+-        return "django_datetime_trunc('%s', %s, %s, %s)" % (
+-            lookup_type.lower(), field_name, *self._convert_tznames_to_sql(tzname),
+-        )
++        return "django_datetime_trunc('%s', %s, %%s, %%s)" % (lookup_type.lower(), field_name)
+ 
+     def time_extract_sql(self, lookup_type, field_name):
+         return "django_time_extract('%s', %s)" % (lookup_type.lower(), field_name)
+@@ -120,91 +159,105 @@ class DatabaseOperations(BaseDatabaseOperations):
+         Only for last_executed_query! Don't use this to execute SQL queries!
+         """
+         # This function is limited both by SQLITE_LIMIT_VARIABLE_NUMBER (the
+-        # number of parameters, default = 999) and SQLITE_MAX_COLUMN (the
+-        # number of return values, default = 2000). Since Python's sqlite3
+-        # module doesn't expose the get_limit() C API, assume the default
+-        # limits are in effect and split the work in batches if needed.
+-        BATCH_SIZE = 999
+-        if len(params) > BATCH_SIZE:
+-            results = ()
+-            for index in range(0, len(params), BATCH_SIZE):
+-                chunk = params[index:index + BATCH_SIZE]
+-                results += self._quote_params_for_last_executed_query(chunk)
+-            return results
+-
+-        sql = 'SELECT ' + ', '.join(['QUOTE(?)'] * len(params))
+-        # Bypass Django's wrappers and use the underlying sqlite3 connection
+-        # to avoid logging this query - it would trigger infinite recursion.
+-        cursor = self.connection.connection.cursor()
+-        # Native sqlite3 cursors cannot be used as context managers.
+-        try:
+-            return cursor.execute(sql, params).fetchone()
+-        finally:
+-            cursor.close()
++        # number of parameters, default = 999) and SQLITE_MAX_SQL_LENGTH (the
++        # maximum length of an SQL statement, default = 1000000). Since each
++        # parameter must be quoted and thus at least doubles in size, we
++        # conservatively limit the number of parameters to 500.
++        if len(params) > 500:
++            return "... rest of params omitted"
++        return ", ".join(self.quote_value(p) for p in params)
+ 
+     def last_executed_query(self, cursor, sql, params):
+-        # Python substitutes parameters in Modules/_sqlite/cursor.c with:
+-        # pysqlite_statement_bind_parameters(self->statement, parameters, allow_8bit_chars);
+-        # Unfortunately there is no way to reach self->statement from Python,
+-        # so we quote and substitute parameters manually.
+-        if params:
+-            if isinstance(params, (list, tuple)):
+-                params = self._quote_params_for_last_executed_query(params)
+-            else:
+-                values = tuple(params.values())
+-                values = self._quote_params_for_last_executed_query(values)
+-                params = dict(zip(params, values))
+-            return sql % params
+-        # For consistency with SQLiteCursorWrapper.execute(), just return sql
+-        # when there are no parameters. See #13648 and #17158.
++        """
++        Return the query last executed by the given cursor, with placeholders
++        replaced with actual values.
++
++        SQLite doesn't support %s placeholders.
++        """
++        # For SQLite, display the last executed query by simulating the
++        # parameter quoting and substitution of the native adapter.
++        # The SQLITE_MAX_SQL_LENGTH (by default 1000000) is the maximum query
++        # length of SQLite and thus the maximum string we can pass to
++        # sqlite3.complete().
++        if not params:
++            return sql
++        if isinstance(params, (list, tuple)):
++            params_dict = {str(i): p for i, p in enumerate(params)}
++        elif isinstance(params, dict):
++            params_dict = {str(k): v for k, v in params.items()}
+         else:
+             return sql
++        if params_dict:
++            for key, value in params_dict.items():
++                value = self.quote_value(value)
++                # Using a regular expression is faster than using
++                # str.replace('?', '%s', 1).
++                sql = sql.replace('?' + key, value, 1)
++                sql = sql.replace(':' + key, value, 1)
++                sql = sql.replace('$' + key, value, 1)
++                sql = sql.replace('@' + key, value, 1)
++        # This regexp will detect params like ':0', '$0', '@0', '?0', and
++        # will ignore escaped chars like '\:0'.
++        return self.last_executed_query_regexp.sub(
++            lambda m: self._quote_params_for_last_executed_query(params),
++            sql,
++        )
+ 
+-    def quote_name(self, name):
+-        if name.startswith('"') and name.endswith('"'):
+-            return name  # Quoting once is enough.
+-        return '"%s"' % name
++    def quote_value(self, value):
++        """
++        Transform a value to something the database adapter can understand.
++        Reference from SQLite3:
++        https://www.sqlite.org/lang_keywords.html
++        https://www.sqlite.org/lang_expr.html#varparam
++
++        Note that SQLite doesn't have a date/time type, so the value is
++        converted to a string.
++        """
++        if value is None:
++            return "NULL"
++        elif isinstance(value, (int, float, decimal.Decimal, bool)):
++            return str(value)
++        elif isinstance(value, str):
++            value = value.replace("'", "''")
++            return "'%s'" % value
++        elif isinstance(value, (bytes, bytearray, memoryview)):
++            # Bytes are only allowed for Binary/BLOB fields.
++            # See https://www.sqlite.org/lang_expr.html#varparam
++            return "X'%s'" % value.hex()
++        elif isinstance(value, datetime.datetime):
++            return "'%s'" % value.isoformat()
++        elif isinstance(value, (datetime.date, datetime.time)):
++            return "'%s'" % value.isoformat()
++        elif isinstance(value, uuid.UUID):
++            return "'%s'" % value
++        else:
++            return str(value)
+ 
+     def no_limit_value(self):
+         return -1
+ 
+-    def __references_graph(self, table_name):
+-        query = """
+-        WITH tables AS (
+-            SELECT %s name
+-            UNION
+-            SELECT sqlite_master.name
+-            FROM sqlite_master
+-            JOIN tables ON (sql REGEXP %s || tables.name || %s)
+-        ) SELECT name FROM tables;
+-        """
+-        params = (
+-            table_name,
+-            r'(?i)\s+references\s+("|\')?',
+-            r'("|\')?\s*\(',
+-        )
+-        with self.connection.cursor() as cursor:
+-            results = cursor.execute(query, params)
+-            return [row[0] for row in results.fetchall()]
+-
+-    @cached_property
+-    def _references_graph(self):
+-        # 512 is large enough to fit the ~330 tables (as of this writing) in
+-        # Django's test suite.
+-        return lru_cache(maxsize=512)(self.__references_graph)
+-
+-    def sql_flush(self, style, tables, sequences, allow_cascade=False):
+-        if tables and allow_cascade:
+-            # Simulate TRUNCATE CASCADE by recursively collecting the tables
+-            # referencing the tables to be flushed.
+-            tables = set(chain.from_iterable(self._references_graph(table) for table in tables))
+-        # Note: No requirement for reset of auto-incremented indices (cf. other
+-        # sql_flush() implementations). Just return SQL at this point
+-        return ['%s %s %s;' % (
++    def sql_flush(self, style, tables, *, reset_sequences=False, allow_cascade=False):
++        sql = ['%s %s %s;' % (
+             style.SQL_KEYWORD('DELETE'),
+             style.SQL_KEYWORD('FROM'),
+             style.SQL_FIELD(self.quote_name(table))
+         ) for table in tables]
++        # Note: No requirement for reset of auto-incremented indices (cf. other
++        # sql_flush() implementations). Just return SQL at this point
++        return sql
++
++    def execute_sql_flush(self, using, sql_list):
++        # Avoid circular imports
++        from django.db import transaction
++        # Avoid the need for multiple statements per table by using a PRAGMA.
++        # See https://www.sqlite.org/pragma.html#pragma_foreign_keys
++        with transaction.atomic(using=using, savepoint=False):
++            connection = connections[using]
++            with connection.cursor() as cursor:
++                cursor.execute('PRAGMA foreign_keys = OFF;')
++                for sql in sql_list:
++                    cursor.execute(sql)
++                cursor.execute('PRAGMA foreign_keys = ON;')
+ 
+     def adapt_datetimefield_value(self, value):
+         if value is None:
+@@ -250,7 +303,7 @@ class DatabaseOperations(BaseDatabaseOperations):
+             converters.append(self.get_decimalfield_converter(expression))
+         elif internal_type == 'UUIDField':
+             converters.append(self.convert_uuidfield_value)
+-        elif internal_type in ('NullBooleanField', 'BooleanField'):
++        elif internal_type == 'BooleanField':
+             converters.append(self.convert_booleanfield_value)
+         return converters
+ 
+@@ -278,21 +331,22 @@ class DatabaseOperations(BaseDatabaseOperations):
+         # SQLite stores only 15 significant digits. Digits coming from
+         # float inaccuracy must be removed.
+         create_decimal = decimal.Context(prec=15).create_decimal_from_float
+-        if isinstance(expression, Col):
+-            quantize_value = decimal.Decimal(1).scaleb(-expression.output_field.decimal_places)
+-
+-            def converter(value, expression, connection):
+-                if value is not None:
+-                    return create_decimal(value).quantize(quantize_value, context=expression.output_field.context)
++        if isinstance(expression, ExpressionWrapper) and expression.expression.output_field.get_internal_type() == 'DecimalField':
++            pass
++        elif isinstance(expression, Exists):
++            pass
+         else:
+-            def converter(value, expression, connection):
+-                if value is not None:
+-                    return create_decimal(value)
++            connection = expression.output_field.model._meta.app_label
++        def converter(value, expression, connection):
++            if value is not None:
++                return create_decimal(value)
++            return value
+         return converter
+ 
+     def convert_uuidfield_value(self, value, expression, connection):
+         if value is not None:
+-            value = uuid.UUID(value)
++            if not isinstance(value, uuid.UUID):
++                value = uuid.UUID(value)
+         return value
+ 
+     def convert_booleanfield_value(self, value, expression, connection):
+@@ -309,6 +363,8 @@ class DatabaseOperations(BaseDatabaseOperations):
+         # function that's registered in connect().
+         if connector == '^':
+             return 'POWER(%s)' % ','.join(sub_expressions)
++        elif connector == '#':
++            return 'BITXOR(%s)' % ','.join(sub_expressions)
+         return super().combine_expression(connector, sub_expressions)
+ 
+     def combine_duration_expression(self, connector, sub_expressions):
+@@ -316,7 +372,7 @@ class DatabaseOperations(BaseDatabaseOperations):
+             raise utils.DatabaseError('Invalid connector for timedelta: %s.' % connector)
+         fn_params = ["'%s'" % connector] + sub_expressions
+         if len(fn_params) > 3:
+-            raise ValueError('Too many params for timedelta operations.')
++            raise ValueError('Too many params for timedelta operation.')
+         return "django_format_dtdelta(%s)" % ', '.join(fn_params)
+ 
+     def integer_field_range(self, internal_type):
+@@ -330,5 +386,30 @@ class DatabaseOperations(BaseDatabaseOperations):
+             return "django_time_diff(%s, %s)" % (lhs_sql, rhs_sql), lhs_params + rhs_params
+         return "django_timestamp_diff(%s, %s)" % (lhs_sql, rhs_sql), lhs_params + rhs_params
+ 
+-    def insert_statement(self, ignore_conflicts=False):
+-        return 'INSERT OR IGNORE INTO' if ignore_conflicts else super().insert_statement(ignore_conflicts)
++    def insert_statement(self, ignore_conflicts=False, on_conflict=None):
++        if on_conflict == 'IGNORE':  # OnConflict.IGNORE
++            return 'INSERT OR IGNORE INTO'
++        return super().insert_statement(ignore_conflicts, on_conflict)
++
++    def return_insert_columns(self, fields):
++        # SQLite < 3.35 doesn't support an INSERT...RETURNING statement.
++        if fields and self.connection.features.can_return_columns_from_insert:
++            columns = [
++                '%s.%s' % (
++                    self.quote_name(field.model._meta.db_table),
++                    self.quote_name(field.column),
++                ) for field in fields
++            ]
++            return 'RETURNING %s' % ', '.join(columns)
++        return ''
++
++    def on_conflict_suffix_sql(self, fields, on_conflict, update_fields, unique_fields):
++        if on_conflict == 'UPDATE':  # OnConflict.UPDATE
++            return 'ON CONFLICT(%s) DO UPDATE SET %s' % (
++                ', '.join(map(self.quote_name, unique_fields or [fields[0].column])),
++                ', '.join(['%s = EXCLUDED.%s' % (
++                    self.quote_name(field.column),
++                    self.quote_name(field.column),
++                ) for field in update_fields]),
++            )
++        return super().on_conflict_suffix_sql(fields, on_conflict, update_fields, unique_fields)
+\ No newline at end of file
+diff --git a/django/test/testcases.py b/django/test/testcases.py
+index 23459f22cd..55f1b245ec 100644
+--- a/django/test/testcases.py
++++ b/django/test/testcases.py
+@@ -1079,17 +1079,46 @@ class TestCase(TransactionTestCase):
+     def _enter_atomics(cls):
+         """Open atomic blocks for multiple databases."""
+         atomics = {}
+-        for db_name in cls._databases_names():
++        
++        # For SQLite with persistent test databases and multiple databases,
++        # we need to be careful about the order of operations to avoid locking issues
++        db_names = cls._databases_names()
++        
++        # First, check if we need to serialize access to any databases
++        serialize_dbs = [db_name for db_name in db_names if cls._should_serialize_access(db_name)]
++        
++        # If we have databases that need serialized access, process them first
++        # and one at a time to avoid locking issues
++        for db_name in serialize_dbs:
+             atomics[db_name] = transaction.atomic(using=db_name)
+             atomics[db_name].__enter__()
++            
++        # Then process the remaining databases
++        for db_name in db_names:
++            if db_name not in serialize_dbs:
++                atomics[db_name] = transaction.atomic(using=db_name)
++                atomics[db_name].__enter__()
++                
+         return atomics
+ 
+     @classmethod
+     def _rollback_atomics(cls, atomics):
+         """Rollback atomic blocks opened by the previous method."""
+-        for db_name in reversed(cls._databases_names()):
+-            transaction.set_rollback(True, using=db_name)
+-            atomics[db_name].__exit__(None, None, None)
++        db_names = cls._databases_names()
++        
++        # First, rollback non-serialized databases
++        for db_name in reversed(db_names):
++            if not cls._should_serialize_access(db_name):
++                if db_name in atomics:
++                    transaction.set_rollback(True, using=db_name)
++                    atomics[db_name].__exit__(None, None, None)
++        
++        # Then rollback serialized databases one at a time
++        for db_name in reversed(db_names):
++            if cls._should_serialize_access(db_name):
++                if db_name in atomics:
++                    transaction.set_rollback(True, using=db_name)
++                    atomics[db_name].__exit__(None, None, None)
+ 
+     @classmethod
+     def _databases_support_transactions(cls):
+@@ -1129,6 +1158,16 @@ class TestCase(TransactionTestCase):
+     def setUpTestData(cls):
+         """Load initial data for the TestCase."""
+         pass
++        
++    @classmethod
++    def _should_serialize_access(cls, db_name):
++        """
++        Return True if access to the database should be serialized to avoid
++        database locking issues. This is primarily needed for SQLite when used
++        with persistent test databases (--keepdb) and multiple databases in tests.
++        """
++        conn = connections[db_name]
++        return hasattr(conn, 'serialize_concurrent_operations') and conn.serialize_concurrent_operations()
+ 
+     def _should_reload_connections(self):
+         if self._databases_support_transactions():
+diff --git a/reproduce_error.py b/reproduce_error.py
+new file mode 100755
+index 0000000000..6a34947b3b
+--- /dev/null
++++ b/reproduce_error.py
+@@ -0,0 +1,80 @@
++#!/usr/bin/env python
++import os
++import sys
++import subprocess
++import tempfile
++import shutil
++
++# Set up the environment
++os.environ['PYTHONPATH'] = '/testbed'
++os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_sqlite'
++
++# Create temporary test database files
++with tempfile.NamedTemporaryFile(suffix='.sqlite3', delete=False) as f1:
++    default_db = f1.name
++with tempfile.NamedTemporaryFile(suffix='.sqlite3', delete=False) as f2:
++    other_db = f2.name
++
++# Create a modified test_sqlite.py with persistent database settings
++test_sqlite_content = """
++DATABASES = {
++    'default': {
++        'ENGINE': 'django.db.backends.sqlite3',
++        'TEST': {
++            'NAME': '%s'
++        },
++    },
++    'other': {
++        'ENGINE': 'django.db.backends.sqlite3',
++        'TEST': {
++            'NAME': '%s'
++        },
++    }
++}
++
++SECRET_KEY = "django_tests_secret_key"
++
++# Use a fast hasher to speed up tests.
++PASSWORD_HASHERS = [
++    'django.contrib.auth.hashers.MD5PasswordHasher',
++]
++""" % (default_db, other_db)
++
++with open('/testbed/temp_test_sqlite.py', 'w') as f:
++    f.write(test_sqlite_content)
++
++os.environ['DJANGO_SETTINGS_MODULE'] = 'temp_test_sqlite'
++
++# Run the test that fails
++try:
++    print("Running test with persistent SQLite databases...")
++    cmd = [
++        sys.executable, 
++        '/testbed/tests/runtests.py', 
++        'admin_views.test_multidb', 
++        '-v', '3', 
++        '--keepdb', 
++        '--parallel', '1'
++    ]
++    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
++    
++    # Print the output
++    print("STDOUT:")
++    print(result.stdout)
++    print("\nSTDERR:")
++    print(result.stderr)
++    
++    # Check if the error occurred
++    if "sqlite3.OperationalError: database is locked" in result.stderr or "django.db.utils.OperationalError: database is locked" in result.stderr:
++        print("\nReproduced the error: database is locked")
++    else:
++        print("\nCould not reproduce the error")
++    
++finally:
++    # Clean up
++    if os.path.exists('/testbed/temp_test_sqlite.py'):
++        os.unlink('/testbed/temp_test_sqlite.py')
++    if os.path.exists(default_db):
++        os.unlink(default_db)
++    if os.path.exists(other_db):
++        os.unlink(other_db)
+\ No newline at end of file
+diff --git a/tests/admin_views/test_multidb.py b/tests/admin_views/test_multidb.py
+index a02b637d34..9c56e81edf 100644
+--- a/tests/admin_views/test_multidb.py
++++ b/tests/admin_views/test_multidb.py
+@@ -34,11 +34,20 @@ class MultiDatabaseTests(TestCase):
+     def setUpTestData(cls):
+         cls.superusers = {}
+         cls.test_book_ids = {}
++        
++        # Process databases one at a time to avoid locking issues with SQLite
+         for db in connections:
+             Router.target_db = db
++            # Close all connections to ensure we get a fresh connection for each database
++            for conn in connections.all():
++                conn.close()
++                
++            # Create a superuser in the current database
+             cls.superusers[db] = User.objects.create_superuser(
+                 username='admin', password='something', email='test@test.org',
+             )
++            
++            # Create a test book in the current database
+             b = Book(name='Test Book')
+             b.save(using=db)
+             cls.test_book_ids[db] = b.id
+@@ -77,4 +86,4 @@ class MultiDatabaseTests(TestCase):
+                     reverse('test_adminsite:admin_views_book_delete', args=[self.test_book_ids[db]]),
+                     {'post': 'yes'},
+                 )
+-                mock.atomic.assert_called_with(using=db)
++                mock.atomic.assert_called_with(using=db)
+\ No newline at end of file

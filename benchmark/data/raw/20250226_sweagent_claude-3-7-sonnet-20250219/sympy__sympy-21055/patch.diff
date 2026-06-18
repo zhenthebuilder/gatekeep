@@ -1,0 +1,19 @@
+diff --git a/sympy/functions/elementary/complexes.py b/sympy/functions/elementary/complexes.py
+index b34ca3a7de..1a2c0b5d1d 100644
+--- a/sympy/functions/elementary/complexes.py
++++ b/sympy/functions/elementary/complexes.py
+@@ -768,6 +768,14 @@ def _eval_derivative(self, t):
+     def _eval_rewrite_as_atan2(self, arg, **kwargs):
+         x, y = self.args[0].as_real_imag()
+         return atan2(y, x)
++        
++    def _eval_refine(self, assumptions):
++        from sympy.assumptions import ask, Q
++        arg = self.args[0]
++        if ask(Q.positive(arg), assumptions):
++            return S.Zero
++        elif ask(Q.negative(arg), assumptions):
++            return S.Pi
+ 
+ 
+ class conjugate(Function):

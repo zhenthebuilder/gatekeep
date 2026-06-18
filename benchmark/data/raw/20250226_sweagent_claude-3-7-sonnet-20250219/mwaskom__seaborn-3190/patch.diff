@@ -1,0 +1,43 @@
+diff --git a/seaborn/_core/scales.py b/seaborn/_core/scales.py
+index 6c9ecbc9..cde17329 100644
+--- a/seaborn/_core/scales.py
++++ b/seaborn/_core/scales.py
+@@ -347,10 +347,36 @@ class ContinuousBase(Scale):
+             else:
+                 vmin, vmax = new.norm
+             vmin, vmax = axis.convert_units((vmin, vmax))
+-            a = forward(vmin)
+-            b = forward(vmax) - forward(vmin)
++            
++            # Check if we're dealing with boolean data
++            is_bool_data = data.dtype == bool
++            
++            # Convert boolean data to integers for normalization
++            if is_bool_data:
++                # Convert the entire series to integers
++                norm_data = data.astype(int)
++                a = forward(int(vmin))
++                fvmax = forward(int(vmax))
++                fvmin = forward(int(vmin))
++            else:
++                norm_data = data
++                a = forward(vmin)
++                fvmax = forward(vmax)
++                fvmin = forward(vmin)
++                
++            b = fvmax - fvmin
++            
++            # Handle the case where all values are the same (b would be 0)
++            if b == 0:
++                b = 1  # Avoid division by zero
+ 
+             def normalize(x):
++                # If we're dealing with boolean data, convert to integers first
++                if is_bool_data:
++                    if hasattr(x, 'astype'):
++                        x = x.astype(int)
++                    elif isinstance(x, (bool, np.bool_)):
++                        x = int(x)
+                 return (x - a) / b
+ 
+         else:

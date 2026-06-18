@@ -1,0 +1,94 @@
+diff --git a/src/_pytest/_code/code.py b/src/_pytest/_code/code.py
+index 7b17d7612..cb6c43881 100644
+--- a/src/_pytest/_code/code.py
++++ b/src/_pytest/_code/code.py
+@@ -1,4 +1,5 @@
+ import inspect
++import os
+ import re
+ import sys
+ import traceback
+@@ -564,6 +565,18 @@ class ExceptionInfo(Generic[_E]):
+         exconly = self.exconly(tryshort=True)
+         entry = self.traceback.getcrashentry()
+         path, lineno = entry.frame.code.raw.co_filename, entry.lineno
++        
++        # If the path is relative and starts with "..", it might be because
++        # the working directory was changed in a fixture
++        if path.startswith("..") and os.path.isabs(os.path.join(os.getcwd(), path)):
++            # Try to make the path relative to the original working directory
++            import sys
++            rootdir = os.getcwd()
++            # Go up one directory to get the original path
++            original_path = os.path.normpath(os.path.join(rootdir, path))
++            if os.path.exists(original_path):
++                path = os.path.basename(original_path)
++        
+         return ReprFileLocation(path, lineno + 1, exconly)
+ 
+     def getrepr(
+@@ -791,8 +804,22 @@ class FormattedExcinfo:
+     def _makepath(self, path):
+         if not self.abspath:
+             try:
+-                np = py.path.local().bestrelpath(path)
+-            except OSError:
++                # Get the session from the current hook
++                import sys
++                from _pytest.config import get_config
++                config = get_config()
++                if config and hasattr(config, "hook") and hasattr(config.hook, "_hookexec"):
++                    session = getattr(config.hook._hookexec, "_pytest_session_object", None)
++                    if session and hasattr(session, "_original_cwd"):
++                        # Use the original working directory stored in the session
++                        np = session._original_cwd.bestrelpath(path)
++                    else:
++                        # Fallback to current working directory
++                        np = py.path.local().bestrelpath(path)
++                else:
++                    # Fallback to current working directory
++                    np = py.path.local().bestrelpath(path)
++            except (OSError, ImportError, AttributeError):
+                 return path
+             if len(np) < len(str(path)):
+                 path = np
+@@ -1115,7 +1142,16 @@ class ReprFileLocation(TerminalRepr):
+         i = msg.find("\n")
+         if i != -1:
+             msg = msg[:i]
+-        tw.write(self.path, bold=True, red=True)
++        
++        # Fix path if it's relative and starts with ".."
++        # This happens when a test changes the working directory in a fixture
++        path = self.path
++        if path.startswith(".."):
++            # Get the basename of the path to show it relative to the original directory
++            # This works regardless of how many levels of "../" are in the path
++            path = os.path.basename(path)
++        
++        tw.write(path, bold=True, red=True)
+         tw.line(":{}: {}".format(self.lineno, msg))
+ 
+ 
+diff --git a/src/_pytest/main.py b/src/_pytest/main.py
+index de7e16744..73d755f12 100644
+--- a/src/_pytest/main.py
++++ b/src/_pytest/main.py
+@@ -181,6 +181,9 @@ def wrap_session(
+     """Skeleton command line program"""
+     session = Session.from_config(config)
+     session.exitstatus = ExitCode.OK
++    # Store the session object in the hook executor for access from other parts of the code
++    if hasattr(config.hook, "_hookexec"):
++        config.hook._hookexec._pytest_session_object = session
+     initstate = 0
+     try:
+         try:
+@@ -385,6 +388,7 @@ class Session(nodes.FSCollector):
+         self.trace = config.trace.root.get("collection")
+         self.startdir = config.invocation_dir
+         self._initialpaths = frozenset()  # type: FrozenSet[py.path.local]
++        self._original_cwd = py.path.local()  # Store the original working directory
+ 
+         # Keep track of any collected nodes in here, so we don't duplicate fixtures
+         self._collection_node_cache1 = (

@@ -1,0 +1,16 @@
+diff --git a/sphinx/environment/collectors/toctree.py b/sphinx/environment/collectors/toctree.py
+index 14ff4ed74..6d057b1cf 100644
+--- a/sphinx/environment/collectors/toctree.py
++++ b/sphinx/environment/collectors/toctree.py
+@@ -223,8 +223,9 @@ class TocTreeCollector(EnvironmentCollector):
+         def get_figtype(node: Node) -> str:
+             for domain in env.domains.values():
+                 figtype = domain.get_enumerable_node_type(node)
+-                if domain.name == 'std' and not domain.get_numfig_title(node):  # type: ignore
+-                    # Skip if uncaptioned node
++                # Only skip uncaptioned nodes if they're not tables
++                if domain.name == 'std' and figtype != 'table' and not domain.get_numfig_title(node):  # type: ignore
++                    # Skip if uncaptioned node (except for tables)
+                     continue
+ 
+                 if figtype:

@@ -1,0 +1,18 @@
+diff --git a/sympy/functions/elementary/hyperbolic.py b/sympy/functions/elementary/hyperbolic.py
+index 892e19cabb..e1a66438cd 100644
+--- a/sympy/functions/elementary/hyperbolic.py
++++ b/sympy/functions/elementary/hyperbolic.py
+@@ -499,6 +499,13 @@ def _eval_is_finite(self):
+         arg = self.args[0]
+         return arg.is_finite
+ 
++    def _eval_is_zero(self):
++        # cosh(x) is never zero for any value of x
++        # This is because cosh(x) = (e^x + e^(-x))/2, which is never zero
++        # Even for complex x, the sum of two non-zero complex numbers can only be zero
++        # if they are negatives of each other, which is not the case for e^x and e^(-x)
++        return False
++
+ 
+ class tanh(HyperbolicFunction):
+     r"""

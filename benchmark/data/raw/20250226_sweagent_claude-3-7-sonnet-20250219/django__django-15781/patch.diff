@@ -1,0 +1,115 @@
+diff --git a/django/core/management/base.py b/django/core/management/base.py
+index d37d43d5c5..ee858b6d11 100644
+--- a/django/core/management/base.py
++++ b/django/core/management/base.py
+@@ -14,6 +14,9 @@ from django.core.exceptions import ImproperlyConfigured
+ from django.core.management.color import color_style, no_style
+ from django.db import DEFAULT_DB_ALIAS, connections
+ 
++# Import the formatters
++from django.core.management.formatters import DjangoHelpFormatter, PreserveWhitespaceDjangoHelpFormatter
++
+ ALL_CHECKS = "__all__"
+ 
+ 
+@@ -102,34 +105,6 @@ def no_translations(handle_func):
+     return wrapper
+ 
+ 
+-class DjangoHelpFormatter(HelpFormatter):
+-    """
+-    Customized formatter so that command-specific arguments appear in the
+-    --help output before arguments common to all commands.
+-    """
+-
+-    show_last = {
+-        "--version",
+-        "--verbosity",
+-        "--traceback",
+-        "--settings",
+-        "--pythonpath",
+-        "--no-color",
+-        "--force-color",
+-        "--skip-checks",
+-    }
+-
+-    def _reordered_actions(self, actions):
+-        return sorted(
+-            actions, key=lambda a: set(a.option_strings) & self.show_last != set()
+-        )
+-
+-    def add_usage(self, usage, actions, *args, **kwargs):
+-        super().add_usage(usage, self._reordered_actions(actions), *args, **kwargs)
+-
+-    def add_arguments(self, actions):
+-        super().add_arguments(self._reordered_actions(actions))
+-
+ 
+ class OutputWrapper(TextIOBase):
+     """
+@@ -289,7 +264,7 @@ class BaseCommand:
+         parser = CommandParser(
+             prog="%s %s" % (os.path.basename(prog_name), subcommand),
+             description=self.help or None,
+-            formatter_class=DjangoHelpFormatter,
++            formatter_class=PreserveWhitespaceDjangoHelpFormatter,
+             missing_args_message=getattr(self, "missing_args_message", None),
+             called_from_command_line=getattr(self, "_called_from_command_line", None),
+             **kwargs,
+diff --git a/django/core/management/formatters.py b/django/core/management/formatters.py
+new file mode 100644
+index 0000000000..c6d54e482b
+--- /dev/null
++++ b/django/core/management/formatters.py
+@@ -0,0 +1,50 @@
++"""
++Formatters for command-line help.
++"""
++import textwrap
++from argparse import HelpFormatter
++
++
++class DjangoHelpFormatter(HelpFormatter):
++    """
++    Customized formatter so that command-specific arguments appear in the
++    --help output before arguments common to all commands.
++    """
++
++    show_last = {
++        "--version",
++        "--verbosity",
++        "--traceback",
++        "--settings",
++        "--pythonpath",
++        "--no-color",
++        "--force-color",
++        "--skip-checks",
++    }
++
++    def _reordered_actions(self, actions):
++        return sorted(
++            actions, key=lambda a: set(a.option_strings) & self.show_last != set()
++        )
++
++    def add_usage(self, usage, actions, *args, **kwargs):
++        super().add_usage(usage, self._reordered_actions(actions), *args, **kwargs)
++
++    def add_arguments(self, actions):
++        super().add_arguments(self._reordered_actions(actions))
++
++
++class PreserveWhitespaceDjangoHelpFormatter(DjangoHelpFormatter):
++    """
++    Custom formatter that preserves whitespace in help text.
++    """
++    def _fill_text(self, text, width, indent):
++        # If the text starts with newlines, it's a multiline string that should be preserved
++        if text.startswith('\n'):
++            # Remove the first newline and dedent the text
++            text = textwrap.dedent(text.lstrip('\n'))
++            # Split into lines and add indentation to each line
++            lines = text.splitlines()
++            return '\n'.join(indent + line for line in lines)
++        # Otherwise, use the default behavior
++        return super()._fill_text(text, width, indent)
+\ No newline at end of file

@@ -1,0 +1,18 @@
+diff --git a/sympy/matrices/expressions/blockmatrix.py b/sympy/matrices/expressions/blockmatrix.py
+index 11aebbc59f..914311fafd 100644
+--- a/sympy/matrices/expressions/blockmatrix.py
++++ b/sympy/matrices/expressions/blockmatrix.py
+@@ -244,7 +244,12 @@ def _entry(self, i, j, **kwargs):
+                 break
+             else:
+                 j -= numcols
+-        return self.blocks[row_block, col_block][i, j]
++        
++        # Special case for BlockDiagMatrix with one element
++        if isinstance(self, BlockDiagMatrix) and len(self.args) == 1:
++            return self.args[0][i, j]
++        else:
++            return self.blocks[row_block, col_block][i, j]
+ 
+     @property
+     def is_Identity(self):

@@ -1,0 +1,59 @@
+diff --git a/sympy/matrices/expressions/matmul.py b/sympy/matrices/expressions/matmul.py
+index 6cbffd2944..22f2479e3d 100644
+--- a/sympy/matrices/expressions/matmul.py
++++ b/sympy/matrices/expressions/matmul.py
+@@ -58,7 +58,7 @@ def _entry(self, i, j, expand=True):
+         indices[0] = i
+         indices[-1] = j
+         for i in range(1, len(matrices)):
+-            indices[i] = Dummy("i_%i" % i)
++            indices[i] = Dummy("i")
+         for i, arg in enumerate(matrices[:-1]):
+             ind_ranges[i] = arg.shape[1] - 1
+         matrices = [arg[indices[i], indices[i+1]] for i, arg in enumerate(matrices)]
+diff --git a/sympy/printing/latex.py b/sympy/printing/latex.py
+index 901918674a..2114e2674d 100644
+--- a/sympy/printing/latex.py
++++ b/sympy/printing/latex.py
+@@ -1349,8 +1349,13 @@ def _print_Symbol(self, expr):
+         if expr in self._settings['symbol_names']:
+             return self._settings['symbol_names'][expr]
+ 
+-        return self._deal_with_super_sub(expr.name) if \
+-            '\\' not in expr.name else expr.name
++        name = expr.name
++        # Handle symbols with names starting with underscore
++        if name.startswith('_'):
++            name = name[1:]  # Remove the leading underscore
++            
++        return self._deal_with_super_sub(name) if \
++            '\\' not in name else name
+ 
+     _print_RandomSymbol = _print_Symbol
+     _print_MatrixSymbol = _print_Symbol
+@@ -1436,9 +1441,24 @@ def _print_MatrixBase(self, expr):
+                            = _print_Matrix \
+                            = _print_MatrixBase
+ 
++    def _print_Dummy(self, expr):
++        if expr.name.startswith('Dummy_'):
++            return 'i_{%d}' % expr.dummy_index
++        else:
++            # For matrix multiplication, use a simpler format
++            if expr.name == 'i':
++                return 'i_{1}'
++            return '%s_{%d}' % (expr.name, expr.dummy_index)
++
+     def _print_MatrixElement(self, expr):
++        i, j = expr.i, expr.j
++        
++        # Process indices to handle underscores
++        i_str = self._print(i)
++        j_str = self._print(j)
++        
+         return self.parenthesize(expr.parent, PRECEDENCE["Atom"], strict=True) \
+-            + '_{%s, %s}' % (expr.i, expr.j)
++            + '_{%s, %s}' % (i_str, j_str)
+ 
+     def _print_MatrixSlice(self, expr):
+         def latexslice(x):

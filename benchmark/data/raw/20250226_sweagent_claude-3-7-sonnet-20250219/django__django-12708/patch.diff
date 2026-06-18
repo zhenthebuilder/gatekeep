@@ -1,0 +1,25 @@
+diff --git a/django/db/backends/base/schema.py b/django/db/backends/base/schema.py
+index 61f88401ab..d5f1fa9158 100644
+--- a/django/db/backends/base/schema.py
++++ b/django/db/backends/base/schema.py
+@@ -407,7 +407,19 @@ class BaseDatabaseSchemaEditor:
+             model, columns, exclude=meta_constraint_names | meta_index_names,
+             **constraint_kwargs
+         )
+-        if len(constraint_names) != 1:
++        if len(constraint_names) == 0:
++            # No constraints found, nothing to delete
++            return
++        elif len(constraint_names) > 1 and constraint_kwargs.get('index') and not constraint_kwargs.get('unique'):
++            # When removing an index_together and there are multiple constraints,
++            # we need to find the one that's actually an index and not a unique constraint
++            for name in constraint_names:
++                with self.connection.cursor() as cursor:
++                    constraints = self.connection.introspection.get_constraints(cursor, model._meta.db_table)
++                if name in constraints and constraints[name]['index'] and not constraints[name]['unique']:
++                    self.execute(self._delete_constraint_sql(sql, model, name))
++                    return
++        elif len(constraint_names) != 1:
+             raise ValueError("Found wrong number (%s) of constraints for %s(%s)" % (
+                 len(constraint_names),
+                 model._meta.db_table,

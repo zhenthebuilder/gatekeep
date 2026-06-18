@@ -1,0 +1,213 @@
+diff --git a/fix_sqf_list.py b/fix_sqf_list.py
+new file mode 100644
+index 0000000000..e2d16b85f5
+--- /dev/null
++++ b/fix_sqf_list.py
+@@ -0,0 +1,18 @@
++from sympy import symbols, sqf, sqf_list
++
++x = symbols('x')
++
++# Example 1 from PR description
++expr1 = (x**2 + 1) * (x - 1)**2 * (x - 2)**3 * (x - 3)**3
++print("Example 1:")
++print("Expression:", expr1)
++print("sqf_list result:", sqf_list(expr1))
++print("sqf result:", sqf(expr1))
++print()
++
++# Example 2 from PR description
++expr2 = x**5 - 2*x**4 - 2*x**3 + 4*x**2 + x - 2
++print("Example 2:")
++print("Expression:", expr2)
++print("sqf_list result:", sqf_list(expr2))
++print("sqf result:", sqf(expr2))
+\ No newline at end of file
+diff --git a/reproduce_issue.py b/reproduce_issue.py
+new file mode 100644
+index 0000000000..e2d16b85f5
+--- /dev/null
++++ b/reproduce_issue.py
+@@ -0,0 +1,18 @@
++from sympy import symbols, sqf, sqf_list
++
++x = symbols('x')
++
++# Example 1 from PR description
++expr1 = (x**2 + 1) * (x - 1)**2 * (x - 2)**3 * (x - 3)**3
++print("Example 1:")
++print("Expression:", expr1)
++print("sqf_list result:", sqf_list(expr1))
++print("sqf result:", sqf(expr1))
++print()
++
++# Example 2 from PR description
++expr2 = x**5 - 2*x**4 - 2*x**3 + 4*x**2 + x - 2
++print("Example 2:")
++print("Expression:", expr2)
++print("sqf_list result:", sqf_list(expr2))
++print("sqf result:", sqf(expr2))
+\ No newline at end of file
+diff --git a/sympy/polys/polytools.py b/sympy/polys/polytools.py
+index c9e77a901f..c783985049 100644
+--- a/sympy/polys/polytools.py
++++ b/sympy/polys/polytools.py
+@@ -5880,7 +5880,7 @@ def _sorted_factors(factors, method):
+         def key(obj):
+             poly, exp = obj
+             rep = poly.rep.rep
+-            return (exp, len(rep), len(poly.gens), rep)
++            return (len(rep), len(poly.gens), -exp, rep)
+     else:
+         def key(obj):
+             poly, exp = obj
+diff --git a/sympy/polys/sqfreetools.py b/sympy/polys/sqfreetools.py
+index 1783a7744a..2550272ca5 100644
+--- a/sympy/polys/sqfreetools.py
++++ b/sympy/polys/sqfreetools.py
+@@ -417,11 +417,8 @@ def dmp_sqf_list(f, u, K, all=False):
+ 
+         if all or dmp_degree(g, u) > 0:
+             result.append((g, i))
+-
+         i += 1
+ 
+-    return coeff, result
+-
+ 
+ def dmp_sqf_list_include(f, u, K, all=False):
+     """
+diff --git a/test_factors_order.py b/test_factors_order.py
+new file mode 100644
+index 0000000000..3e95c08cf8
+--- /dev/null
++++ b/test_factors_order.py
+@@ -0,0 +1,40 @@
++from sympy import symbols, Poly, sqf_list, sqf
++from sympy.polys.polytools import _sorted_factors, _poly_from_expr
++
++x = symbols('x')
++
++# Example 1 from PR description
++expr1 = (x**2 + 1) * (x - 1)**2 * (x - 2)**3 * (x - 3)**3
++print("Example 1:")
++print("Expression:", expr1)
++
++# Get the factors from sqf_list
++coeff, factors = sqf_list(expr1)
++print("sqf_list factors:", factors)
++
++# Convert factors to Poly objects
++poly_factors = []
++for f, k in factors:
++    poly_factors.append((Poly(f, x), k))
++
++# Sort the factors using _sorted_factors
++sorted_factors = _sorted_factors(poly_factors, 'sqf')
++print("Sorted factors:", sorted_factors)
++
++# Example 2 from PR description
++expr2 = x**5 - 2*x**4 - 2*x**3 + 4*x**2 + x - 2
++print("\nExample 2:")
++print("Expression:", expr2)
++
++# Get the factors from sqf_list
++coeff, factors = sqf_list(expr2)
++print("sqf_list factors:", factors)
++
++# Convert factors to Poly objects
++poly_factors = []
++for f, k in factors:
++    poly_factors.append((Poly(f, x), k))
++
++# Sort the factors using _sorted_factors
++sorted_factors = _sorted_factors(poly_factors, 'sqf')
++print("Sorted factors:", sorted_factors)
+\ No newline at end of file
+diff --git a/test_sqf_order.py b/test_sqf_order.py
+new file mode 100644
+index 0000000000..9ffa29dd87
+--- /dev/null
++++ b/test_sqf_order.py
+@@ -0,0 +1,47 @@
++from sympy import symbols, Poly, sqf_list, sqf
++from sympy.polys.polytools import _sorted_factors, _poly_from_expr, _symbolic_factor_list, _symbolic_factor, _generic_factor, _generic_factor_list
++
++x = symbols('x')
++
++# Example 1 from PR description
++expr1 = (x**2 + 1) * (x - 1)**2 * (x - 2)**3 * (x - 3)**3
++print("Example 1:")
++print("Expression:", expr1)
++
++# Get the factors from sqf_list
++coeff, factors = sqf_list(expr1)
++print("sqf_list factors:", factors)
++
++# Get the result from sqf
++sqf_result = sqf(expr1)
++print("sqf result:", sqf_result)
++
++# Example 2 from PR description
++expr2 = x**5 - 2*x**4 - 2*x**3 + 4*x**2 + x - 2
++print("\nExample 2:")
++print("Expression:", expr2)
++
++# Get the factors from sqf_list
++coeff, factors = sqf_list(expr2)
++print("sqf_list factors:", factors)
++
++# Get the result from sqf
++sqf_result = sqf(expr2)
++print("sqf result:", sqf_result)
++
++# Print the factors in the order they appear in the sqf result
++print("\nFactors in sqf result for Example 1:")
++for arg in sqf_result.args:
++    if arg.is_Pow:
++        base, exp = arg.args
++        print(f"({base}, {exp})")
++    else:
++        print(f"({arg}, 1)")
++
++print("\nFactors in sqf result for Example 2:")
++for arg in sqf_result.args:
++    if arg.is_Pow:
++        base, exp = arg.args
++        print(f"({base}, {exp})")
++    else:
++        print(f"({arg}, 1)")
+\ No newline at end of file
+diff --git a/verify_fix.py b/verify_fix.py
+new file mode 100644
+index 0000000000..a8148cdd35
+--- /dev/null
++++ b/verify_fix.py
+@@ -0,0 +1,26 @@
++from sympy import symbols, sqf, sqf_list
++
++x = symbols('x')
++
++# Example 1 from PR description
++expr1 = (x**2 + 1) * (x - 1)**2 * (x - 2)**3 * (x - 3)**3
++print("Example 1:")
++print("Expression:", expr1)
++print("sqf_list result:", sqf_list(expr1))
++print("sqf result:", sqf(expr1))
++print()
++
++# Example 2 from PR description
++expr2 = x**5 - 2*x**4 - 2*x**3 + 4*x**2 + x - 2
++print("Example 2:")
++print("Expression:", expr2)
++print("sqf_list result:", sqf_list(expr2))
++print("sqf result:", sqf(expr2))
++print()
++
++# Additional test case
++expr3 = (x**2 - 1)**2 * (x - 2) * (x - 3)**3
++print("Example 3:")
++print("Expression:", expr3)
++print("sqf_list result:", sqf_list(expr3))
++print("sqf result:", sqf(expr3))
+\ No newline at end of file

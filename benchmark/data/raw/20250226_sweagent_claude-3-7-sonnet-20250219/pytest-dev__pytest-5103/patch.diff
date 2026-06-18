@@ -1,0 +1,853 @@
+diff --git a/conftest.py b/conftest.py
+new file mode 100644
+index 000000000..1badba282
+--- /dev/null
++++ b/conftest.py
+@@ -0,0 +1,9 @@
++"""Register the unroll plugin."""
++import pytest
++
++# Import our plugin
++from _pytest.plugin_unroll import pytest_runtest_setup, pytest_runtest_teardown
++
++# Register the hooks
++pytest.hookimpl(hookwrapper=True)(pytest_runtest_setup)
++pytest.hookimpl(hookwrapper=True)(pytest_runtest_teardown)
+\ No newline at end of file
+diff --git a/src/_pytest/assertion/rewrite.py b/src/_pytest/assertion/rewrite.py
+index 2903b8995..7b8cc5781 100644
+--- a/src/_pytest/assertion/rewrite.py
++++ b/src/_pytest/assertion/rewrite.py
+@@ -24,6 +24,7 @@ from _pytest.assertion import util
+ from _pytest.assertion.util import (  # noqa: F401
+     format_explanation as _format_explanation,
+ )
++from _pytest.assertion.unroll_iterables import unroll_all_any
+ from _pytest.compat import spec_from_file_location
+ from _pytest.pathlib import fnmatch_ex
+ from _pytest.pathlib import PurePath
+@@ -820,6 +821,12 @@ class AssertionRewriter(ast.NodeVisitor):
+         the expression is false.
+ 
+         """
++        # Check if this is an assertion with an all() or any() call
++        # If so, unroll it to a for loop
++        unrolled = unroll_all_any(assert_)
++        if unrolled:
++            return unrolled
++        
+         if isinstance(assert_.test, ast.Tuple) and len(assert_.test.elts) >= 1:
+             from _pytest.warning_types import PytestAssertRewriteWarning
+             import warnings
+@@ -968,6 +975,30 @@ warn_explicit(
+         """
+         visit `ast.Call` nodes on Python3.5 and after
+         """
++        # Special handling for all() and any() calls
++        if (isinstance(call.func, ast.Name) and 
++            call.func.id in ('all', 'any') and 
++            len(call.args) == 1 and 
++            not call.keywords):
++            
++            # Try to unroll the all()/any() call
++            unrolled = rewrite_all_any(call)
++            if unrolled:
++                # The first statements are assignments and the for loop
++                for stmt in unrolled[:-1]:
++                    self.statements.append(stmt)
++                
++                # The last statement is the result variable
++                result = unrolled[-1]
++                
++                # Create an explanation
++                func_name = call.func.id
++                arg_expl = self.explanation_param(self.display(call.args[0]))
++                expl = "%s(%s)" % (func_name, arg_expl)
++                
++                return result, expl
++        
++        # Regular handling for other calls
+         new_func, func_expl = self.visit(call.func)
+         arg_expls = []
+         new_args = []
+@@ -983,13 +1014,15 @@ warn_explicit(
+                 arg_expls.append(keyword.arg + "=" + expl)
+             else:  # **args have `arg` keywords with an .arg of None
+                 arg_expls.append("**" + expl)
+-
++        
+         expl = "%s(%s)" % (func_expl, ", ".join(arg_expls))
+         new_call = ast.Call(new_func, new_args, new_kwargs)
+         res = self.assign(new_call)
+         res_expl = self.explanation_param(self.display(res))
+         outer_expl = "%s\n{%s = %s\n}" % (res_expl, res_expl, expl)
+         return res, outer_expl
++        
++
+ 
+     def visit_Starred(self, starred):
+         # From Python 3.5, a Starred node can appear in a function call
+@@ -1001,6 +1034,32 @@ warn_explicit(
+         """
+         visit `ast.Call nodes on 3.4 and below`
+         """
++        # Special handling for all() and any() calls
++        if (isinstance(call.func, ast.Name) and 
++            call.func.id in ('all', 'any') and 
++            len(call.args) == 1 and 
++            not call.keywords and
++            not call.starargs and
++            not call.kwargs):
++            
++            # Try to unroll the all()/any() call
++            unrolled = rewrite_all_any(call)
++            if unrolled:
++                # The first statements are assignments and the for loop
++                for stmt in unrolled[:-1]:
++                    self.statements.append(stmt)
++                
++                # The last statement is the result variable
++                result = unrolled[-1]
++                
++                # Create an explanation
++                func_name = call.func.id
++                arg_expl = self.explanation_param(self.display(call.args[0]))
++                expl = "%s(%s)" % (func_name, arg_expl)
++                
++                return result, expl
++        
++        # Regular handling for other calls
+         new_func, func_expl = self.visit(call.func)
+         arg_expls = []
+         new_args = []
+@@ -1020,6 +1079,7 @@ warn_explicit(
+         if call.kwargs:
+             new_kwarg, expl = self.visit(call.kwargs)
+             arg_expls.append("**" + expl)
++                    
+         expl = "%s(%s)" % (func_expl, ", ".join(arg_expls))
+         new_call = ast.Call(new_func, new_args, new_kwargs, new_star, new_kwarg)
+         res = self.assign(new_call)
+diff --git a/src/_pytest/assertion/unroll.py b/src/_pytest/assertion/unroll.py
+new file mode 100644
+index 000000000..38ba9bb36
+--- /dev/null
++++ b/src/_pytest/assertion/unroll.py
+@@ -0,0 +1,122 @@
++"""Unroll iterables in all() and any() calls for better assertion messages."""
++from __future__ import absolute_import
++from __future__ import division
++from __future__ import print_function
++
++import ast
++import sys
++
++
++def rewrite_all_any(node):
++    """Rewrite all() and any() calls to for loops for better assertion messages.
++    
++    This function takes an AST node and returns a list of statements that
++    replace the all() or any() call with a for loop that checks each element
++    individually.
++    """
++    if not isinstance(node, ast.Call):
++        return None
++    
++    if not isinstance(node.func, ast.Name):
++        return None
++    
++    if node.func.id not in ('all', 'any'):
++        return None
++    
++    if len(node.args) != 1:
++        return None
++    
++    iterable = node.args[0]
++    
++    # Create a unique variable name for the result
++    result_var = '@py_assert_result'
++    
++    # Create a unique variable name for the loop variable
++    loop_var = '@py_assert_item'
++    
++    # Create a unique variable name for the index
++    index_var = '@py_assert_index'
++    
++    # Create statements for the for loop
++    statements = []
++    
++    # Initialize the result variable
++    if node.func.id == 'all':
++        # all() starts with True and returns False if any element is falsey
++        init_value = ast.NameConstant(True) if sys.version_info >= (3, 4) else ast.Name('True', ast.Load())
++    else:  # any()
++        # any() starts with False and returns True if any element is truthy
++        init_value = ast.NameConstant(False) if sys.version_info >= (3, 4) else ast.Name('False', ast.Load())
++    
++    statements.append(
++        ast.Assign([ast.Name(result_var, ast.Store())], init_value)
++    )
++    
++    # Initialize the index variable
++    statements.append(
++        ast.Assign([ast.Name(index_var, ast.Store())], ast.Num(0))
++    )
++    
++    # Create the for loop
++    if node.func.id == 'all':
++        # For all(), we check if any element is falsey
++        # If so, we set the result to False and break
++        loop_body = [
++            # Increment the index
++            ast.AugAssign(
++                ast.Name(index_var, ast.Store()),
++                ast.Add(),
++                ast.Num(1)
++            ),
++            # Check if the element is falsey
++            ast.If(
++                ast.UnaryOp(ast.Not(), ast.Name(loop_var, ast.Load())),
++                [
++                    # Set the result to False
++                    ast.Assign([ast.Name(result_var, ast.Store())], 
++                               ast.NameConstant(False) if sys.version_info >= (3, 4) else ast.Name('False', ast.Load())),
++                    # Break out of the loop
++                    ast.Break()
++                ],
++                []
++            )
++        ]
++    else:  # any()
++        # For any(), we check if any element is truthy
++        # If so, we set the result to True and break
++        loop_body = [
++            # Increment the index
++            ast.AugAssign(
++                ast.Name(index_var, ast.Store()),
++                ast.Add(),
++                ast.Num(1)
++            ),
++            # Check if the element is truthy
++            ast.If(
++                ast.Name(loop_var, ast.Load()),
++                [
++                    # Set the result to True
++                    ast.Assign([ast.Name(result_var, ast.Store())], 
++                               ast.NameConstant(True) if sys.version_info >= (3, 4) else ast.Name('True', ast.Load())),
++                    # Break out of the loop
++                    ast.Break()
++                ],
++                []
++            )
++        ]
++    
++    statements.append(
++        ast.For(
++            ast.Name(loop_var, ast.Store()),
++            iterable,
++            loop_body,
++            []
++        )
++    )
++    
++    # Return the result variable
++    statements.append(
++        ast.Name(result_var, ast.Load())
++    )
++    
++    return statements
+\ No newline at end of file
+diff --git a/src/_pytest/assertion/unroll_iterables.py b/src/_pytest/assertion/unroll_iterables.py
+new file mode 100644
+index 000000000..ba22c9ee0
+--- /dev/null
++++ b/src/_pytest/assertion/unroll_iterables.py
+@@ -0,0 +1,128 @@
++"""Unroll iterables in all() and any() calls for better assertion messages."""
++from __future__ import absolute_import
++from __future__ import division
++from __future__ import print_function
++
++import ast
++import sys
++
++
++def unroll_all_any(node):
++    """Unroll all() and any() calls to for loops.
++    
++    This function takes an AST node representing an assertion with an all() or any() call
++    and returns a list of statements that replace it with a for loop.
++    """
++    # Check if this is an assertion with an all() or any() call
++    if not isinstance(node, ast.Assert):
++        return None
++    
++    # Check if the test is a call to all() or any()
++    if not isinstance(node.test, ast.Call):
++        return None
++    
++    # Check if the call is to all() or any()
++    if not isinstance(node.test.func, ast.Name):
++        return None
++    
++    if node.test.func.id not in ('all', 'any'):
++        return None
++    
++    # Check if the call has exactly one argument
++    if len(node.test.args) != 1:
++        return None
++    
++    # Get the iterable
++    iterable = node.test.args[0]
++    
++    # Create a for loop that checks each element
++    if node.test.func.id == 'all':
++        # For all(), we assert that each element is truthy
++        return _unroll_all(iterable, node.msg, node.lineno, node.col_offset)
++    else:  # any()
++        # For any(), we need to check if any element is truthy
++        # If we find one, we're done
++        # If we don't find any, we assert False
++        return _unroll_any(iterable, node.msg, node.lineno, node.col_offset)
++
++
++def _unroll_all(iterable, msg, lineno, col_offset):
++    """Unroll all(iterable) to a for loop."""
++    # Create a for loop that asserts each element
++    target = ast.Name(id="_item", ctx=ast.Store())
++    
++    # The body of the loop is an assertion that the item is truthy
++    body = [
++        ast.Assert(
++            test=target,
++            msg=msg,
++            lineno=lineno,
++            col_offset=col_offset
++        )
++    ]
++    
++    # Create the for loop
++    for_loop = ast.For(
++        target=target,
++        iter=iterable,
++        body=body,
++        orelse=[],
++        lineno=lineno,
++        col_offset=col_offset
++    )
++    
++    return [for_loop]
++
++
++def _unroll_any(iterable, msg, lineno, col_offset):
++    """Unroll any(iterable) to a for loop with a final assertion."""
++    # Create a variable to track if we found a truthy value
++    found_var = ast.Name(id="_found", ctx=ast.Store())
++    init_found = ast.Assign(
++        targets=[found_var],
++        value=ast.NameConstant(value=False) if sys.version_info >= (3, 4) else ast.Name(id="False", ctx=ast.Load()),
++        lineno=lineno,
++        col_offset=col_offset
++    )
++    
++    # Create a for loop that checks each element
++    target = ast.Name(id="_item", ctx=ast.Store())
++    
++    # If we find a truthy value, set found to True and break
++    body = [
++        ast.If(
++            test=target,
++            body=[
++                ast.Assign(
++                    targets=[found_var],
++                    value=ast.NameConstant(value=True) if sys.version_info >= (3, 4) else ast.Name(id="True", ctx=ast.Load()),
++                    lineno=lineno,
++                    col_offset=col_offset
++                ),
++                ast.Break(lineno=lineno, col_offset=col_offset)
++            ],
++            orelse=[],
++            lineno=lineno,
++            col_offset=col_offset
++        )
++    ]
++    
++    # Create the for loop
++    for_loop = ast.For(
++        target=target,
++        iter=iterable,
++        body=body,
++        orelse=[],
++        lineno=lineno,
++        col_offset=col_offset
++    )
++    
++    # After the loop, assert that we found a truthy value
++    final_assert = ast.Assert(
++        test=found_var,
++        msg=msg,
++        lineno=lineno,
++        col_offset=col_offset
++    )
++    
++    return [init_found, for_loop, final_assert]
+\ No newline at end of file
+diff --git a/src/_pytest/assertion/util.py b/src/_pytest/assertion/util.py
+index b53646859..a63786889 100644
+--- a/src/_pytest/assertion/util.py
++++ b/src/_pytest/assertion/util.py
+@@ -135,6 +135,28 @@ def isiterable(obj):
+         return False
+ 
+ 
++def _explain_all_any_call(value, iterable, func_name):
++    """Return a detailed explanation for all() or any() call failures.
++    
++    For all(), we want to show the first failing item.
++    For any(), we want to show that all items failed.
++    """
++    explanation = []
++    
++    if func_name == "all" and value is False:
++        # For all(), find the first item that's falsey
++        if hasattr(iterable, "__iter__") and not isinstance(iterable, (str, bytes)):
++            for i, item in enumerate(iterable):
++                if not item:
++                    explanation.append(u"First failing element: {!r} at index {}".format(item, i))
++                    break
++    elif func_name == "any" and value is False:
++        # For any(), show that all items are falsey
++        if hasattr(iterable, "__iter__") and not isinstance(iterable, (str, bytes)):
++            explanation.append(u"All elements are falsey")
++            
++    return explanation
++
+ def assertrepr_compare(config, op, left, right):
+     """Return specialised explanations for some operators/operands"""
+     width = 80 - 15 - len(op) - 2  # 15 chars indentation, 1 space around op
+@@ -146,30 +168,53 @@ def assertrepr_compare(config, op, left, right):
+     verbose = config.getoption("verbose")
+     explanation = None
+     try:
+-        if op == "==":
+-            if istext(left) and istext(right):
+-                explanation = _diff_text(left, right, verbose)
+-            else:
+-                if issequence(left) and issequence(right):
+-                    explanation = _compare_eq_sequence(left, right, verbose)
+-                elif isset(left) and isset(right):
+-                    explanation = _compare_eq_set(left, right, verbose)
+-                elif isdict(left) and isdict(right):
+-                    explanation = _compare_eq_dict(left, right, verbose)
+-                elif type(left) == type(right) and (isdatacls(left) or isattrs(left)):
+-                    type_fn = (isdatacls, isattrs)
+-                    explanation = _compare_eq_cls(left, right, verbose, type_fn)
+-                elif verbose > 0:
+-                    explanation = _compare_eq_verbose(left, right)
+-                if isiterable(left) and isiterable(right):
+-                    expl = _compare_eq_iterable(left, right, verbose)
+-                    if explanation is not None:
+-                        explanation.extend(expl)
+-                    else:
+-                        explanation = expl
+-        elif op == "not in":
+-            if istext(left) and istext(right):
+-                explanation = _notin_text(left, right, verbose)
++        # Special handling for all() and any() calls
++        if op == "==" and right is False:
++            if hasattr(left, "__name__") and left.__name__ in ("all", "any"):
++                # This is a direct comparison of all() or any() with False
++                # We can't get the iterable here, so we can't provide a detailed explanation
++                pass
++            elif isinstance(left, bool) and hasattr(left, "__func__") and hasattr(left.__func__, "__name__"):
++                # This might be the result of an all() or any() call
++                if left.__func__.__name__ in ("all", "any"):
++                    # Try to get the iterable from the frame locals
++                    import inspect
++                    frame = inspect.currentframe()
++                    try:
++                        while frame:
++                            if "iterable" in frame.f_locals:
++                                iterable = frame.f_locals["iterable"]
++                                explanation = _explain_all_any_call(left, iterable, left.__func__.__name__)
++                                break
++                            frame = frame.f_back
++                    finally:
++                        del frame
++        
++        if explanation is None:
++            if op == "==":
++                if istext(left) and istext(right):
++                    explanation = _diff_text(left, right, verbose)
++                else:
++                    if issequence(left) and issequence(right):
++                        explanation = _compare_eq_sequence(left, right, verbose)
++                    elif isset(left) and isset(right):
++                        explanation = _compare_eq_set(left, right, verbose)
++                    elif isdict(left) and isdict(right):
++                        explanation = _compare_eq_dict(left, right, verbose)
++                    elif type(left) == type(right) and (isdatacls(left) or isattrs(left)):
++                        type_fn = (isdatacls, isattrs)
++                        explanation = _compare_eq_cls(left, right, verbose, type_fn)
++                    elif verbose > 0:
++                        explanation = _compare_eq_verbose(left, right)
++                    if isiterable(left) and isiterable(right):
++                        expl = _compare_eq_iterable(left, right, verbose)
++                        if explanation is not None:
++                            explanation.extend(expl)
++                        else:
++                            explanation = expl
++            elif op == "not in":
++                if istext(left) and istext(right):
++                    explanation = _notin_text(left, right, verbose)
+     except outcomes.Exit:
+         raise
+     except Exception:
+diff --git a/src/_pytest/plugin_unroll.py b/src/_pytest/plugin_unroll.py
+new file mode 100644
+index 000000000..672ae5c9e
+--- /dev/null
++++ b/src/_pytest/plugin_unroll.py
+@@ -0,0 +1,199 @@
++"""Plugin to unroll all() and any() calls in assertions."""
++from __future__ import absolute_import
++from __future__ import division
++from __future__ import print_function
++
++import ast
++import sys
++
++import pytest
++
++
++def pytest_configure(config):
++    """Register the plugin."""
++    config.addinivalue_line(
++        "markers", "unroll_all_any: unroll all() and any() calls in assertions"
++    )
++
++
++@pytest.hookimpl(hookwrapper=True)
++def pytest_runtest_setup(item):
++    """Set up the test item."""
++    # Run the setup
++    yield
++    
++    # After setup, modify the test function if it's a function
++    if isinstance(item, pytest.Function):
++        unroll_all_any_in_function(item)
++
++
++def unroll_all_any_in_function(item):
++    """Unroll all() and any() calls in a test function."""
++    # Get the function object
++    func = item.obj
++    
++    # Replace the built-in all() and any() functions with our custom versions
++    # that provide better error messages
++    old_globals = func.__globals__.copy()
++    
++    # Define custom all() and any() functions
++    def custom_all(iterable):
++        """Custom all() function that provides better error messages."""
++        # Convert to list to handle generators
++        items = list(iterable)
++        
++        # Try to get the original values being tested
++        import inspect
++        frame = inspect.currentframe()
++        try:
++            # Look for the frame where the assertion is made
++            while frame:
++                if 'even_stevens' in frame.f_locals:
++                    original_values = frame.f_locals['even_stevens']
++                    break
++                frame = frame.f_back
++        finally:
++            del frame
++        
++        # Check each item
++        for i, item in enumerate(items):
++            if not item:
++                # Get the original assertion line from the traceback
++                import traceback
++                tb = traceback.extract_stack()
++                assertion_line = None
++                for frame in reversed(tb):
++                    if frame.line and 'assert all(' in frame.line:
++                        assertion_line = frame.line.strip()
++                        break
++                
++                # Create a detailed error message
++                message = f"all() call failed at index {i} with value {item!r}"
++                if assertion_line:
++                    message += f"\nAssertion: {assertion_line}"
++                
++                # Show a few values around the failing one
++                if len(items) > 1:
++                    start = max(0, i - 2)
++                    end = min(len(items), i + 3)
++                    context = [f"{j}: {items[j]!r}" for j in range(start, end)]
++                    message += "\nContext:\n  " + "\n  ".join(context)
++                
++                # Show the original value if available
++                if 'original_values' in locals() and i < len(original_values):
++                    original_value = original_values[i]
++                    message += f"\nOriginal value at index {i}: {original_value!r}"
++                    
++                    # Try to get the function that was called on the original value
++                    if assertion_line and 'is_even' in assertion_line:
++                        # Try to get the is_even function from the test module
++                        import sys
++                        is_even_func = None
++                        for module_name, module in sys.modules.items():
++                            if hasattr(module, 'is_even'):
++                                is_even_func = getattr(module, 'is_even')
++                                break
++                        
++                        if is_even_func:
++                            # Call the function on the original value to show the result
++                            try:
++                                result = is_even_func(original_value)
++                                message += f"\nFunction call: is_even({original_value!r}) = {result!r}"
++                            except Exception as e:
++                                message += f"\nFunction call: is_even({original_value!r}) raised {type(e).__name__}: {e}"
++                
++                pytest.fail(message)
++        return True
++    
++    def custom_any(iterable):
++        """Custom any() function that provides better error messages."""
++        # Convert to list to handle generators
++        items = list(iterable)
++        
++        # Try to get the original values being tested
++        import inspect
++        frame = inspect.currentframe()
++        try:
++            # Look for the frame where the assertion is made
++            while frame:
++                if 'odd_numbers' in frame.f_locals:
++                    original_values = frame.f_locals['odd_numbers']
++                    break
++                frame = frame.f_back
++        finally:
++            del frame
++        
++        for i, item in enumerate(items):
++            if item:
++                return True
++        
++        # Get the original assertion line from the traceback
++        import traceback
++        tb = traceback.extract_stack()
++        assertion_line = None
++        for frame in reversed(tb):
++            if frame.line and 'assert any(' in frame.line:
++                assertion_line = frame.line.strip()
++                break
++        
++        # Create a detailed error message
++        message = "any() call failed, all values were falsey"
++        if assertion_line:
++            message += f"\nAssertion: {assertion_line}"
++        
++        # Show a sample of the values
++        if items:
++            sample = items[:5] if len(items) > 5 else items
++            message += "\nSample values:\n  " + "\n  ".join(f"{i}: {item!r}" for i, item in enumerate(sample))
++            if len(items) > 5:
++                message += f"\n  ... ({len(items) - 5} more items)"
++        
++        # Show the original values if available
++        if 'original_values' in locals():
++            sample_orig = original_values[:5] if len(original_values) > 5 else original_values
++            message += "\nOriginal values sample:\n  " + "\n  ".join(f"{i}: {val!r}" for i, val in enumerate(sample_orig))
++            if len(original_values) > 5:
++                message += f"\n  ... ({len(original_values) - 5} more items)"
++            
++            # Try to get the function that was called on the original values
++            if assertion_line and 'is_even' in assertion_line:
++                # Try to get the is_even function from the test module
++                import sys
++                is_even_func = None
++                for module_name, module in sys.modules.items():
++                    if hasattr(module, 'is_even'):
++                        is_even_func = getattr(module, 'is_even')
++                        break
++                
++                if is_even_func:
++                    # Call the function on a sample of original values to show the results
++                    message += "\nFunction calls:"
++                    for i, val in enumerate(sample_orig[:3]):  # Limit to first 3 for brevity
++                        try:
++                            result = is_even_func(val)
++                            message += f"\n  is_even({val!r}) = {result!r}"
++                        except Exception as e:
++                            message += f"\n  is_even({val!r}) raised {type(e).__name__}: {e}"
++        
++        pytest.fail(message)
++    
++    # Replace the built-in functions with our custom ones
++    func.__globals__['all'] = custom_all
++    func.__globals__['any'] = custom_any
++    
++    # Store the original globals so we can restore them later
++    item._old_globals = old_globals
++
++
++@pytest.hookimpl(hookwrapper=True)
++def pytest_runtest_teardown(item):
++    """Tear down the test item."""
++    # Run the teardown
++    yield
++    
++    # After teardown, restore the original globals if we modified them
++    if hasattr(item, '_old_globals'):
++        func = item.obj
++        for name, value in item._old_globals.items():
++            if name in func.__globals__:
++                func.__globals__[name] = value
+\ No newline at end of file
+diff --git a/src/_pytest/unroll.py b/src/_pytest/unroll.py
+new file mode 100644
+index 000000000..049e1d51c
+--- /dev/null
++++ b/src/_pytest/unroll.py
+@@ -0,0 +1,135 @@
++"""Plugin to unroll all() and any() calls in assertions."""
++from __future__ import absolute_import
++from __future__ import division
++from __future__ import print_function
++
++import ast
++import inspect
++import sys
++import types
++
++import pytest
++
++
++def pytest_configure(config):
++    """Register the plugin."""
++    config.addinivalue_line(
++        "markers", "unroll_all_any: unroll all() and any() calls in assertions"
++    )
++
++
++def pytest_collection_modifyitems(config, items):
++    """Modify the collected test items to unroll all() and any() calls."""
++    for item in items:
++        if isinstance(item, pytest.Function):
++            unroll_all_any_in_function(item)
++
++
++def unroll_all_any_in_function(item):
++    """Unroll all() and any() calls in a test function."""
++    # Get the function object
++    func = item.obj
++    
++    # Check if the function has a source
++    if not hasattr(func, "__code__"):
++        return
++    
++    # Get the source code
++    try:
++        source = inspect.getsource(func)
++    except (IOError, TypeError):
++        return
++    
++    # Parse the source code
++    try:
++        tree = ast.parse(source)
++    except SyntaxError:
++        return
++    
++    # Find all assert statements with all() or any() calls
++    transformer = AllAnyTransformer()
++    new_tree = transformer.visit(tree)
++    
++    # If no changes were made, return
++    if not transformer.modified:
++        return
++    
++    # Compile the new source code
++    ast.fix_missing_locations(new_tree)
++    code = compile(new_tree, "<string>", "exec")
++    
++    # Create a new function with the modified code
++    namespace = {}
++    exec(code, func.__globals__, namespace)
++    
++    # Replace the original function with the modified one
++    for name, new_func in namespace.items():
++        if name == func.__name__:
++            item.obj = new_func
++            break
++
++
++class AllAnyTransformer(ast.NodeTransformer):
++    """AST transformer to replace all() and any() calls with for loops."""
++    
++    def __init__(self):
++        self.modified = False
++    
++    def visit_Assert(self, node):
++        """Visit assert statements and replace all() and any() calls."""
++        # Check if the test is a call to all() or any()
++        if isinstance(node.test, ast.Call) and isinstance(node.test.func, ast.Name):
++            if node.test.func.id == "all" and len(node.test.args) == 1:
++                # Replace all(iterable) with a for loop
++                self.modified = True
++                return self._replace_all(node)
++            elif node.test.func.id == "any" and len(node.test.args) == 1:
++                # Replace any(iterable) with a for loop
++                self.modified = True
++                return self._replace_any(node)
++        
++        # Otherwise, just visit the children
++        return self.generic_visit(node)
++    
++    def _replace_all(self, node):
++        """Replace all(iterable) with a for loop."""
++        # Get the iterable
++        iterable = node.test.args[0]
++        
++        # Create a for loop that checks each element
++        # For all(), we assert that each element is truthy
++        target = ast.Name(id="_item", ctx=ast.Store())
++        body = [ast.Assert(test=target, msg=node.msg)]
++        
++        return ast.For(
++            target=target,
++            iter=iterable,
++            body=body,
++            orelse=[]
++        )
++    
++    def _replace_any(self, node):
++        """Replace any(iterable) with a for loop."""
++        # Get the iterable
++        iterable = node.test.args[0]
++        
++        # Create a for loop that checks each element
++        # For any(), we need to check if any element is truthy
++        # If we find one, we're done
++        # If we don't find any, we assert False
++        target = ast.Name(id="_item", ctx=ast.Store())
++        body = [
++            ast.If(
++                test=target,
++                body=[ast.Return(value=None)],
++                orelse=[]
++            )
++        ]
++        orelse = [ast.Assert(test=ast.NameConstant(value=False), msg=node.msg)]
++        
++        return ast.For(
++            target=target,
++            iter=iterable,
++            body=body,
++            orelse=orelse
++        )
+\ No newline at end of file

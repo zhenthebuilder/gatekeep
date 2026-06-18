@@ -1,0 +1,19 @@
+diff --git a/django/db/migrations/operations/fields.py b/django/db/migrations/operations/fields.py
+index 402dae2829..798d8f7f4f 100644
+--- a/django/db/migrations/operations/fields.py
++++ b/django/db/migrations/operations/fields.py
+@@ -352,6 +352,14 @@ class RenameField(FieldOperation):
+                                 self.new_name if to_field_name == self.old_name else to_field_name
+                                 for to_field_name in to_fields
+                             ])
++                    # Also update to_fields for ForeignKeys from other models that reference this field
++                    elif hasattr(remote_field, 'model') and self._get_model_tuple(remote_field.model, app_label, self.model_name_lower) == model_tuple:
++                        to_fields = getattr(field, 'to_fields', None)
++                        if to_fields:
++                            field.to_fields = tuple([
++                                self.new_name if to_field_name == self.old_name else to_field_name
++                                for to_field_name in to_fields
++                            ])
+         state.reload_model(app_label, self.model_name_lower, delay=delay)
+ 
+     def database_forwards(self, app_label, schema_editor, from_state, to_state):

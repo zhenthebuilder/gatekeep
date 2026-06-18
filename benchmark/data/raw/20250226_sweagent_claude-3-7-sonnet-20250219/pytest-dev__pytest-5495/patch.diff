@@ -1,0 +1,51 @@
+diff --git a/src/_pytest/assertion/util.py b/src/_pytest/assertion/util.py
+index 762e5761d..bd848e49d 100644
+--- a/src/_pytest/assertion/util.py
++++ b/src/_pytest/assertion/util.py
+@@ -257,22 +257,41 @@ def _compare_eq_sequence(left, right, verbose=0):
+     explanation = []
+     len_left = len(left)
+     len_right = len(right)
++    
++    # Special handling for byte strings to make the output more readable
++    is_bytes = isinstance(left, bytes) and isinstance(right, bytes)
++    
+     for i in range(min(len_left, len_right)):
+         if left[i] != right[i]:
+-            explanation += [
+-                "At index {} diff: {!r} != {!r}".format(i, left[i], right[i])
+-            ]
++            if is_bytes:
++                # For byte strings, show the byte representation instead of the ordinal value
++                left_repr = saferepr(bytes([left[i]]) if isinstance(left[i], int) else left[i])
++                right_repr = saferepr(bytes([right[i]]) if isinstance(right[i], int) else right[i])
++                explanation += [
++                    "At index {} diff: {} != {}".format(i, left_repr, right_repr)
++                ]
++            else:
++                explanation += [
++                    "At index {} diff: {!r} != {!r}".format(i, left[i], right[i])
++                ]
+             break
++    
+     len_diff = len_left - len_right
+ 
+     if len_diff:
+         if len_diff > 0:
+             dir_with_more = "Left"
+-            extra = saferepr(left[len_right])
++            extra_item = left[len_right]
+         else:
+             len_diff = 0 - len_diff
+             dir_with_more = "Right"
+-            extra = saferepr(right[len_left])
++            extra_item = right[len_left]
++
++        if is_bytes:
++            # For byte strings, show the repr of the extra byte(s) instead of the ordinal value
++            extra = saferepr(bytes([extra_item]) if isinstance(extra_item, int) else extra_item)
++        else:
++            extra = saferepr(extra_item)
+ 
+         if len_diff == 1:
+             explanation += [

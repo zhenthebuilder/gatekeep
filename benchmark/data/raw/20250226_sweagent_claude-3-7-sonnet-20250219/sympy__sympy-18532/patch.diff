@@ -1,0 +1,15 @@
+diff --git a/sympy/core/basic.py b/sympy/core/basic.py
+index 6866648d4e..131cef77fa 100644
+--- a/sympy/core/basic.py
++++ b/sympy/core/basic.py
+@@ -508,6 +508,10 @@ def atoms(self, *types):
+         result = set()
+         for expr in preorder_traversal(self):
+             if isinstance(expr, types):
++                # If no specific types are given and we're looking for Atoms,
++                # only include objects with no args (true leaf nodes)
++                if types == (Atom,) and expr.args:
++                    continue
+                 result.add(expr)
+         return result
+ 

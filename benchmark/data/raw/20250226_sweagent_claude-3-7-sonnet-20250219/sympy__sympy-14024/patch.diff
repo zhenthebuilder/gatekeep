@@ -1,0 +1,158 @@
+diff --git a/fix_negative_base.py b/fix_negative_base.py
+new file mode 100644
+index 0000000000..4a5f0c528d
+--- /dev/null
++++ b/fix_negative_base.py
+@@ -0,0 +1,50 @@
++from sympy import Symbol, S, simplify, Mul, Pow, sympify
++
++def fix_negative_base_pow(expr):
++    """
++    Fix the issue with (-a)**x * a**(-x) simplification.
++    
++    When a is a concrete number, the simplification to (-1)**x is not valid.
++    This function checks if the expression is of the form (-a)**x * a**(-x)
++    and returns the original expression if a is a concrete number.
++    """
++    expr = sympify(expr)
++    
++    if not expr.is_Mul:
++        return expr
++    
++    # Check if the expression is of the form (-a)**x * a**(-x)
++    args = expr.args
++    for i, arg1 in enumerate(args):
++        if not arg1.is_Pow:
++            continue
++        
++        base1, exp1 = arg1.as_base_exp()
++        
++        for j, arg2 in enumerate(args):
++            if i == j or not arg2.is_Pow:
++                continue
++            
++            base2, exp2 = arg2.as_base_exp()
++            
++            # Check if base1 = -base2 and exp1 = -exp2
++            if (base1 == -base2 and exp1 == -exp2) or (base2 == -base1 and exp2 == -exp1):
++                # If the base is a concrete number, don't simplify
++                if base1.is_number or base2.is_number:
++                    return expr
++    
++    # If we didn't find a problematic pattern, return the simplified expression
++    return simplify(expr)
++
++# Monkey patch the simplify function
++original_simplify = simplify
++
++def patched_simplify(expr, ratio=1.7, measure=None, rational=False):
++    # First check if the expression contains a problematic pattern
++    expr = fix_negative_base_pow(expr)
++    
++    # Then apply the original simplify function
++    return original_simplify(expr, ratio, measure, rational)
++
++# Replace the original simplify function with our patched version
++simplify = patched_simplify
+\ No newline at end of file
+diff --git a/reproduce.py b/reproduce.py
+new file mode 100644
+index 0000000000..309ea29302
+--- /dev/null
++++ b/reproduce.py
+@@ -0,0 +1,29 @@
++from sympy import Symbol, S, simplify
++from sympy.core.numbers import Integer
++
++# Case 1: Using Symbol with assumptions
++a = Symbol('a', integer=True, positive=True)
++e = (-a)**Symbol('x') * a**(-Symbol('x'))
++f = simplify(e)
++print("Case 1: Symbol with assumptions")
++print("Original expression:", e)
++print("Simplified expression:", f)
++t = -S(10)/3
++n1 = e.subs(Symbol('x'), t)
++n2 = f.subs(Symbol('x'), t)
++print("Numerical value of original:", n1.evalf())
++print("Numerical value of simplified:", n2.evalf())
++print()
++
++# Case 2: Using a specific integer
++a = S(2)
++e = (-a)**Symbol('x') * a**(-Symbol('x'))
++f = simplify(e)
++print("Case 2: Using specific integer")
++print("Original expression:", e)
++print("Simplified expression:", f)
++t = -S(10)/3
++n1 = e.subs(Symbol('x'), t)
++n2 = f.subs(Symbol('x'), t)
++print("Numerical value of original:", n1.evalf())
++print("Numerical value of simplified:", n2.evalf())
+\ No newline at end of file
+diff --git a/sympy/simplify/powsimp.py b/sympy/simplify/powsimp.py
+index a7fd30e118..32277563e6 100644
+--- a/sympy/simplify/powsimp.py
++++ b/sympy/simplify/powsimp.py
+@@ -203,7 +203,23 @@ def recurse(arg, **kwargs):
+         _n = S.NegativeOne
+         for i, (b, e) in enumerate(be):
+             if ((-b).is_Symbol or b.is_Add) and -b in c_powers:
+-                if (b.is_positive in (0, 1) or e.is_integer):
++                # For concrete numbers, we need to be more careful
++                # Only combine if b is positive (and not a concrete number) or e is integer
++                # For concrete numbers, we need to check if b is positive
++                if b.is_number and not b.is_Symbol:
++                    # For concrete numbers, don't combine
++                    # This prevents the simplification of (-2)**x * 2**(-x) to (-1)**x
++                    # which is incorrect for non-integer x
++                    pass
++                elif b.is_Symbol and b.is_positive:
++                    # For symbols with positive assumption, use the original logic
++                    c_powers[-b] += c_powers.pop(b)
++                    if _n in c_powers:
++                        c_powers[_n] += e
++                    else:
++                        c_powers[_n] = e
++                elif e.is_integer:
++                    # For integer exponents, the simplification is valid
+                     c_powers[-b] += c_powers.pop(b)
+                     if _n in c_powers:
+                         c_powers[_n] += e
+diff --git a/test_fix.py b/test_fix.py
+new file mode 100644
+index 0000000000..6acee2adfe
+--- /dev/null
++++ b/test_fix.py
+@@ -0,0 +1,29 @@
++from sympy import Symbol, S
++from fix_negative_base import simplify
++
++# Case 1: Using Symbol with assumptions
++a = Symbol('a', integer=True, positive=True)
++e = (-a)**Symbol('x') * a**(-Symbol('x'))
++f = simplify(e)
++print("Case 1: Symbol with assumptions")
++print("Original expression:", e)
++print("Simplified expression:", f)
++t = -S(10)/3
++n1 = e.subs(Symbol('x'), t)
++n2 = f.subs(Symbol('x'), t)
++print("Numerical value of original:", n1.evalf())
++print("Numerical value of simplified:", n2.evalf())
++print()
++
++# Case 2: Using a specific integer
++a = S(2)
++e = (-a)**Symbol('x') * a**(-Symbol('x'))
++f = simplify(e)
++print("Case 2: Using specific integer")
++print("Original expression:", e)
++print("Simplified expression:", f)
++t = -S(10)/3
++n1 = e.subs(Symbol('x'), t)
++n2 = f.subs(Symbol('x'), t)
++print("Numerical value of original:", n1.evalf())
++print("Numerical value of simplified:", n2.evalf())
+\ No newline at end of file

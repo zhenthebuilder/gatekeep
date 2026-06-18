@@ -1,0 +1,28 @@
+diff --git a/sympy/printing/lambdarepr.py b/sympy/printing/lambdarepr.py
+index 8f60434e89..78c3a185aa 100644
+--- a/sympy/printing/lambdarepr.py
++++ b/sympy/printing/lambdarepr.py
+@@ -51,6 +51,9 @@ def _print_ITE(self, expr):
+         ]
+         return ''.join(result)
+ 
++    def _print_Identity(self, expr):
++        return "numpy.identity(%s)" % self._print(expr.args[0])
++
+     def _print_NumberSymbol(self, expr):
+         return str(expr)
+ 
+diff --git a/sympy/printing/pycode.py b/sympy/printing/pycode.py
+index 6ec7bd891c..9439250937 100644
+--- a/sympy/printing/pycode.py
++++ b/sympy/printing/pycode.py
+@@ -598,6 +598,9 @@ def _print_Mod(self, expr):
+ 
+     def _print_re(self, expr):
+         return "%s(%s)" % (self._module_format('numpy.real'), self._print(expr.args[0]))
++        
++    def _print_Identity(self, expr):
++        return "%s(%s)" % (self._module_format('numpy.identity'), self._print(expr.args[0]))
+ 
+     def _print_sinc(self, expr):
+         return "%s(%s)" % (self._module_format('numpy.sinc'), self._print(expr.args[0]/S.Pi))

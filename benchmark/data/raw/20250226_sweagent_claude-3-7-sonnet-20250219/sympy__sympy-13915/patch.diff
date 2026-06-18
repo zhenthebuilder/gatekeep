@@ -1,0 +1,38 @@
+diff --git a/sympy/core/basic.py b/sympy/core/basic.py
+index d4ca323e0d..ead480c849 100644
+--- a/sympy/core/basic.py
++++ b/sympy/core/basic.py
+@@ -1029,6 +1029,33 @@ def fallback(self, old, new):
+         if _aresame(self, old):
+             return new
+ 
++        # Check if the substitution leads to an undefined expression
++        if old.is_Symbol and not new.has(old):
++            # Try the substitution
++            try:
++                from sympy.core.singleton import S
++                from sympy.series.limits import limit
++                from sympy.core.basic import preorder_traversal
++
++                # Check if any subexpression becomes undefined after substitution
++                for subexpr in preorder_traversal(self):
++                    if subexpr.has(old):
++                        try:
++                            subexpr_subs = subexpr._eval_subs(old, new)
++                            if subexpr_subs is None:
++                                # Use fallback
++                                subexpr_subs = fallback(subexpr, old, new)
++                            if (subexpr_subs.has(S.ComplexInfinity) or 
++                                (subexpr_subs.has(S.NaN) and not subexpr.has(S.NaN))):
++                                # Use the limit instead
++                                return limit(self, old, new)
++                        except Exception:
++                            # If there's an error during substitution, continue with normal substitution
++                            pass
++            except ImportError:
++                # If there's an import error, continue with normal substitution
++                pass
++
+         rv = self._eval_subs(old, new)
+         if rv is None:
+             rv = fallback(self, old, new)

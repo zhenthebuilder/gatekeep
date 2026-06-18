@@ -1,0 +1,169 @@
+diff --git a/sklearn/mixture/base.py b/sklearn/mixture/base.py
+index a9f66740f..898d45fdd 100644
+--- a/sklearn/mixture/base.py
++++ b/sklearn/mixture/base.py
+@@ -15,6 +15,7 @@ import numpy as np
+ from .. import cluster
+ from ..base import BaseEstimator
+ from ..base import DensityMixin
++from ..base import ClusterMixin
+ from ..externals import six
+ from ..exceptions import ConvergenceWarning
+ from ..utils import check_array, check_random_state
+@@ -64,7 +65,7 @@ def _check_X(X, n_components=None, n_features=None, ensure_min_samples=1):
+     return X
+ 
+ 
+-class BaseMixture(six.with_metaclass(ABCMeta, DensityMixin, BaseEstimator)):
++class BaseMixture(six.with_metaclass(ABCMeta, DensityMixin, ClusterMixin, BaseEstimator)):
+     """Base class for mixture models.
+ 
+     This abstract class specifies an interface for all mixture classes and
+@@ -84,6 +85,26 @@ class BaseMixture(six.with_metaclass(ABCMeta, DensityMixin, BaseEstimator)):
+         self.warm_start = warm_start
+         self.verbose = verbose
+         self.verbose_interval = verbose_interval
++        
++    @property
++    def n_clusters(self):
++        """Number of clusters in the model.
++        
++        Returns
++        -------
++        n_clusters : int
++            Number of clusters found by the algorithm.
++            
++        Notes
++        -----
++        This is an alias for `n_components` to make mixture models
++        compatible with the clusterer interface.
++        """
++        return self.n_components
++        
++    @n_clusters.setter
++    def n_clusters(self, value):
++        self.n_components = value
+ 
+     def _check_initial_parameters(self, X):
+         """Check values of the basic parameters.
+@@ -239,6 +260,9 @@ class BaseMixture(six.with_metaclass(ABCMeta, DensityMixin, BaseEstimator)):
+ 
+         self._set_parameters(best_params)
+         self.n_iter_ = best_n_iter
++        
++        # Store the labels for the training data (for clusterer interface)
++        self.labels_ = self.predict(X)
+ 
+         return self
+ 
+@@ -339,6 +363,24 @@ class BaseMixture(six.with_metaclass(ABCMeta, DensityMixin, BaseEstimator)):
+         self._check_is_fitted()
+         X = _check_X(X, None, self.means_.shape[1])
+         return self._estimate_weighted_log_prob(X).argmax(axis=1)
++        
++    def fit_predict(self, X, y=None):
++        """Fit the model and predict the cluster for each sample in X.
++        
++        Parameters
++        ----------
++        X : array-like, shape (n_samples, n_features)
++            List of n_features-dimensional data points. Each row
++            corresponds to a single data point.
++        y : ignored
++            Not used, present for API consistency by convention.
++            
++        Returns
++        -------
++        labels : array, shape (n_samples,)
++            Component labels.
++        """
++        return self.fit(X).labels_
+ 
+     def predict_proba(self, X):
+         """Predict posterior probability of each component given the data.
+diff --git a/sklearn/mixture/bayesian_mixture.py b/sklearn/mixture/bayesian_mixture.py
+index aef6828fa..9dc53b377 100644
+--- a/sklearn/mixture/bayesian_mixture.py
++++ b/sklearn/mixture/bayesian_mixture.py
+@@ -76,6 +76,9 @@ class BayesianGaussianMixture(BaseMixture):
+     maximum number of components (called the Stick-breaking representation).
+     The number of components actually used almost always depends on the data.
+ 
++    This class implements the clusterer interface, providing methods
++    like ``fit_predict`` and attributes like ``labels_``.
++
+     .. versionadded:: 0.18
+ 
+     Read more in the :ref:`User Guide <bgmm>`.
+@@ -83,11 +86,16 @@ class BayesianGaussianMixture(BaseMixture):
+     Parameters
+     ----------
+     n_components : int, defaults to 1.
+-        The number of mixture components. Depending on the data and the value
++        The number of mixture components. Also known as ``n_clusters`` for
++        compatibility with the clusterer interface. Depending on the data and the value
+         of the `weight_concentration_prior` the model can decide to not use
+         all the components by setting some component `weights_` to values very
+         close to zero. The number of effective components is therefore smaller
+         than n_components.
++        
++    n_clusters : int, optional (default=None)
++        The number of clusters to form. If provided, this parameter is used instead
++        of ``n_components`` for compatibility with the clusterer interface.
+ 
+     covariance_type : {'full', 'tied', 'diag', 'spherical'}, defaults to 'full'
+         String describing the type of covariance parameters to use.
+@@ -313,7 +321,11 @@ class BayesianGaussianMixture(BaseMixture):
+                  mean_precision_prior=None, mean_prior=None,
+                  degrees_of_freedom_prior=None, covariance_prior=None,
+                  random_state=None, warm_start=False, verbose=0,
+-                 verbose_interval=10):
++                 verbose_interval=10, n_clusters=None):
++        # Handle n_clusters as an alias for n_components for clusterer interface compatibility
++        if n_clusters is not None:
++            n_components = n_clusters
++            
+         super(BayesianGaussianMixture, self).__init__(
+             n_components=n_components, tol=tol, reg_covar=reg_covar,
+             max_iter=max_iter, n_init=n_init, init_params=init_params,
+diff --git a/sklearn/mixture/gaussian_mixture.py b/sklearn/mixture/gaussian_mixture.py
+index d58a9e326..5e6d10674 100644
+--- a/sklearn/mixture/gaussian_mixture.py
++++ b/sklearn/mixture/gaussian_mixture.py
+@@ -439,6 +439,9 @@ class GaussianMixture(BaseMixture):
+     This class allows to estimate the parameters of a Gaussian mixture
+     distribution.
+ 
++    This class implements the clusterer interface, providing methods
++    like ``fit_predict`` and attributes like ``labels_``.
++
+     Read more in the :ref:`User Guide <gmm>`.
+ 
+     .. versionadded:: 0.18
+@@ -446,7 +449,12 @@ class GaussianMixture(BaseMixture):
+     Parameters
+     ----------
+     n_components : int, defaults to 1.
+-        The number of mixture components.
++        The number of mixture components. Also known as ``n_clusters`` for
++        compatibility with the clusterer interface.
++    
++    n_clusters : int, optional (default=None)
++        The number of clusters to form. If provided, this parameter is used instead
++        of ``n_components`` for compatibility with the clusterer interface.
+ 
+     covariance_type : {'full', 'tied', 'diag', 'spherical'},
+             defaults to 'full'.
+@@ -584,7 +592,11 @@ class GaussianMixture(BaseMixture):
+                  reg_covar=1e-6, max_iter=100, n_init=1, init_params='kmeans',
+                  weights_init=None, means_init=None, precisions_init=None,
+                  random_state=None, warm_start=False,
+-                 verbose=0, verbose_interval=10):
++                 verbose=0, verbose_interval=10, n_clusters=None):
++        # Handle n_clusters as an alias for n_components for clusterer interface compatibility
++        if n_clusters is not None:
++            n_components = n_clusters
++            
+         super(GaussianMixture, self).__init__(
+             n_components=n_components, tol=tol, reg_covar=reg_covar,
+             max_iter=max_iter, n_init=n_init, init_params=init_params,

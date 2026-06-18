@@ -1,0 +1,41 @@
+diff --git a/sympy/polys/polyutils.py b/sympy/polys/polyutils.py
+index f51f80098d..19a7d42f90 100644
+--- a/sympy/polys/polyutils.py
++++ b/sympy/polys/polyutils.py
+@@ -266,8 +266,34 @@ def _is_coeff(factor):
+                     else:
+                         base, exp = decompose_power_rat(factor)
+ 
+-                    elements[base] = elements.setdefault(base, 0) + exp
+-                    gens.add(base)
++                    # Skip adding Piecewise expressions to generators when they're
++                    # inside hyperbolic functions or exponentials
++                    from sympy.functions.elementary.piecewise import Piecewise
++                    from sympy.functions.elementary.hyperbolic import HyperbolicFunction
++                    from sympy.functions.elementary.exponential import exp
++                    
++                    # Check if base is a Piecewise
++                    if isinstance(base, Piecewise):
++                        # Check if this Piecewise is inside a hyperbolic function or exp
++                        # in any of the expressions
++                        skip_gen = False
++                        for e in exprs:
++                            for atom in e.atoms(HyperbolicFunction, exp):
++                                if base in atom.atoms(Piecewise):
++                                    skip_gen = True
++                                    break
++                            if skip_gen:
++                                break
++                        
++                        # If it's inside a hyperbolic function, don't add it to generators
++                        # but still keep it in elements for the polynomial representation
++                        elements[base] = elements.setdefault(base, 0) + exp
++                        if not skip_gen:
++                            gens.add(base)
++                    else:
++                        # Normal case - not a Piecewise
++                        elements[base] = elements.setdefault(base, 0) + exp
++                        gens.add(base)
+ 
+             terms.append((coeff, elements))
+ 

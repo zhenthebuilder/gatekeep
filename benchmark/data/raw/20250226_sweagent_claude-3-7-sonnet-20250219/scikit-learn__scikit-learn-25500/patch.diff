@@ -1,0 +1,20 @@
+diff --git a/sklearn/calibration.py b/sklearn/calibration.py
+index 2c4a33616..b6c8beedc 100644
+--- a/sklearn/calibration.py
++++ b/sklearn/calibration.py
+@@ -760,7 +760,14 @@ class _CalibratedClassifier:
+                 # When binary, `predictions` consists only of predictions for
+                 # clf.classes_[1] but `pos_class_indices` = 0
+                 class_idx += 1
+-            proba[:, class_idx] = calibrator.predict(this_pred)
++            prediction = calibrator.predict(this_pred)
++            # Handle case when prediction is a DataFrame (when transform_output="pandas")
++            if hasattr(prediction, "values"):
++                prediction = prediction.values
++            # Ensure prediction is 1D
++            if prediction.ndim > 1 and prediction.shape[1] == 1:
++                prediction = prediction.ravel()
++            proba[:, class_idx] = prediction
+ 
+         # Normalize the probabilities
+         if n_classes == 2:

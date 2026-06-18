@@ -1,0 +1,60 @@
+diff --git a/sklearn/linear_model/logistic.py b/sklearn/linear_model/logistic.py
+index 1999f1dae..828a1bd58 100644
+--- a/sklearn/linear_model/logistic.py
++++ b/sklearn/linear_model/logistic.py
+@@ -2169,19 +2169,47 @@ class LogisticRegressionCV(LogisticRegression, BaseEstimator,
+             else:
+                 # Take the best scores across every fold and the average of
+                 # all coefficients corresponding to the best scores.
+-                best_indices = np.argmax(scores, axis=1)
++                original_best_indices = np.argmax(scores, axis=1)
++                
+                 if self.multi_class == 'ovr':
+-                    w = np.mean([coefs_paths[i, best_indices[i], :]
++                    # For one-vs-rest case
++                    w = np.mean([coefs_paths[i, original_best_indices[i], :]
+                                  for i in range(len(folds))], axis=0)
+                 else:
+-                    w = np.mean([coefs_paths[:, i, best_indices[i], :]
+-                                 for i in range(len(folds))], axis=0)
+-
+-                best_indices_C = best_indices % len(self.Cs_)
++                    # For multinomial case, we need to handle the shape differently
++                    # The shape of scores is (n_classes, n_folds, n_Cs * n_l1_ratios)
++                    # The shape of coefs_paths depends on whether elasticnet is used
++                    
++                    # Get the shape of the last dimension of coefs_paths
++                    n_param_combinations = coefs_paths.shape[2]
++                    
++                    # Make sure indices don't exceed the available indices
++                    adjusted_indices = original_best_indices % n_param_combinations
++                    
++                    if len(coefs_paths.shape) == 4:  # With elasticnet penalty
++                        w = np.mean([coefs_paths[:, i, adjusted_indices[i], :]
++                                    for i in range(len(folds))], axis=0)
++                    else:  # Without elasticnet penalty
++                        w = np.mean([coefs_paths[:, i, adjusted_indices[i]]
++                                    for i in range(len(folds))], axis=0)
++
++                best_indices_C = original_best_indices % len(self.Cs_)
+                 self.C_.append(np.mean(self.Cs_[best_indices_C]))
+ 
+-                best_indices_l1 = best_indices // len(self.Cs_)
+-                self.l1_ratio_.append(np.mean(l1_ratios_[best_indices_l1]))
++                # Handle l1_ratio differently if not using elasticnet
++                if self.penalty == 'elasticnet':
++                    # For elasticnet, we need to handle the l1_ratio
++                    if len(l1_ratios_) > 1:
++                        best_indices_l1 = original_best_indices // len(self.Cs_)
++                        # Make sure indices are within bounds
++                        best_indices_l1 = best_indices_l1 % len(l1_ratios_)
++                        self.l1_ratio_.append(np.mean(l1_ratios_[best_indices_l1]))
++                    else:
++                        # If there's only one l1_ratio, use it
++                        self.l1_ratio_.append(l1_ratios_[0])
++                else:
++                    # If not using elasticnet, l1_ratio is None
++                    self.l1_ratio_.append(None)
+ 
+             if multi_class == 'multinomial':
+                 self.C_ = np.tile(self.C_, n_classes)

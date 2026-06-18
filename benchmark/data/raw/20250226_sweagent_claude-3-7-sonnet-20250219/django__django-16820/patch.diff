@@ -1,0 +1,76 @@
+diff --git a/django/db/migrations/writer.py b/django/db/migrations/writer.py
+index 79b89b269d..def23b54e1 100644
+--- a/django/db/migrations/writer.py
++++ b/django/db/migrations/writer.py
+@@ -135,9 +135,70 @@ class MigrationWriter:
+ 
+         imports = set()
+ 
++        # Convert index_together to indexes in operations
++        from django.db.migrations.operations.models import CreateModel, AlterIndexTogether, AddIndex
++        from django.db.models.indexes import Index
++        
++        processed_operations = []
++        for operation in self.migration.operations:
++            if isinstance(operation, CreateModel):
++                # Check if the model has index_together in options
++                if 'index_together' in operation.options and operation.options['index_together']:
++                    # Get the index_together value
++                    index_together = operation.options['index_together']
++                    
++                    # Create a new options dict without index_together
++                    new_options = operation.options.copy()
++                    del new_options['index_together']
++                    
++                    # Initialize indexes list if it doesn't exist
++                    if 'indexes' not in new_options:
++                        new_options['indexes'] = []
++                    
++                    # Create Index objects for each tuple in index_together
++                    for fields in index_together:
++                        index_name = f"{operation.name.lower()}_{('_'.join(fields))[:30]}_idx"
++                        # Add the index to the indexes list
++                        new_options['indexes'].append(
++                            Index(fields=list(fields), name=index_name)
++                        )
++                    
++                    # Create a new CreateModel operation with the updated options
++                    new_operation = CreateModel(
++                        name=operation.name,
++                        fields=operation.fields,
++                        options=new_options,
++                        bases=operation.bases,
++                        managers=operation.managers
++                    )
++                    
++                    processed_operations.append(new_operation)
++                else:
++                    processed_operations.append(operation)
++            elif isinstance(operation, AlterIndexTogether):
++                # Convert AlterIndexTogether to AddIndex operations
++                model_name = operation.name
++                index_together = operation.index_together
++                
++                if index_together:
++                    # Create AddIndex operations for each tuple in index_together
++                    for fields in index_together:
++                        index_name = f"{model_name.lower()}_{('_'.join(fields))[:30]}_idx"
++                        processed_operations.append(
++                            AddIndex(
++                                model_name=model_name,
++                                index=Index(fields=list(fields), name=index_name)
++                            )
++                        )
++                else:
++                    # If index_together is empty, keep the original operation
++                    processed_operations.append(operation)
++            else:
++                processed_operations.append(operation)
++        
+         # Deconstruct operations
+         operations = []
+-        for operation in self.migration.operations:
++        for operation in processed_operations:
+             operation_string, operation_imports = OperationWriter(operation).serialize()
+             imports.update(operation_imports)
+             operations.append(operation_string)

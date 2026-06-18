@@ -70,18 +70,19 @@ deliverables:
   - id: public-benchmark-ab
     description: >
       An A/B run on a public recognized benchmark with reproducible
-      scoring code and raw logs present in the workspace.
+      scoring code and raw logs present in the workspace, including an
+      independent second-run generalization check.
     severity: required
     checks:
       - kind: file_exists
         path: "benchmark/scripts/*.py"
-        min_count: 2
+        min_count: 4
       - kind: file_exists
         path: "benchmark/results/*.json"
-        min_count: 1
+        min_count: 4
       - kind: file_exists
         path: "benchmark/data/raw/*/*/report.json"
-        min_count: 100
+        min_count: 500
 
   - id: marketing-plan
     description: "A marketing plan exists as markdown."

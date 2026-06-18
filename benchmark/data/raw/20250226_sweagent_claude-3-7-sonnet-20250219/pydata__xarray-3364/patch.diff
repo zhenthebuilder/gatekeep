@@ -1,0 +1,207 @@
+diff --git a/xarray/core/concat.py b/xarray/core/concat.py
+index ecae2566..89152773 100644
+--- a/xarray/core/concat.py
++++ b/xarray/core/concat.py
+@@ -1,3 +1,4 @@
++import numpy as np
+ import pandas as pd
+ 
+ from . import dtypes, utils
+@@ -16,6 +17,7 @@ def concat(
+     positions=None,
+     fill_value=dtypes.NA,
+     join="outer",
++    join_vars="inner",
+ ):
+     """Concatenate xarray objects along a new or existing dimension.
+ 
+@@ -90,6 +92,12 @@ def concat(
+         - 'override': if indexes are of same size, rewrite indexes to be
+           those of the first object with that dimension. Indexes for the same
+           dimension must have the same size in all objects.
++    join_vars : {'inner', 'outer'}, optional
++        String indicating how to handle variables that are not present in all datasets:
++        
++        - 'inner': only include variables that are present in all datasets (default)
++        - 'outer': include all variables from all datasets, filling missing values
++          with `fill_value`
+ 
+     indexers, mode, concat_over : deprecated
+ 
+@@ -128,7 +136,10 @@ def concat(
+             "can only concatenate xarray Dataset and DataArray "
+             "objects, got %s" % type(first_obj)
+         )
+-    return f(objs, dim, data_vars, coords, compat, positions, fill_value, join)
++        
++    if join_vars not in ["inner", "outer"]:
++        raise ValueError(f"join_vars={join_vars!r} invalid: must be 'inner' or 'outer'")
++    return f(objs, dim, data_vars, coords, compat, positions, fill_value, join, join_vars)
+ 
+ 
+ def _calc_concat_dim_coord(dim):
+@@ -155,7 +166,7 @@ def _calc_concat_dim_coord(dim):
+     return dim, coord
+ 
+ 
+-def _calc_concat_over(datasets, dim, dim_names, data_vars, coords, compat):
++def _calc_concat_over(datasets, dim, dim_names, data_vars, coords, compat, join_vars="inner"):
+     """
+     Determine which dataset variables need to be concatenated in the result,
+     """
+@@ -269,15 +280,67 @@ def _dataset_concat(
+     positions,
+     fill_value=dtypes.NA,
+     join="outer",
++    join_vars="inner",
+ ):
+     """
+     Concatenate a sequence of datasets along a new or existing dimension
+     """
+     from .dataset import Dataset
+ 
++    if join_vars not in ["inner", "outer"]:
++        raise ValueError(f"join_vars={join_vars!r} invalid: must be 'inner' or 'outer'")
++    
+     dim, coord = _calc_concat_dim_coord(dim)
++    
+     # Make sure we're working on a copy (we'll be loading variables)
+     datasets = [ds.copy() for ds in datasets]
++    
++    # If using outer join for variables, we need to add missing variables to each dataset
++    if join_vars == "outer":
++        # First, identify all variables and coordinates across all datasets
++        all_vars = set()
++        all_coords = set()
++        for ds in datasets:
++            all_vars.update(ds.data_vars)
++            all_coords.update(ds.coords)
++        
++        # Add missing variables and coordinates to each dataset
++        for ds in datasets:
++            # Add missing data variables
++            for var in all_vars:
++                if var not in ds:
++                    # Find a dataset that has this variable to use as a template
++                    template_ds = next((d for d in datasets if var in d), None)
++                    if template_ds is not None:
++                        # Create a dummy variable with the same dimensions but filled with NaN
++                        dummy = template_ds[var].copy()
++                        dummy.values = np.full_like(dummy.values, np.nan)
++                        
++                        # Adjust dimensions to match the current dataset
++                        for dim_name in dummy.dims:
++                            if dim_name in ds.dims and dim_name != dim:
++                                dummy = dummy.reindex({dim_name: ds[dim_name]})
++                        
++                        ds[var] = dummy
++            
++            # Add missing coordinates (excluding dimension coordinates)
++            for coord_name in all_coords:
++                if coord_name not in ds.coords and coord_name not in ds.dims:
++                    # Find a dataset that has this coordinate to use as a template
++                    template_ds = next((d for d in datasets if coord_name in d.coords), None)
++                    if template_ds is not None:
++                        # Create a dummy coordinate with the same dimensions but filled with NaN
++                        dummy = template_ds[coord_name].copy()
++                        dummy.values = np.full_like(dummy.values, np.nan)
++                        
++                        # Adjust dimensions to match the current dataset
++                        for dim_name in dummy.dims:
++                            if dim_name in ds.dims and dim_name != dim:
++                                dummy = dummy.reindex({dim_name: ds[dim_name]})
++                        
++                        ds.coords[coord_name] = dummy
++    
++    # Align datasets along non-concatenated dimensions
+     datasets = align(
+         *datasets, join=join, copy=False, exclude=[dim], fill_value=fill_value
+     )
+@@ -314,13 +377,26 @@ def _dataset_concat(
+         for ds in datasets:
+             absent_merge_vars = variables_to_merge - set(ds.variables)
+             if absent_merge_vars:
+-                raise ValueError(
+-                    "variables %r are present in some datasets but not others. "
+-                    % absent_merge_vars
+-                )
++                if join_vars == "inner":
++                    raise ValueError(
++                        "variables %r are present in some datasets but not others. "
++                        % absent_merge_vars
++                    )
++                else:
++                    # This shouldn't happen with join_vars="outer" since we've already added missing variables
++                    # But just in case, we'll handle it
++                    for var in absent_merge_vars:
++                        # Find a dataset that has this variable to use as a template
++                        template_ds = next((d for d in datasets if var in d.variables), None)
++                        if template_ds is not None:
++                            # Create a dummy variable with the same dimensions but filled with NaN
++                            dummy_var = template_ds[var].copy()
++                            dummy_var.values = np.full_like(dummy_var.values, np.nan)
++                            ds[var] = dummy_var
+ 
+             for var in variables_to_merge:
+-                to_merge[var].append(ds.variables[var])
++                if var in ds.variables:  # This check is redundant with join_vars="outer"
++                    to_merge[var].append(ds.variables[var])
+ 
+         for var in variables_to_merge:
+             result_vars[var] = unique_variable(
+@@ -361,7 +437,25 @@ def _dataset_concat(
+             try:
+                 vars = ensure_common_dims([ds.variables[k] for ds in datasets])
+             except KeyError:
+-                raise ValueError("%r is not present in all datasets." % k)
++                if join_vars == "inner":
++                    raise ValueError("%r is not present in all datasets." % k)
++                else:
++                    # This shouldn't happen with join_vars="outer" since we've already added missing variables
++                    # But just in case, we'll handle it
++                    vars_list = []
++                    for ds in datasets:
++                        if k in ds.variables:
++                            vars_list.append(ds.variables[k])
++                        else:
++                            # Find a dataset that has this variable to use as a template
++                            template_ds = next((d for d in datasets if k in d.variables), None)
++                            if template_ds is not None:
++                                # Create a dummy variable with the same dimensions but filled with NaN
++                                dummy_var = template_ds[k].copy()
++                                dummy_var.values = np.full_like(dummy_var.values, np.nan)
++                                vars_list.append(dummy_var)
++                    vars = ensure_common_dims(vars_list)
++            
+             combined = concat_vars(vars, dim, positions)
+             assert isinstance(combined, Variable)
+             result_vars[k] = combined
+@@ -369,11 +463,16 @@ def _dataset_concat(
+     result = Dataset(result_vars, attrs=result_attrs)
+     absent_coord_names = coord_names - set(result.variables)
+     if absent_coord_names:
+-        raise ValueError(
+-            "Variables %r are coordinates in some datasets but not others."
+-            % absent_coord_names
+-        )
+-    result = result.set_coords(coord_names)
++        if join_vars == "inner":
++            raise ValueError(
++                "Variables %r are coordinates in some datasets but not others."
++                % absent_coord_names
++            )
++        else:
++            # For join_vars="outer", only set the coordinates that actually exist in the result
++            result = result.set_coords(coord_names & set(result.variables))
++    else:
++        result = result.set_coords(coord_names)
+     result.encoding = result_encoding
+ 
+     result = result.drop(unlabeled_dims, errors="ignore")
+@@ -422,5 +521,6 @@ def _dataarray_concat(
+         positions,
+         fill_value=fill_value,
+         join=join,
++        join_vars=join_vars,
+     )
+     return arrays[0]._from_temp_dataset(ds, name)

@@ -1,0 +1,81 @@
+diff --git a/django/contrib/admin/sites.py b/django/contrib/admin/sites.py
+index 837dabfea8..7fd5515a42 100644
+--- a/django/contrib/admin/sites.py
++++ b/django/contrib/admin/sites.py
+@@ -430,7 +430,7 @@ class AdminSite:
+                     return HttpResponsePermanentRedirect(path)
+         raise Http404
+ 
+-    def _build_app_dict(self, request, label=None):
++    def build_app_dict(self, request, label=None):
+         """
+         Build the app dictionary. The optional `label` parameter filters models
+         of a specific app.
+@@ -466,6 +466,7 @@ class AdminSite:
+                 'perms': perms,
+                 'admin_url': None,
+                 'add_url': None,
++                'model': model,
+             }
+             if perms.get('change') or perms.get('view'):
+                 model_dict['view_only'] = not perms.get('change')
+@@ -503,7 +504,7 @@ class AdminSite:
+         Return a sorted list of all the installed apps that have been
+         registered in this site.
+         """
+-        app_dict = self._build_app_dict(request)
++        app_dict = self.build_app_dict(request)
+ 
+         # Sort the apps alphabetically.
+         app_list = sorted(app_dict.values(), key=lambda x: x['name'].lower())
+@@ -534,7 +535,7 @@ class AdminSite:
+         return TemplateResponse(request, self.index_template or 'admin/index.html', context)
+ 
+     def app_index(self, request, app_label, extra_context=None):
+-        app_dict = self._build_app_dict(request, app_label)
++        app_dict = self.build_app_dict(request, app_label)
+         if not app_dict:
+             raise Http404('The requested admin page does not exist.')
+         # Sort the models alphabetically within each app.
+diff --git a/summary.md b/summary.md
+new file mode 100644
+index 0000000000..26a87ed97f
+--- /dev/null
++++ b/summary.md
+@@ -0,0 +1,35 @@
++# Changes Made to Implement PR Requirements
++
++## Problem Statement
++The PR description indicated that the user needed to manipulate the app_list in a custom admin view, and the easiest way to achieve this was to have access to the model class. Currently, the app_list dictionary only contains serialized model information, not the actual model class.
++
++Additionally, the PR requested to make the `_build_app_dict` method public, as it is used by both the `index` and `app_index` views.
++
++## Changes Implemented
++
++1. **Added model class to app_list context**
++   - Modified the `_build_app_dict` method in `django/contrib/admin/sites.py` to include the model class in the model_dict:
++   ```python
++   model_dict = {
++       'name': capfirst(model._meta.verbose_name_plural),
++       'object_name': model._meta.object_name,
++       'perms': perms,
++       'admin_url': None,
++       'add_url': None,
++       'model': model,  # Added this line
++   }
++   ```
++
++2. **Made _build_app_dict method public**
++   - Renamed the method from `_build_app_dict` to `build_app_dict` (removed the leading underscore)
++   - Updated all references to this method in the `get_app_list` and `app_index` methods
++
++## Benefits
++- Custom admin views can now access the model class directly from the app_list context
++- This makes it easier to manipulate the app_list in custom admin views
++- The build_app_dict method is now properly exposed as a public API, which is appropriate since it's used by multiple views
++
++## Verification
++- Created a verification script to confirm that the changes were implemented correctly
++- Verified that the build_app_dict method is now public
++- Verified that the model_dict includes the model class
+\ No newline at end of file

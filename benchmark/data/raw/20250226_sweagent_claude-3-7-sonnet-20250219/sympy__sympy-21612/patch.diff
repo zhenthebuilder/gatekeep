@@ -1,0 +1,35 @@
+diff --git a/sympy/parsing/latex/_parse_latex_antlr.py b/sympy/parsing/latex/_parse_latex_antlr.py
+index 2e4a45ad20..05f0345190 100644
+--- a/sympy/parsing/latex/_parse_latex_antlr.py
++++ b/sympy/parsing/latex/_parse_latex_antlr.py
+@@ -382,11 +382,27 @@ def convert_frac(frac):
+ 
+     expr_top = convert_expr(frac.upper)
+     expr_bot = convert_expr(frac.lower)
+-    inverse_denom = sympy.Pow(expr_bot, -1, evaluate=False)
++    # Create a proper fraction with correct parentheses
++    # Use sympy.Mul with evaluate=False to preserve the structure
++    # This ensures proper parentheses in nested fractions
+     if expr_top == 1:
+-        return inverse_denom
++        return sympy.Pow(expr_bot, -1, evaluate=False)
+     else:
+-        return sympy.Mul(expr_top, inverse_denom, evaluate=False)
++        # Create a proper fraction that maintains the correct parentheses
++        # We need to wrap the denominator in parentheses to ensure correct precedence
++        # Use a custom approach to create a division that preserves the structure
++        # This is a workaround to ensure proper parentheses in nested fractions
++        # We create a Mul with a Pow with negative exponent, but we make sure
++        # that the denominator is properly parenthesized
++        # Use a different approach to create a division that preserves the structure
++        from sympy.parsing.sympy_parser import parse_expr
++        # Convert the expressions to strings
++        num_str = str(expr_top)
++        den_str = str(expr_bot)
++        # Create a string representation of the division
++        div_str = "(%s)/(%s)" % (num_str, den_str)
++        # Parse the string representation
++        return parse_expr(div_str, evaluate=False)
+ 
+ def convert_binom(binom):
+     expr_n = convert_expr(binom.n)

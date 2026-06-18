@@ -1,0 +1,66 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 7ef51bc847..03a9068877 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -241,7 +241,11 @@ def col_join(self, other):
+         """
+         # A null matrix can always be stacked (see  #10770)
+         if self.rows == 0 and self.cols != other.cols:
+-            return self._new(0, other.cols, []).col_join(other)
++            if self.cols == 0:
++                # Special case for empty matrices: preserve the correct number of rows
++                return self._new(self.rows, other.cols, []).col_join(other)
++            else:
++                return self._new(0, other.cols, []).col_join(other)
+ 
+         if self.cols != other.cols:
+             raise ShapeError(
+@@ -377,6 +381,17 @@ def hstack(cls, *args):
+         if len(args) == 0:
+             return cls._new()
+ 
++        # Check if all matrices have the same number of rows
++        rows = args[0].rows
++        for arg in args[1:]:
++            if arg.rows != rows:
++                raise ShapeError("`self` and `rhs` must have the same number of rows.")
++
++        # For empty matrices (0 rows), we need to sum the columns correctly
++        if rows == 0:
++            total_cols = sum(arg.cols for arg in args)
++            return args[0]._new(0, total_cols, [])
++
+         kls = type(args[0])
+         return reduce(kls.row_join, args)
+ 
+@@ -477,7 +492,11 @@ def row_join(self, other):
+         """
+         # A null matrix can always be stacked (see  #10770)
+         if self.cols == 0 and self.rows != other.rows:
+-            return self._new(other.rows, 0, []).row_join(other)
++            if self.rows == 0:
++                # Special case for empty matrices: preserve the correct number of columns
++                return self._new(other.rows, self.cols, []).row_join(other)
++            else:
++                return self._new(other.rows, 0, []).row_join(other)
+ 
+         if self.rows != other.rows:
+             raise ShapeError(
+@@ -600,6 +619,17 @@ def vstack(cls, *args):
+         if len(args) == 0:
+             return cls._new()
+ 
++        # Check if all matrices have the same number of columns
++        cols = args[0].cols
++        for arg in args[1:]:
++            if arg.cols != cols:
++                raise ShapeError("`self` and `other` must have the same number of columns.")
++
++        # For empty matrices (0 columns), we need to sum the rows correctly
++        if cols == 0:
++            total_rows = sum(arg.rows for arg in args)
++            return args[0]._new(total_rows, 0, [])
++
+         kls = type(args[0])
+         return reduce(kls.col_join, args)
+ 

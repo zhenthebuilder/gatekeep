@@ -1,0 +1,63 @@
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 9ce46e3f73..c2dd5ba7b3 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -257,6 +257,37 @@ class Field(RegisterLookupMixin):
+                 )
+             ]
+ 
++        errors = []
++        
++        # Check if max_length is defined and if any choice value exceeds it
++        if hasattr(self, 'max_length') and self.max_length is not None:
++            choice_values = []
++            
++            # Extract all choice values, handling both flat and grouped choices
++            for choices_group in self.choices:
++                try:
++                    group_name, group_choices = choices_group
++                    # This is a group, so add all values from the group
++                    for choice_value, _ in group_choices:
++                        if isinstance(choice_value, str):
++                            choice_values.append(choice_value)
++                except (TypeError, ValueError):
++                    # This is a flat choice pair
++                    choice_value, _ = choices_group
++                    if isinstance(choice_value, str):
++                        choice_values.append(choice_value)
++            
++            # Check if any choice value exceeds max_length
++            for value in choice_values:
++                if len(value) > self.max_length:
++                    errors.append(
++                        checks.Error(
++                            f"'choices' contains '{value}' which is longer than the max_length of {self.max_length}.",
++                            obj=self,
++                            id='fields.E009',
++                        )
++                    )
++
+         # Expect [group_name, [value, display]]
+         for choices_group in self.choices:
+             try:
+@@ -280,16 +311,17 @@ class Field(RegisterLookupMixin):
+             if isinstance(choices_group, str):
+                 break
+         else:
+-            return []
++            return errors
+ 
+-        return [
++        errors.append(
+             checks.Error(
+                 "'choices' must be an iterable containing "
+                 "(actual value, human readable name) tuples.",
+                 obj=self,
+                 id='fields.E005',
+             )
+-        ]
++        )
++        return errors
+ 
+     def _check_db_index(self):
+         if self.db_index not in (None, True, False):

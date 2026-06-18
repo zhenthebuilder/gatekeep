@@ -1,0 +1,56 @@
+diff --git a/sklearn/model_selection/_split.py b/sklearn/model_selection/_split.py
+index c49a3ce6a..cb293bf6a 100644
+--- a/sklearn/model_selection/_split.py
++++ b/sklearn/model_selection/_split.py
+@@ -1087,6 +1087,9 @@ class _RepeatedSplits(metaclass=ABCMeta):
+         Constructor parameters for cv. Must not contain random_state
+         and shuffle.
+     """
++    
++    def __repr__(self):
++        return _build_repr(self)
+     def __init__(self, cv, n_repeats=10, random_state=None, **cvargs):
+         if not isinstance(n_repeats, numbers.Integral):
+             raise ValueError("Number of repetitions must be of Integral type.")
+@@ -1213,8 +1216,16 @@ class RepeatedKFold(_RepeatedSplits):
+     RepeatedStratifiedKFold: Repeats Stratified K-Fold n times.
+     """
+     def __init__(self, n_splits=5, n_repeats=10, random_state=None):
++        self.n_splits = n_splits
++        self.n_repeats = n_repeats
++        self.random_state = random_state
+         super().__init__(
+             KFold, n_repeats, random_state, n_splits=n_splits)
++            
++    def __repr__(self):
++        return "RepeatedKFold(n_splits=%d, n_repeats=%d, random_state=%s)" % (
++            self.n_splits, self.n_repeats, 
++            repr(self.random_state) if self.random_state is not None else "None")
+ 
+ 
+ class RepeatedStratifiedKFold(_RepeatedSplits):
+@@ -1266,8 +1277,16 @@ class RepeatedStratifiedKFold(_RepeatedSplits):
+     RepeatedKFold: Repeats K-Fold n times.
+     """
+     def __init__(self, n_splits=5, n_repeats=10, random_state=None):
++        self.n_splits = n_splits
++        self.n_repeats = n_repeats
++        self.random_state = random_state
+         super().__init__(
+             StratifiedKFold, n_repeats, random_state, n_splits=n_splits)
++            
++    def __repr__(self):
++        return "RepeatedStratifiedKFold(n_splits=%d, n_repeats=%d, random_state=%s)" % (
++            self.n_splits, self.n_repeats, 
++            repr(self.random_state) if self.random_state is not None else "None")
+ 
+ 
+ class BaseShuffleSplit(metaclass=ABCMeta):
+@@ -2147,6 +2166,7 @@ def _build_repr(self):
+     else:
+         args = sorted([p.name for p in init_signature.parameters.values()
+                        if p.name != 'self' and p.kind != p.VAR_KEYWORD])
++                
+     class_name = self.__class__.__name__
+     params = dict()
+     for key in args:

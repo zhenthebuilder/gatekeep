@@ -1,0 +1,74 @@
+diff --git a/django/db/migrations/serializer.py b/django/db/migrations/serializer.py
+index 7d226955d5..dd5ff3b1e4 100644
+--- a/django/db/migrations/serializer.py
++++ b/django/db/migrations/serializer.py
+@@ -91,12 +91,46 @@ class DeconstructableSerializer(BaseSerializer):
+     @staticmethod
+     def _serialize_path(path):
+         module, name = path.rsplit(".", 1)
++        
++        # Check if the module part contains a class name (for inner classes)
++        if "." in module:
++            module_parts = module.split(".")
++            
++            # Find the first part that looks like a class (starts with uppercase)
++            class_part_index = -1
++            for i, part in enumerate(module_parts):
++                if part and part[0].isupper():
++                    class_part_index = i
++                    break
++            
++            if class_part_index >= 0:
++                # This is likely an inner class
++                # Reconstruct the module without the class parts
++                real_module = ".".join(module_parts[:class_part_index])
++                # Include all class parts in the name
++                class_parts = module_parts[class_part_index:]
++                name = ".".join(class_parts) + "." + name
++                
++                if not real_module:
++                    # Handle the case where there's no module part (e.g., in interactive interpreter)
++                    return name, set()
++                elif real_module == "django.db.models":
++                    imports = {"from django.db import models"}
++                    full_name = "models.%s" % name
++                else:
++                    imports = {"import %s" % real_module}
++                    full_name = real_module + "." + name
++                
++                return full_name, imports
++        
++        # Original implementation for non-inner classes
+         if module == "django.db.models":
+             imports = {"from django.db import models"}
+             name = "models.%s" % name
+         else:
+             imports = {"import %s" % module}
+             name = path
++        
+         return name, imports
+ 
+     def serialize(self):
+@@ -120,8 +154,11 @@ class EnumSerializer(BaseSerializer):
+     def serialize(self):
+         enum_class = self.value.__class__
+         module = enum_class.__module__
++        qualname = enum_class.__qualname__
++        
++        # Handle inner classes by using the full qualified name
+         return (
+-            '%s.%s[%r]' % (module, enum_class.__qualname__, self.value.name),
++            '%s.%s[%r]' % (module, qualname, self.value.name),
+             {'import %s' % module},
+         )
+ 
+@@ -269,7 +306,8 @@ class TypeSerializer(BaseSerializer):
+             if module == builtins.__name__:
+                 return self.value.__name__, set()
+             else:
+-                return "%s.%s" % (module, self.value.__name__), {"import %s" % module}
++                # Use __qualname__ instead of __name__ to handle inner classes
++                return "%s.%s" % (module, self.value.__qualname__), {"import %s" % module}
+ 
+ 
+ class UUIDSerializer(BaseSerializer):

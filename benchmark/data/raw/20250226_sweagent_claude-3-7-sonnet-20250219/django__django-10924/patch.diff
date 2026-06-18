@@ -1,0 +1,31 @@
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 0c64748ccd..00307a7f7b 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -1708,8 +1708,10 @@ class FilePathField(Field):
+         return str(value)
+ 
+     def formfield(self, **kwargs):
++        # If path is callable, evaluate it
++        path = self.path() if callable(self.path) else self.path
+         return super().formfield(**{
+-            'path': self.path,
++            'path': path,
+             'match': self.match,
+             'recursive': self.recursive,
+             'form_class': forms.FilePathField,
+diff --git a/docs/ref/models/fields.txt b/docs/ref/models/fields.txt
+index e352e8b007..c61fcfe6a5 100644
+--- a/docs/ref/models/fields.txt
++++ b/docs/ref/models/fields.txt
+@@ -867,6 +867,10 @@ directory on the filesystem. Has three special arguments, of which the first is
+ 
+     Required. The absolute filesystem path to a directory from which this
+     :class:`FilePathField` should get its choices. Example: ``"/home/images"``.
++    
++    It can also be a callable that returns the path. This is useful when you need
++    the path to depend on runtime information. The callable is evaluated when
++    :class:`FilePathField` is rendered in a form.
+ 
+ .. attribute:: FilePathField.match
+ 

@@ -1,0 +1,30 @@
+diff --git a/django/utils/autoreload.py b/django/utils/autoreload.py
+index 25c3b44250..86d1935e62 100644
+--- a/django/utils/autoreload.py
++++ b/django/utils/autoreload.py
+@@ -139,9 +139,10 @@ def iter_modules_and_files(modules, extra_files):
+         path = Path(filename)
+         try:
+             resolved_path = path.resolve(strict=True).absolute()
+-        except FileNotFoundError:
+-            # The module could have been removed, don't fail loudly if this
+-            # is the case.
++        except (FileNotFoundError, ValueError):
++            # FileNotFoundError: The module could have been removed
++            # ValueError: Can be thrown when there's a null byte in the path
++            # Don't fail loudly in either case.
+             continue
+         results.add(resolved_path)
+     return frozenset(results)
+@@ -359,8 +360,9 @@ class StatReloader(BaseReloader):
+                 continue
+             try:
+                 mtime = file.stat().st_mtime
+-            except OSError:
+-                # This is thrown when the file does not exist.
++            except (OSError, ValueError):
++                # OSError is thrown when the file does not exist.
++                # ValueError can be thrown when there's a null byte in the path.
+                 continue
+             seen_files.add(file)
+             yield file, mtime

@@ -1,0 +1,203 @@
+diff --git a/sklearn/neighbors/nca.py b/sklearn/neighbors/nca.py
+index 1d278b6e1..3b6e6778a 100644
+--- a/sklearn/neighbors/nca.py
++++ b/sklearn/neighbors/nca.py
+@@ -13,6 +13,7 @@ from warnings import warn
+ import numpy as np
+ import sys
+ import time
++import numbers
+ from scipy.optimize import minimize
+ from ..utils.extmath import softmax
+ from ..metrics import pairwise_distances
+@@ -299,7 +300,7 @@ class NeighborhoodComponentsAnalysis(BaseEstimator, TransformerMixin):
+ 
+         # Check the preferred dimensionality of the projected space
+         if self.n_components is not None:
+-            check_scalar(self.n_components, 'n_components', int, 1)
++            check_scalar(self.n_components, 'n_components', numbers.Integral, 1)
+ 
+             if self.n_components > X.shape[1]:
+                 raise ValueError('The preferred dimensionality of the '
+@@ -318,9 +319,9 @@ class NeighborhoodComponentsAnalysis(BaseEstimator, TransformerMixin):
+                                  .format(X.shape[1],
+                                          self.components_.shape[1]))
+ 
+-        check_scalar(self.max_iter, 'max_iter', int, 1)
+-        check_scalar(self.tol, 'tol', float, 0.)
+-        check_scalar(self.verbose, 'verbose', int, 0)
++        check_scalar(self.max_iter, 'max_iter', numbers.Integral, 1)
++        check_scalar(self.tol, 'tol', numbers.Real, 0.)
++        check_scalar(self.verbose, 'verbose', numbers.Integral, 0)
+ 
+         if self.callback is not None:
+             if not callable(self.callback):
+diff --git a/sklearn/utils/validation.py b/sklearn/utils/validation.py
+index 8747844e5..97ef28f2d 100644
+--- a/sklearn/utils/validation.py
++++ b/sklearn/utils/validation.py
+@@ -971,8 +971,12 @@ def check_scalar(x, name, target_type, min_val=None, max_val=None):
+     ValueError
+         If the parameter's value violates the given bounds.
+     """
+-
+-    if not isinstance(x, target_type):
++    # For numeric types, we allow conversion between different numeric types
++    if target_type == int and isinstance(x, numbers.Integral):
++        pass  # Allow any integer type (int, np.int64, etc.)
++    elif target_type == float and isinstance(x, numbers.Real):
++        pass  # Allow any real number type (float, np.float64, etc.)
++    elif not isinstance(x, target_type):
+         raise TypeError('`{}` must be an instance of {}, not {}.'
+                         .format(name, target_type, type(x)))
+ 
+@@ -981,3 +985,149 @@ def check_scalar(x, name, target_type, min_val=None, max_val=None):
+ 
+     if max_val is not None and x > max_val:
+         raise ValueError('`{}`= {}, must be <= {}.'.format(name, x, max_val))
++
++
++class Interval:
++    """Represents a range of values for use in parameter validation.
++    
++    Parameters
++    ----------
++    left : float or int or None, optional (default=None)
++        The left bound of the interval. If None, the interval is unbounded on the left.
++        
++    right : float or int or None, optional (default=None)
++        The right bound of the interval. If None, the interval is unbounded on the right.
++        
++    closed : str, optional (default='left')
++        Indicates whether the interval is closed on the left and/or right.
++        Valid values are 'left', 'right', 'both', or 'neither'.
++    """
++    
++    def __init__(self, left=None, right=None, closed='left'):
++        self.left = left
++        self.right = right
++        
++        if closed not in ['left', 'right', 'both', 'neither']:
++            raise ValueError("'closed' must be one of 'left', 'right', 'both', or 'neither'")
++        self.closed = closed
++    
++    def contains(self, value):
++        """Check if the value is within the interval.
++        
++        Parameters
++        ----------
++        value : float or int
++            The value to check.
++            
++        Returns
++        -------
++        bool
++            True if the value is within the interval, False otherwise.
++        """
++        if self.left is not None:
++            if self.closed in ['left', 'both']:
++                if value < self.left:
++                    return False
++            else:  # 'right', 'neither'
++                if value <= self.left:
++                    return False
++                    
++        if self.right is not None:
++            if self.closed in ['right', 'both']:
++                if value > self.right:
++                    return False
++            else:  # 'left', 'neither'
++                if value >= self.right:
++                    return False
++                    
++        return True
++    
++    def __repr__(self):
++        left_bracket = '[' if self.closed in ['left', 'both'] else '('
++        right_bracket = ']' if self.closed in ['right', 'both'] else ')'
++        left_val = '-∞' if self.left is None else str(self.left)
++        right_val = '∞' if self.right is None else str(self.right)
++        return f"{left_bracket}{left_val}, {right_val}{right_bracket}"
++
++
++def check_param(param, name, valid_options):
++    """Validate parameters against a set of valid options.
++    
++    Parameters
++    ----------
++    param : object
++        The parameter to validate.
++        
++    name : str
++        The name of the parameter to be printed in error messages.
++        
++    valid_options : dict
++        A dictionary mapping types to constraints. The keys are types or type
++        classes (e.g., numbers.Integral, numbers.Real, str), and the values are
++        either None (no constraint), a list of valid values, or an Interval object.
++        
++    Returns
++    -------
++    object
++        The validated parameter.
++        
++    Raises
++    ------
++    TypeError
++        If the parameter's type does not match any of the valid types.
++        
++    ValueError
++        If the parameter's value violates the constraints for its type.
++    """
++    # Special case for bool to avoid treating it as a number
++    if isinstance(param, bool) and bool not in valid_options:
++        valid_types = ', '.join(str(t) for t in valid_options.keys())
++        raise TypeError(
++            f"Invalid type for `{name}`: {type(param)}. "
++            f"Valid types are: {valid_types}."
++        )
++    
++    # Check if the parameter type matches any of the valid types
++    param_type_valid = False
++    for valid_type, constraint in valid_options.items():
++        if isinstance(param, valid_type):
++            # Special case for numbers.Real and numbers.Integral
++            # to avoid treating bool as a number when not explicitly allowed
++            if ((valid_type is numbers.Real or valid_type is numbers.Integral) and 
++                isinstance(param, bool) and bool not in valid_options):
++                continue
++                
++            param_type_valid = True
++            
++            # Check constraints if they exist
++            if constraint is not None:
++                if isinstance(constraint, list):
++                    # Check if the parameter is in the list of valid values
++                    if param not in constraint:
++                        valid_values = ', '.join(repr(v) for v in constraint)
++                        raise ValueError(
++                            f"Invalid value for `{name}`: {param}. "
++                            f"Valid values are: {valid_values}."
++                        )
++                elif isinstance(constraint, Interval):
++                    # Check if the parameter is within the interval
++                    if not constraint.contains(param):
++                        raise ValueError(
++                            f"Invalid value for `{name}`: {param}. "
++                            f"Valid range is {constraint}."
++                        )
++                else:
++                    raise ValueError(
++                        f"Invalid constraint type for `{name}`: {type(constraint)}. "
++                        f"Constraints must be None, a list, or an Interval object."
++                    )
++            break
++    
++    if not param_type_valid:
++        valid_types = ', '.join(str(t) for t in valid_options.keys())
++        raise TypeError(
++            f"Invalid type for `{name}`: {type(param)}. "
++            f"Valid types are: {valid_types}."
++        )
++    
++    return param

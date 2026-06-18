@@ -1,0 +1,91 @@
+diff --git a/sympy/matrices/expressions/blockmatrix.py b/sympy/matrices/expressions/blockmatrix.py
+index b821c42845..bf81bf399d 100644
+--- a/sympy/matrices/expressions/blockmatrix.py
++++ b/sympy/matrices/expressions/blockmatrix.py
+@@ -234,6 +234,15 @@ def transpose(self):
+ 
+     def _entry(self, i, j, **kwargs):
+         # Find row entry
++        from sympy.core.symbol import Symbol
++        from sympy.core.relational import Relational
++        
++        # If i or j is symbolic, we can't determine which block it belongs to
++        if isinstance(i, Symbol) or isinstance(j, Symbol) or isinstance(i, Relational) or isinstance(j, Relational):
++            # Return an expression that preserves the block structure
++            return self._symbolic_entry(i, j)
++            
++        # Handle numeric indices
+         for row_block, numrows in enumerate(self.rowblocksizes):
+             if (i < numrows) != False:
+                 break
+@@ -245,6 +254,70 @@ def _entry(self, i, j, **kwargs):
+             else:
+                 j -= numcols
+         return self.blocks[row_block, col_block][i, j]
++        
++    def _symbolic_entry(self, i, j):
++        # Create a piecewise expression based on the block structure
++        from sympy import Piecewise, And
++        
++        result = None
++        row_offset = 0
++        
++        for row_block, numrows in enumerate(self.rowblocksizes):
++            col_offset = 0
++            for col_block, numcols in enumerate(self.colblocksizes):
++                # Condition: i is in this row block and j is in this column block
++                condition = And(row_offset <= i, i < row_offset + numrows,
++                               col_offset <= j, j < col_offset + numcols)
++                
++                # Adjust indices for the block
++                block_i = i - row_offset
++                block_j = j - col_offset
++                
++                # Create a symbolic entry for this block
++                # We need to handle this carefully to avoid IndexError with symbolic indices
++                try:
++                    # Try to get the entry directly
++                    entry = self.blocks[row_block, col_block][block_i, block_j]
++                except (IndexError, TypeError):
++                    # If that fails, create a symbolic representation
++                    block = self.blocks[row_block, col_block]
++                    entry = MatrixElement(block, block_i, block_j)
++                
++                # Add to piecewise expression
++                if result is None:
++                    result = Piecewise((entry, condition))
++                else:
++                    result = Piecewise((entry, condition), *result.args)
++                
++                col_offset += numcols
++            row_offset += numrows
++            
++        return result
++        
++class MatrixElement(Basic):
++    """Represents a single element of a matrix
++    
++    This is used to handle symbolic indices in matrix expressions
++    """
++    def __new__(cls, matrix, i, j):
++        return Basic.__new__(cls, matrix, i, j)
++        
++    @property
++    def matrix(self):
++        return self.args[0]
++        
++    @property
++    def i(self):
++        return self.args[1]
++        
++    @property
++    def j(self):
++        return self.args[2]
++        
++    def _sympystr(self, printer):
++        return "(%s)[%s, %s]" % (printer._print(self.matrix),
++                                printer._print(self.i),
++                                printer._print(self.j))
+ 
+     @property
+     def is_Identity(self):

@@ -1,0 +1,43 @@
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index c268a56724..01ca6550ab 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -1175,7 +1175,20 @@ def get_backend():
+     --------
+     matplotlib.use
+     """
+-    return rcParams['backend']
++    # Use _get_backend_or_none to avoid triggering backend resolution
++    # which can destroy figures created in rc_context
++    backend = rcParams._get_backend_or_none()
++    if backend is None:
++        # If no backend is set, we need to resolve it
++        # We'll manually resolve it without destroying figures
++        from matplotlib import pyplot as plt
++        # Store the current figures
++        figs = plt._pylab_helpers.Gcf.figs.copy()
++        # Access rcParams['backend'] to trigger backend resolution
++        backend = rcParams['backend']
++        # Restore the figures that might have been cleared
++        plt._pylab_helpers.Gcf.figs.update(figs)
++    return backend
+ 
+ 
+ def interactive(b):
+diff --git a/lib/matplotlib/pyplot.py b/lib/matplotlib/pyplot.py
+index e3c66ea67c..9589c43c66 100644
+--- a/lib/matplotlib/pyplot.py
++++ b/lib/matplotlib/pyplot.py
+@@ -222,7 +222,11 @@ def switch_backend(newbackend):
+     global _backend_mod
+     # make sure the init is pulled up so we can assign to it later
+     import matplotlib.backends
+-    close("all")
++    
++    # Only close figures if we're not resolving the auto backend sentinel
++    # This prevents figures from being closed when get_backend() is called
++    if newbackend is not rcsetup._auto_backend_sentinel:
++        close("all")
+ 
+     if newbackend is rcsetup._auto_backend_sentinel:
+         current_framework = cbook._get_running_interactive_framework()

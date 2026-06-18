@@ -1,0 +1,36 @@
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index 92213a4e67..29c336c256 100644
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -703,6 +703,7 @@ class SQLCompiler:
+         not be) and column name for ordering by the given 'name' parameter.
+         The 'name' is of the form 'field1__field2__...__fieldN'.
+         """
++        original_name = name
+         name, order = get_order_dir(name, default_order)
+         descending = order == 'DESC'
+         pieces = name.split(LOOKUP_SEP)
+@@ -730,6 +731,23 @@ class SQLCompiler:
+                                                        order, already_seen))
+             return results
+         targets, alias, _ = self.query.trim_joins(targets, joins, path)
++        
++        # For inherited models, we need to respect the ordering direction from the parent model
++        # Check if this is a Meta.ordering field from the parent model
++        if self._meta_ordering is not None:
++            # Check if the original field name (with potential minus sign) is in _meta_ordering
++            if original_name in self._meta_ordering:
++                # Use the original direction from Meta.ordering
++                descending = original_name.startswith('-')
++            else:
++                # Check if the field name without direction is in _meta_ordering
++                for item in self._meta_ordering:
++                    item_name, item_order = get_order_dir(item, default_order)
++                    if item_name == name:
++                        # Use the direction from Meta.ordering
++                        descending = item_order == 'DESC'
++                        break
++        
+         return [(OrderBy(transform_function(t, alias), descending=descending), False) for t in targets]
+ 
+     def _setup_joins(self, pieces, opts, alias):

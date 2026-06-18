@@ -1,0 +1,26 @@
+diff --git a/sklearn/utils/validation.py b/sklearn/utils/validation.py
+index fe1f7236e..2da8e294f 100644
+--- a/sklearn/utils/validation.py
++++ b/sklearn/utils/validation.py
+@@ -461,7 +461,20 @@ def check_array(array, accept_sparse=False, accept_large_sparse=True,
+     # store whether originally we wanted numeric dtype
+     dtype_numeric = isinstance(dtype, six.string_types) and dtype == "numeric"
+ 
+-    dtype_orig = getattr(array, "dtype", None)
++    # Check if input is a pandas DataFrame
++    pandas_input = False
++    try:
++        import pandas as pd
++        pandas_input = isinstance(array, pd.DataFrame)
++    except ImportError:
++        pass
++
++    if pandas_input:
++        # Get dtype from DataFrame's values
++        dtype_orig = getattr(array.values, "dtype", None)
++    else:
++        dtype_orig = getattr(array, "dtype", None)
++        
+     if not hasattr(dtype_orig, 'kind'):
+         # not a data type (e.g. a column named dtype in a pandas DataFrame)
+         dtype_orig = None

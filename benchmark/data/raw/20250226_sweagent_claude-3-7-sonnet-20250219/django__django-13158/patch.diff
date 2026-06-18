@@ -1,0 +1,19 @@
+diff --git a/django/db/models/query.py b/django/db/models/query.py
+index 07d6ffd4ca..f7b398ec93 100644
+--- a/django/db/models/query.py
++++ b/django/db/models/query.py
+@@ -920,6 +920,14 @@ class QuerySet:
+         """Return an empty QuerySet."""
+         clone = self._chain()
+         clone.query.set_empty()
++        # If this is a combined query, we need to set all the combined queries to empty as well
++        if hasattr(clone.query, 'combined_queries') and clone.query.combined_queries:
++            empty_queries = []
++            for q in clone.query.combined_queries:
++                empty_q = q.clone()
++                empty_q.set_empty()
++                empty_queries.append(empty_q)
++            clone.query.combined_queries = tuple(empty_queries)
+         return clone
+ 
+     ##################################################################

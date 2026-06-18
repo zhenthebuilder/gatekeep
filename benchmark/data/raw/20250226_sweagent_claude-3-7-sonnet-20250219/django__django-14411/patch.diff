@@ -1,0 +1,16 @@
+diff --git a/django/contrib/auth/forms.py b/django/contrib/auth/forms.py
+index 20d8922799..28dafb1569 100644
+--- a/django/contrib/auth/forms.py
++++ b/django/contrib/auth/forms.py
+@@ -49,6 +49,11 @@ class ReadOnlyPasswordHashWidget(forms.Widget):
+                     summary.append({'label': gettext(key), 'value': value_})
+         context['summary'] = summary
+         return context
++        
++    def id_for_label(self, id_):
++        # This widget doesn't render a real input element, so it shouldn't have a 'for' attribute
++        # pointing to it. Return None to prevent the label from having a 'for' attribute.
++        return None
+ 
+ 
+ class ReadOnlyPasswordHashField(forms.Field):

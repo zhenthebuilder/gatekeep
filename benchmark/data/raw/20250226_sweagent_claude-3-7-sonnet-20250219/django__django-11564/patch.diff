@@ -1,0 +1,65 @@
+diff --git a/django/contrib/staticfiles/storage.py b/django/contrib/staticfiles/storage.py
+index ba3b62620d..2eb8b4e026 100644
+--- a/django/contrib/staticfiles/storage.py
++++ b/django/contrib/staticfiles/storage.py
+@@ -126,6 +126,7 @@ class HashedFilesMixin:
+                     args += (hashed_files,)
+                 hashed_name = hashed_name_func(*args)
+ 
++        # Call the parent url method which should now handle SCRIPT_NAME
+         final_url = super().url(hashed_name)
+ 
+         # Special casing for a @font-face hack, like url(myfont.eot?#iefix")
+diff --git a/django/core/files/storage.py b/django/core/files/storage.py
+index 4c27fce605..d2301a9e56 100644
+--- a/django/core/files/storage.py
++++ b/django/core/files/storage.py
+@@ -332,7 +332,29 @@ class FileSystemStorage(Storage):
+         url = filepath_to_uri(name)
+         if url is not None:
+             url = url.lstrip('/')
+-        return urljoin(self.base_url, url)
++        
++        # Get the base URL
++        base_url = self.base_url
++        
++        # Try to get SCRIPT_NAME from the current thread's request
++        try:
++            from django.http import HttpRequest
++            import threading
++            current_request = getattr(threading.current_thread(), '_request', None)
++            if current_request and isinstance(current_request, HttpRequest):
++                script_name = current_request.META.get('SCRIPT_NAME', '')
++                if script_name:
++                    # Ensure script_name doesn't end with a slash
++                    script_name = script_name.rstrip('/')
++                    # Ensure base_url starts with a slash
++                    if not base_url.startswith('/'):
++                        base_url = '/' + base_url
++                    # Combine them
++                    base_url = script_name + base_url
++        except (ImportError, AttributeError):
++            pass
++        
++        return urljoin(base_url, url)
+ 
+     def _datetime_from_timestamp(self, ts):
+         """
+diff --git a/django/templatetags/static.py b/django/templatetags/static.py
+index 39712aaba0..d7c77bcf7b 100644
+--- a/django/templatetags/static.py
++++ b/django/templatetags/static.py
+@@ -100,7 +100,12 @@ class StaticNode(template.Node):
+ 
+     def url(self, context):
+         path = self.path.resolve(context)
+-        return self.handle_simple(path)
++        
++        # The handle_simple method will now use the FileSystemStorage.url method
++        # which already handles SCRIPT_NAME, so we don't need to add it here
++        url = self.handle_simple(path)
++        
++        return url
+ 
+     def render(self, context):
+         url = self.url(context)

@@ -1,0 +1,28 @@
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index 63ca817355..fc1bb84713 100644
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -112,14 +112,19 @@ class SQLCompiler:
+         ref_sources = {
+             expr.source for expr in expressions if isinstance(expr, Ref)
+         }
+-        for expr, _, _ in select:
++        for expr, _, alias in select:
+             # Skip members of the select clause that are already included
+             # by reference.
+             if expr in ref_sources:
+                 continue
+-            cols = expr.get_group_by_cols()
+-            for col in cols:
+-                expressions.append(col)
++            # If the expression has an alias, use the original expression
++            # in the GROUP BY clause instead of just the column name
++            if alias:
++                expressions.append(expr)
++            else:
++                cols = expr.get_group_by_cols()
++                for col in cols:
++                    expressions.append(col)
+         for expr, (sql, params, is_ref) in order_by:
+             # Skip References to the select clause, as all expressions in the
+             # select clause are already part of the group by.

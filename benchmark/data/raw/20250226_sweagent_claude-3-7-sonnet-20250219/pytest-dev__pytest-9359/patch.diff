@@ -1,0 +1,14 @@
+diff --git a/src/_pytest/_code/source.py b/src/_pytest/_code/source.py
+index 6f54057c0..6772829e4 100644
+--- a/src/_pytest/_code/source.py
++++ b/src/_pytest/_code/source.py
+@@ -207,6 +207,9 @@ def getstatementrange_ast(
+         line = source.lines[end - 1].lstrip()
+         if line.startswith("#") or not line:
+             end -= 1
++        # Check for decorator lines that follow the assertion
++        elif line.startswith("@"):
++            end -= 1
+         else:
+             break
+     return astnode, start, end

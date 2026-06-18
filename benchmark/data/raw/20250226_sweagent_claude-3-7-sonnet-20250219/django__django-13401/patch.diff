@@ -1,0 +1,57 @@
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 28374272f4..22f6885b39 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -516,16 +516,51 @@ class Field(RegisterLookupMixin):
+     def __eq__(self, other):
+         # Needed for @total_ordering
+         if isinstance(other, Field):
++            # Check if both fields have a model attribute
++            has_model_self = hasattr(self, 'model')
++            has_model_other = hasattr(other, 'model')
++            
++            # If both have models, they must be the same for equality
++            if has_model_self and has_model_other:
++                if self.model is not other.model:
++                    return False
++            # If one has a model and the other doesn't, they're not equal
++            elif has_model_self or has_model_other:
++                return False
++                
++            # If we get here, either both have the same model or neither has a model
+             return self.creation_counter == other.creation_counter
+         return NotImplemented
+ 
+     def __lt__(self, other):
+         # This is needed because bisect does not take a comparison function.
+         if isinstance(other, Field):
+-            return self.creation_counter < other.creation_counter
++            # Order by creation_counter first to maintain existing behavior
++            if self.creation_counter != other.creation_counter:
++                return self.creation_counter < other.creation_counter
++                
++            # If creation_counter is the same, check models
++            has_model_self = hasattr(self, 'model')
++            has_model_other = hasattr(other, 'model')
++            
++            # If both have models, compare them
++            if has_model_self and has_model_other:
++                if self.model is not other.model:
++                    return str(self.model) < str(other.model)
++            # If only one has a model, the one without comes first
++            elif has_model_self:
++                return False  # self has model, other doesn't, so self > other
++            elif has_model_other:
++                return True   # self doesn't have model, other does, so self < other
++                
++            # If we get here, they're equal in terms of ordering
++            return False
+         return NotImplemented
+ 
+     def __hash__(self):
++        # Include model in hash if available
++        if hasattr(self, 'model'):
++            return hash((self.creation_counter, id(self.model)))
+         return hash(self.creation_counter)
+ 
+     def __deepcopy__(self, memodict):

@@ -1,0 +1,47 @@
+{
+  "run": "20250226_sweagent_claude-3-7-sonnet-20250219",
+  "note": "Generalization/robustness check on a second, independent real agent submission. Arm A is adapted (non-empty patch present, no exit_status field available for this run) -- see module docstring. Not the paper's headline Table 1; reported separately to avoid conflating two different Arm-A definitions.",
+  "n_instances_total": 300,
+  "n_instances_with_ground_truth": 289,
+  "n_skipped_no_ground_truth": 11,
+  "skipped_no_ground_truth": [
+    "django__django-15388",
+    "matplotlib__matplotlib-22711",
+    "matplotlib__matplotlib-22835",
+    "matplotlib__matplotlib-23562",
+    "matplotlib__matplotlib-23563",
+    "matplotlib__matplotlib-23913",
+    "matplotlib__matplotlib-23964",
+    "matplotlib__matplotlib-23987",
+    "matplotlib__matplotlib-24149",
+    "matplotlib__matplotlib-24334",
+    "matplotlib__matplotlib-25079"
+  ],
+  "arm_a_baseline_metrics": {
+    "tp": 136,
+    "fp": 153,
+    "fn": 0,
+    "tn": 0,
+    "precision": 0.47058823529411764,
+    "recall": 1.0,
+    "f1": 0.6399999999999999,
+    "accuracy": 0.47058823529411764,
+    "n": 289
+  },
+  "arm_b_gatekeep_metrics": {
+    "tp": 136,
+    "fp": 151,
+    "fn": 0,
+    "tn": 2,
+    "precision": 0.4738675958188153,
+    "recall": 1.0,
+    "f1": 0.6430260047281323,
+    "accuracy": 0.47750865051903113,
+    "n": 289
+  },
+  "doomed_deliverables_total": 153,
+  "arm_a_doomed_let_through": 153,
+  "arm_a_doomed_caught": 0,
+  "arm_b_doomed_let_through": 151,
+  "arm_b_doomed_caught": 2
+}

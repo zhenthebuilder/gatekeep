@@ -1,0 +1,78 @@
+diff --git a/sympy/simplify/cse_main.py b/sympy/simplify/cse_main.py
+index d649dd02a9..7551376e38 100644
+--- a/sympy/simplify/cse_main.py
++++ b/sympy/simplify/cse_main.py
+@@ -567,6 +567,7 @@ def tree_cse(exprs, symbols, opt_subs=None, order='canonical', ignore=()):
+         Substitutions containing any Symbol from ``ignore`` will be ignored.
+     """
+     from sympy.matrices.expressions import MatrixExpr, MatrixSymbol, MatMul, MatAdd
++    from sympy.matrices.expressions.matexpr import MatrixElement
+     from sympy.polys.rootoftools import RootOf
+ 
+     if opt_subs is None:
+@@ -585,6 +586,13 @@ def _find_repeated(expr):
+ 
+         if isinstance(expr, RootOf):
+             return
++            
++        # Don't treat MatrixElement objects as candidates for CSE
++        # But still process their arguments to find common subexpressions
++        if isinstance(expr, MatrixElement):
++            for arg in expr.args:
++                _find_repeated(arg)
++            return
+ 
+         if isinstance(expr, Basic) and (expr.is_Atom or expr.is_Order):
+             if expr.is_Symbol:
+diff --git a/sympy/simplify/tests/test_cse.py b/sympy/simplify/tests/test_cse.py
+index eb9cc23131..4a05dde8c6 100644
+--- a/sympy/simplify/tests/test_cse.py
++++ b/sympy/simplify/tests/test_cse.py
+@@ -358,6 +358,47 @@ def test_cse_MatrixExpr():
+ 
+     replacements, reduced_exprs = cse([expr1 + expr2, expr1])
+     assert replacements
++    
++def test_cse_MatrixSymbol_indexing():
++    # Test that MatrixSymbol indexing works correctly with CSE
++    A = MatrixSymbol("A", 2, 2)
++    B = MatrixSymbol("B", 2, 2)
++    
++    # Create an expression with MatrixSymbol indexing
++    expr = A[0, 0] * B[0, 0] + A[0, 1] * B[1, 0]
++    
++    # Apply CSE
++    replacements, reduced_exprs = cse(expr)
++    
++    # Check that the MatrixSymbols are extracted as common subexpressions
++    assert len(replacements) == 2
++    symbols = [sym for sym, expr in replacements]
++    values = [expr for sym, expr in replacements]
++    assert A in values
++    assert B in values
++    
++    # Check that the reduced expression uses the MatrixSymbol indexing correctly
++    A_sym = symbols[values.index(A)]
++    B_sym = symbols[values.index(B)]
++    expected = A_sym[0, 0] * B_sym[0, 0] + A_sym[0, 1] * B_sym[1, 0]
++    assert reduced_exprs[0] == expected
++    
++    # Test with a more complex expression
++    C = MatrixSymbol("C", 3, 3)
++    
++    expr1 = A[0, 0] * B[0, 0] * C[0, 0] + A[0, 1] * B[1, 0] * C[0, 0]
++    expr2 = C[1, 1] * C[1, 2] * C[2, 2]
++    
++    # Apply CSE to multiple expressions
++    replacements, reduced_exprs = cse([expr1, expr2])
++    
++    # Check that the MatrixSymbols are extracted as common subexpressions
++    assert len(replacements) == 3
++    symbols = [sym for sym, expr in replacements]
++    values = [expr for sym, expr in replacements]
++    assert A in values
++    assert B in values
++    assert C in values
+ 
+     replacements, reduced_exprs = cse([A**2, A + A**2])
+     assert replacements

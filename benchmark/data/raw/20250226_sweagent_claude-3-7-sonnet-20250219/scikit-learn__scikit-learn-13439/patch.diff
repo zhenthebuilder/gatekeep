@@ -1,0 +1,26 @@
+diff --git a/sklearn/pipeline.py b/sklearn/pipeline.py
+index 7eaf9a46f..f40d3f8de 100644
+--- a/sklearn/pipeline.py
++++ b/sklearn/pipeline.py
+@@ -218,6 +218,10 @@ class Pipeline(_BaseComposition):
+             # Not an int, try get step by name
+             return self.named_steps[ind]
+         return est
++        
++    def __len__(self):
++        """Returns the length of the Pipeline"""
++        return len(self.steps)
+ 
+     @property
+     def _estimator_type(self):
+@@ -770,6 +774,10 @@ class FeatureUnion(_BaseComposition, TransformerMixin):
+         return ((name, trans, get_weight(name))
+                 for name, trans in self.transformer_list
+                 if trans is not None and trans != 'drop')
++                
++    def __len__(self):
++        """Returns the length of the FeatureUnion"""
++        return len(self.transformer_list)
+ 
+     def get_feature_names(self):
+         """Get feature names from all transformers.

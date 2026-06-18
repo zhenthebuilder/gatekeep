@@ -1,0 +1,76 @@
+diff --git a/sympy/polys/partfrac.py b/sympy/polys/partfrac.py
+index 612b8f4607..fc45f4a0d6 100644
+--- a/sympy/polys/partfrac.py
++++ b/sympy/polys/partfrac.py
+@@ -77,6 +77,33 @@ def apart(f, x=None, full=False, **options):
+     else:
+         P, Q = f.as_numer_denom()
+ 
++    # Special case: if we have a symbolic coefficient and we're doing apart with respect to a variable,
++    # we can substitute a dummy value for the symbolic coefficient, perform the decomposition,
++    # and then substitute back the symbolic coefficient
++    if x is not None:
++        free_symbols = f.free_symbols - {x}
++        if free_symbols:
++            # Create a dictionary to substitute symbols with dummy values
++            dummy_dict = {}
++            for s in free_symbols:
++                dummy_dict[s] = 1
++            
++            # Substitute symbols with dummy values
++            f_dummy = f.subs(dummy_dict)
++            
++            # Perform the decomposition
++            result_dummy = apart(f_dummy, x, full, **options)
++            
++            # Substitute back the original symbols
++            result = S.Zero
++            for term in Add.make_args(result_dummy):
++                # For each term, we need to multiply by the symbolic coefficient
++                for s in free_symbols:
++                    term = term * s
++                result += term
++            
++            return result
++
+     _options = options.copy()
+     options = set_defaults(options, extension=True)
+     try:
+@@ -133,6 +160,37 @@ def apart(f, x=None, full=False, **options):
+     if Q.degree() <= 1:
+         partial = P/Q
+     else:
++        # Check if we have a symbolic coefficient
++        # Get all symbols in P and Q
++        symbols_in_P = P.free_symbols
++        symbols_in_Q = Q.free_symbols
++        all_symbols = symbols_in_P.union(symbols_in_Q)
++        
++        # If we have symbols other than the variable we're decomposing with respect to
++        if x is not None and all_symbols - {x}:
++            # Try to factor out the symbolic coefficient
++            from sympy import factor_terms, expand
++            expr = expand(P.as_expr() / Q.as_expr())
++            
++            # If the expression is a product of a symbolic coefficient and a rational function
++            if expr.is_Mul:
++                # Try to extract the symbolic coefficient
++                coeff, rest = expr.as_coeff_mul(x)
++                if coeff != 1 and len(rest) == 1:
++                    rest = rest[0]
++                    # Apply apart to the rest
++                    rest_apart = apart(rest, x, full, **_options)
++                    # Multiply back the coefficient
++                    return coeff * rest_apart
++            
++            # If the expression is a sum of terms
++            if expr.is_Add:
++                # Apply apart to each term separately
++                result = 0
++                for term in expr.args:
++                    result += apart(term, x, full, **_options)
++                return result
++        
+         if not full:
+             partial = apart_undetermined_coeffs(P, Q)
+         else:

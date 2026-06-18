@@ -1,0 +1,30 @@
+diff --git a/sympy/matrices/common.py b/sympy/matrices/common.py
+index 379a2917aa..bc5021b380 100644
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -1973,6 +1973,12 @@ def __div__(self, other):
+ 
+     @call_highest_priority('__rmatmul__')
+     def __matmul__(self, other):
++        other = _matrixify(other)
++        
++        # Only allow matrix multiplication, not scalar multiplication
++        if not hasattr(other, 'shape') or len(getattr(other, 'shape', ())) != 2:
++            raise ValueError("Scalar operands are not allowed, use '*' instead")
++            
+         return self.__mul__(other)
+ 
+     @call_highest_priority('__rmul__')
+@@ -2068,6 +2074,12 @@ def __radd__(self, other):
+ 
+     @call_highest_priority('__matmul__')
+     def __rmatmul__(self, other):
++        other = _matrixify(other)
++        
++        # Only allow matrix multiplication, not scalar multiplication
++        if not hasattr(other, 'shape') or len(getattr(other, 'shape', ())) != 2:
++            raise ValueError("Scalar operands are not allowed, use '*' instead")
++            
+         return self.__rmul__(other)
+ 
+     @call_highest_priority('__mul__')

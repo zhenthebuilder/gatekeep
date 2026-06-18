@@ -1,0 +1,53 @@
+diff --git a/sympy/printing/latex.py b/sympy/printing/latex.py
+index 737e16cc74..e05e29a3d3 100644
+--- a/sympy/printing/latex.py
++++ b/sympy/printing/latex.py
+@@ -1854,16 +1854,44 @@ def _print_PolynomialRingBase(self, expr):
+ 
+     def _print_Poly(self, poly):
+         cls = poly.__class__.__name__
+-        expr = self._print(poly.as_expr())
++        
++        # Use the same approach as the string printer to maintain term order
++        terms = []
++        for monom, coeff in poly.terms():
++            s_monom = []
++            
++            for i, exp in enumerate(monom):
++                if exp > 0:
++                    base = self._print(poly.gens[i])
++                    if exp == 1:
++                        s_monom.append(base)
++                    else:
++                        s_monom.append("%s^{%d}" % (base, exp))
++            
++            s_monom = " ".join(s_monom)
++            
++            if coeff == 1 and s_monom:
++                terms.append(s_monom)
++            elif coeff == -1 and s_monom:
++                terms.append("-%s" % s_monom)
++            elif not s_monom:
++                # constant term
++                terms.append(self._print(coeff))
++            else:
++                terms.append("%s %s" % (self._print(coeff), s_monom))
++        
++        # Join terms with + signs
++        poly_expr = " + ".join(terms).replace("+ -", "- ").replace(" -  ", " - ")
++        
+         gens = list(map(self._print, poly.gens))
+         domain = "domain=%s" % self._print(poly.get_domain())
+-
+-        args = ", ".join([expr] + gens + [domain])
++        
++        args = ", ".join([poly_expr] + gens + [domain])
+         if cls in accepted_latex_functions:
+             tex = r"\%s {\left (%s \right )}" % (cls, args)
+         else:
+             tex = r"\operatorname{%s}{\left( %s \right)}" % (cls, args)
+-
++        
+         return tex
+ 
+     def _print_ComplexRootOf(self, root):

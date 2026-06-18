@@ -1,0 +1,47 @@
+diff --git a/sklearn/pipeline.py b/sklearn/pipeline.py
+index 94d9465d7..c18eb66c1 100644
+--- a/sklearn/pipeline.py
++++ b/sklearn/pipeline.py
+@@ -1280,7 +1280,21 @@ class FeatureUnion(TransformerMixin, _BaseComposition):
+         config = _get_output_config("transform", self)
+         if config["dense"] == "pandas" and all(hasattr(X, "iloc") for X in Xs):
+             pd = check_pandas_support("transform")
+-            return pd.concat(Xs, axis=1)
++            
++            # Convert any Series to DataFrame before concatenation
++            Xs_converted = []
++            for X in Xs:
++                if isinstance(X, pd.Series):
++                    Xs_converted.append(pd.DataFrame(X))
++                else:
++                    Xs_converted.append(X)
++            
++            # Use axis=1 to concatenate horizontally and ignore_index=False to preserve indices
++            try:
++                return pd.concat(Xs_converted, axis=1)
++            except ValueError:
++                # If indices don't align, try with ignore_index=True
++                return pd.concat(Xs_converted, axis=1, ignore_index=True)
+ 
+         if any(sparse.issparse(f) for f in Xs):
+             Xs = sparse.hstack(Xs).tocsr()
+diff --git a/sklearn/utils/_set_output.py b/sklearn/utils/_set_output.py
+index 335773c6a..cf0083fcf 100644
+--- a/sklearn/utils/_set_output.py
++++ b/sklearn/utils/_set_output.py
+@@ -55,9 +55,14 @@ def _wrap_in_pandas_container(
+     if isinstance(data_to_wrap, pd.DataFrame):
+         if columns is not None:
+             data_to_wrap.columns = columns
+-        if index is not None:
++        # Only set the index if the lengths match to avoid ValueError
++        if index is not None and len(data_to_wrap) == len(index):
+             data_to_wrap.index = index
+         return data_to_wrap
++    
++    # For pandas Series, convert to DataFrame but keep original index
++    if isinstance(data_to_wrap, pd.Series):
++        return pd.DataFrame(data_to_wrap)
+ 
+     return pd.DataFrame(data_to_wrap, index=index, columns=columns)
+ 

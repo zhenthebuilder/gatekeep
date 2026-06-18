@@ -1,0 +1,114 @@
+diff --git a/django/core/management/commands/runserver.py b/django/core/management/commands/runserver.py
+index f501e995e0..a656c3fb97 100644
+--- a/django/core/management/commands/runserver.py
++++ b/django/core/management/commands/runserver.py
+@@ -108,6 +108,13 @@ class Command(BaseCommand):
+         # to be raised in the child process, raise it now.
+         autoreload.raise_last_exception()
+ 
++        # Add manage.py to watched files
++        if args and hasattr(args[0], 'watch_file'):
++            from pathlib import Path
++            manage_py = Path('manage.py')
++            if manage_py.exists():
++                args[0].watch_file(manage_py.absolute())
++
+         threading = options['use_threading']
+         # 'shutdown_message' is a stealth option.
+         shutdown_message = options.get('shutdown_message', '')
+diff --git a/reproduce_issue.py b/reproduce_issue.py
+new file mode 100755
+index 0000000000..ef07bdb455
+--- /dev/null
++++ b/reproduce_issue.py
+@@ -0,0 +1,75 @@
++#!/usr/bin/env python
++import os
++import sys
++import tempfile
++import time
++import subprocess
++import shutil
++
++# Create a temporary directory for our test project
++temp_dir = tempfile.mkdtemp()
++print(f"Creating test project in {temp_dir}")
++
++try:
++    # Create a simple Django project
++    os.chdir(temp_dir)
++    subprocess.run([sys.executable, "-m", "django", "startproject", "test_project"], check=True)
++    
++    # Change to the project directory
++    os.chdir(os.path.join(temp_dir, "test_project"))
++    
++    # Start the Django development server in the background
++    server_process = subprocess.Popen(
++        [sys.executable, "manage.py", "runserver", "--nothreading"],
++        stdout=subprocess.PIPE,
++        stderr=subprocess.PIPE,
++        universal_newlines=True
++    )
++    
++    # Wait for the server to start
++    print("Waiting for server to start...")
++    time.sleep(3)
++    
++    # Modify manage.py to add a print statement
++    with open("manage.py", "r") as f:
++        content = f.read()
++    
++    modified_content = content.replace(
++        "def main():",
++        "def main():\n    print('This is a test modification')"
++    )
++    
++    with open("manage.py", "w") as f:
++        f.write(modified_content)
++    
++    print("Modified manage.py file")
++    
++    # Wait to see if the server reloads
++    print("Waiting to see if server reloads...")
++    time.sleep(5)
++    
++    # Check if the server reloaded by looking at its output
++    try:
++        output, error = server_process.communicate(timeout=1)
++    except subprocess.TimeoutExpired:
++        server_process.terminate()
++        output, error = server_process.communicate()
++    
++    print("\nServer output:")
++    print(output)
++    print("\nServer error:")
++    print(error)
++    
++    # Terminate the server
++    server_process.terminate()
++    
++    # Check if the server reloaded
++    reload_count = output.count("Watching for file changes with StatReloader") + error.count("Watching for file changes with StatReloader")
++    if reload_count > 1:
++        print("\nSERVER RELOADED: The issue is fixed!")
++    else:
++        print("\nSERVER DID NOT RELOAD: The issue still exists.")
++
++finally:
++    # Clean up the temporary directory
++    shutil.rmtree(temp_dir)
+\ No newline at end of file
+diff --git a/test.txt b/test.txt
+new file mode 100644
+index 0000000000..af5626b4a1
+--- /dev/null
++++ b/test.txt
+@@ -0,0 +1 @@
++Hello, world!
+diff --git a/test/test.txt b/test/test.txt
+new file mode 100644
+index 0000000000..af5626b4a1
+--- /dev/null
++++ b/test/test.txt
+@@ -0,0 +1 @@
++Hello, world!

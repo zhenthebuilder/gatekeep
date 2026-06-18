@@ -1,0 +1,2314 @@
+[
+  {
+    "instance_id": "astropy__astropy-12907",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (853 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-14182",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (55849 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-14365",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1005 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-14995",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (732 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-6938",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (516 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-7746",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1499 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-10914",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2440 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-10924",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1343 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11001",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (960 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11019",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (7603 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11039",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (812 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11049",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2434 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11099",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (901 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11133",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (553 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11179",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (676 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11283",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1741 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11422",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3582 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11564",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2668 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11583",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1347 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11620",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1933 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11630",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3496 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11742",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2468 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11797",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1631 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11815",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (905 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11848",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1578 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11905",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (623 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11910",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1261 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11964",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2879 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11999",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (958 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12113",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (33933 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12125",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3152 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12184",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (608 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12284",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (809 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12286",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1084 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12308",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (668 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12453",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1025 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12470",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1871 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12497",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1393 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12589",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1256 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12700",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1009 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12708",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1457 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12747",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (714 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12856",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (705 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12908",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1662 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12915",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1126 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12983",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1037 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13028",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (780 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13033",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1047 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13158",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (859 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13220",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2451 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13230",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (595 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13265",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (8521 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13315",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (964 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13321",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2719 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13401",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2667 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13447",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3583 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13448",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3072 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13551",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1306 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13590",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (967 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13658",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1525 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13660",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1237 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13710",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (910 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13757",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1430 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13768",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (916 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13925",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (627 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13933",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1212 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13964",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (4331 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14016",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1076 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14017",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1839 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14155",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2741 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14238",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1058 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14382",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (837 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14411",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (692 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14534",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (495 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14580",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2067 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14608",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1988 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14667",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (942 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14672",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (512 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14730",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (808 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14752",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1148 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14787",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (844 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14855",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (973 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14915",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (435 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14997",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1789 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14999",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3559 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15061",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (635 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15202",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2242 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15213",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1148 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15252",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2414 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15320",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (552 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15347",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (711 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15400",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (667 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15498",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1174 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15695",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (950 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15738",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (49469 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15781",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3886 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15789",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1090 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15790",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1028 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15814",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (705 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15819",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1563 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15851",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (622 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15902",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (827 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15996",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1731 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16041",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (911 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16046",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (454 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16139",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (841 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16229",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (62370 chars)",
+    "arm_b_shippable": false,
+    "arm_b_reason": "patch-deliverable:no_placeholder_text:4 placeholder marker(s) found"
+  },
+  {
+    "instance_id": "django__django-16255",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (524 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16379",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (866 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16400",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1173 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16408",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (7308 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16527",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (549 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16595",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (566 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16816",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2374 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16820",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3771 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16873",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (592 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16910",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (4819 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-17051",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1041 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-17087",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (735 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-18869",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2614 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23299",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1725 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23314",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (503 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23476",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1616 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-24265",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2610 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-24970",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (998 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25311",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (4754 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25332",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (860 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25433",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1459 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25442",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3928 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25498",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (12101 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-26011",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (679 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-26020",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2379 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "mwaskom__seaborn-2848",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (898 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "mwaskom__seaborn-3010",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1797 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "mwaskom__seaborn-3190",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1622 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "mwaskom__seaborn-3407",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2527 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pallets__flask-4045",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (506 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pallets__flask-4992",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1725 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pallets__flask-5063",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1927 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-1963",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1274 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-2148",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1759 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-2317",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (620 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-2674",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2368 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-3362",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1042 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-863",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (822 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-3364",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (9555 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-4094",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2583 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-4248",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2699 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-4493",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1029 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-5131",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1572 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-5859",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1747 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-6506",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1622 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-7080",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1244 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-7114",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1189 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-7228",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3001 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-7993",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1469 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-11143",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (630 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-11148",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (4647 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5103",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (31972 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5221",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2240 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5227",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (514 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5413",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (789 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5495",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2044 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5692",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1394 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-6116",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (367 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7168",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2082 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7220",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (4142 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7373",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1428 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7432",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1399 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7490",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1000 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-8365",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (964 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-8906",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2528 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-9359",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (522 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-10297",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1573 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-10508",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (660 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-10949",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1000 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-11040",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2781 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-11281",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (7315 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-12471",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3704 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13142",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1255 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13241",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1123 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13439",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (942 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13496",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1982 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13497",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (641 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13584",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1625 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13779",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (636 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-14087",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3415 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-14092",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (8260 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-14894",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1243 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-14983",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2365 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-15512",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3657 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-15535",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1273 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-25500",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (953 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-25570",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2950 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-25638",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3851 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-25747",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2046 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-10325",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3369 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-10451",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (5083 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-11445",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (16769 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-7686",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (56902 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-7738",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (691 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-7975",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3192 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8273",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (970 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8282",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (9757 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8435",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (46710 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8474",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (911 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8506",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (513 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8595",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (870 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8627",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (30625977 chars)",
+    "arm_b_shippable": false,
+    "arm_b_reason": "patch-deliverable:no_placeholder_text:604 placeholder marker(s) found"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8713",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (876 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8721",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (628 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8801",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1371 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-11400",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (754 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-11870",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (25346 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-11897",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (10067 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12171",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (856 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12236",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3125 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12419",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (4311 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12454",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (449 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12481",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1140 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13031",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2642 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13043",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1875 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13146",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (63806 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13177",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (544 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13437",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (561 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13471",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1318 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13480",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (592 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13647",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (531 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13773",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1164 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13895",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1250 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13915",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1773 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13971",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (521 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14024",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (5668 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14308",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (4388 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14317",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1921 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14396",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2183 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14774",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (588 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14817",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (556 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15011",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (869 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15308",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (741 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15345",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1248 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15346",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1165 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15609",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2366 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15678",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1751 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16106",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2811 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16281",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1250 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16503",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1221 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16792",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2313 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16988",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (5483 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-17022",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1053 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-17139",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (459 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-17630",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (5900 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-17655",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1434 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18057",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1569 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18087",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (4408 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18189",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1030 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18199",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1381 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18532",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (592 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18621",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (715 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18698",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (6050 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18835",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1167 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-19007",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3584 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-19254",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1264 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-19487",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (632 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20049",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (5237 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20154",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1775 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20212",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (475 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20322",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (31438 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20442",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1954 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20590",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (458 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20639",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (738 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21055",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (707 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21171",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (731 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21379",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2101 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21612",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1782 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21614",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (829 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21627",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (738 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21847",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1051 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-22005",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (489 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-22714",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (703 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-22840",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (2991 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-23117",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (3218 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-23191",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (7778 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-23262",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (699 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24066",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1696 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24102",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (877 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24152",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (929 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24213",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1045 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24909",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "non-empty patch.diff present (1911 chars)",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  }
+]

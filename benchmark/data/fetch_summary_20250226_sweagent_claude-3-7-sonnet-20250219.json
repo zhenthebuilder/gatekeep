@@ -1,0 +1,30 @@
+{
+  "run": "20250226_sweagent_claude-3-7-sonnet-20250219",
+  "fetched": 300,
+  "missing_report": [
+    "django__django-15388",
+    "matplotlib__matplotlib-22711",
+    "matplotlib__matplotlib-22835",
+    "matplotlib__matplotlib-23562",
+    "matplotlib__matplotlib-23913",
+    "matplotlib__matplotlib-25079",
+    "matplotlib__matplotlib-23563",
+    "matplotlib__matplotlib-24334",
+    "matplotlib__matplotlib-23964",
+    "matplotlib__matplotlib-24149",
+    "matplotlib__matplotlib-23987"
+  ],
+  "missing_patch": [
+    "django__django-15388",
+    "matplotlib__matplotlib-22711",
+    "matplotlib__matplotlib-22835",
+    "matplotlib__matplotlib-23562",
+    "matplotlib__matplotlib-23913",
+    "matplotlib__matplotlib-25079",
+    "matplotlib__matplotlib-23563",
+    "matplotlib__matplotlib-24334",
+    "matplotlib__matplotlib-23964",
+    "matplotlib__matplotlib-24149",
+    "matplotlib__matplotlib-23987"
+  ]
+}

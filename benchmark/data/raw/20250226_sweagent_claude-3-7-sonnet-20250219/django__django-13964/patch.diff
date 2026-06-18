@@ -1,0 +1,82 @@
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 0f53d9c30b..04b6e34805 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -93,6 +93,19 @@ class Field(RegisterLookupMixin):
+     # These track each time a Field instance is created. Used to retain order.
+     # The auto_creation_counter is used for fields that Django implicitly
+     # creates, creation_counter is used for all user-specified fields.
++    
++    @property
++    def is_numeric(self):
++        """
++        Returns True if this field is of a numeric type (e.g., IntegerField, FloatField).
++        Used to determine whether primary key changes need special handling.
++        """
++        return self.get_internal_type() in {
++            'AutoField', 'BigAutoField', 'BigIntegerField', 'DecimalField',
++            'FloatField', 'IntegerField', 'PositiveBigIntegerField',
++            'PositiveIntegerField', 'PositiveSmallIntegerField',
++            'SmallAutoField', 'SmallIntegerField',
++        }
+     creation_counter = 0
+     auto_creation_counter = -1
+     default_validators = []  # Default set of validators
+diff --git a/django/db/models/fields/related_descriptors.py b/django/db/models/fields/related_descriptors.py
+index 872a4c98dc..a2c52c17a6 100644
+--- a/django/db/models/fields/related_descriptors.py
++++ b/django/db/models/fields/related_descriptors.py
+@@ -253,9 +253,50 @@ class ForwardManyToOneDescriptor:
+ 
+         # Set the values of the related field.
+         else:
+-            for lh_field, rh_field in self.field.related_fields:
+-                setattr(instance, lh_field.attname, getattr(value, rh_field.attname))
+-
++            # Create a function that will update the related field's value on the instance.
++            def update_foreign_key():
++                for lh_field, rh_field in self.field.related_fields:
++                    setattr(instance, lh_field.attname, getattr(value, rh_field.attname))
++            
++            # Set the initial value
++            update_foreign_key()
++            
++            # For non-numeric primary keys, we need to track changes to the PK
++            # and update the foreign key accordingly
++            if not value._meta.pk.is_numeric:
++                # Store the original primary key value
++                orig_pk = getattr(value, value._meta.pk.attname)
++                
++                # Define a descriptor to track changes to the primary key
++                if not hasattr(value.__class__, '_pk_tracker'):
++                    orig_setattr = value.__class__.__setattr__
++                    
++                    def _pk_tracking_setattr(self, name, val):
++                        # Call the original __setattr__
++                        orig_setattr(self, name, val)
++                        
++                        # If this is the primary key attribute and it's being changed
++                        # and there are objects pointing to this one, update them
++                        if name == self._meta.pk.attname and getattr(self, name) != orig_pk:
++                            # Find all instances that have this object as a foreign key
++                            # and update their foreign key value
++                            for obj in getattr(self, '_related_objects', []):
++                                if hasattr(obj, '_foreign_key_update_callback'):
++                                    obj._foreign_key_update_callback()
++                    
++                    value.__class__._pk_tracker = True
++                    value.__class__.__setattr__ = _pk_tracking_setattr
++                
++                # Store a reference to this instance on the related object
++                if not hasattr(value, '_related_objects'):
++                    value._related_objects = []
++                
++                if instance not in value._related_objects:
++                    value._related_objects.append(instance)
++                
++                # Store the update callback on the instance
++                instance._foreign_key_update_callback = update_foreign_key
++        
+         # Set the related instance cache used by __get__ to avoid an SQL query
+         # when accessing the attribute we just set.
+         self.field.set_cached_value(instance, value)

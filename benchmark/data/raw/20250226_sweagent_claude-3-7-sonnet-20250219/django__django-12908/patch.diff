@@ -1,0 +1,32 @@
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index 09a9d73077..45dacbaacc 100644
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -479,6 +479,27 @@ class SQLCompiler:
+         params = []
+         for part in args_parts:
+             params.extend(part)
++            
++        # If distinct is specified, handle it appropriately
++        if self.query.distinct:
++            if self.query.distinct_fields:
++                distinct_fields, distinct_params = self.get_distinct()
++                if distinct_fields:
++                    # Raise an error if distinct fields are specified for a union query
++                    # This is because the distinct operation on a union query with distinct fields
++                    # would require wrapping the union query in a subquery and applying the distinct
++                    # operation to it, which is not currently supported
++                    raise NotSupportedError(
++                        "DISTINCT ON fields is not supported with union queries. "
++                        "Use .distinct() without arguments instead."
++                    )
++            # For distinct without fields, the UNION operation already removes duplicates
++            # unless UNION ALL is used
++            elif all and combinator == 'union':
++                # For UNION ALL, we need to wrap the query in a subquery and apply DISTINCT
++                sql = 'SELECT DISTINCT * FROM ({})'.format(result[0])
++                result = [sql]
++                
+         return result, params
+ 
+     def as_sql(self, with_limits=True, with_col_aliases=False):

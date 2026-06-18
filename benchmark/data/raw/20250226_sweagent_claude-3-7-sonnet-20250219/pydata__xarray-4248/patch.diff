@@ -1,0 +1,68 @@
+diff --git a/xarray/core/formatting.py b/xarray/core/formatting.py
+index 28eaae5f..db09d804 100644
+--- a/xarray/core/formatting.py
++++ b/xarray/core/formatting.py
+@@ -278,7 +278,13 @@ def summarize_variable(
+             raise TypeError(f"`max_width` value of `{max_width}` is not a valid int")
+         else:
+             max_width = max_width_options
+-    first_col = pretty_print(f"  {marker} {name} ", col_width)
++    
++    # Check if the variable has a units attribute
++    units_str = ""
++    if hasattr(var, 'attrs') and 'units' in var.attrs and var.attrs['units']:
++        units_str = f", in {var.attrs['units']}"
++    
++    first_col = pretty_print(f"  {marker} {name}{units_str} ", col_width)
+     if var.dims:
+         dims_str = "({}) ".format(", ".join(map(str, var.dims)))
+     else:
+@@ -357,8 +363,18 @@ def _get_col_items(mapping):
+ 
+ 
+ def _calculate_col_width(col_items):
++    # Calculate the maximum length of variable names
+     max_name_length = max(len(str(s)) for s in col_items) if col_items else 0
+-    col_width = max(max_name_length, 7) + 6
++    
++    # Add extra space for units if present
++    extra_width = 0
++    for item in col_items:
++        if hasattr(item, 'variable') and hasattr(item.variable, 'attrs') and 'units' in item.variable.attrs:
++            # Add length of ", in units_value"
++            units_len = len(", in ") + len(str(item.variable.attrs['units']))
++            extra_width = max(extra_width, units_len)
++    
++    col_width = max(max_name_length, 7) + 6 + extra_width
+     return col_width
+ 
+ 
+@@ -495,8 +511,26 @@ def array_repr(arr):
+ def dataset_repr(ds):
+     summary = ["<xarray.{}>".format(type(ds).__name__)]
+ 
+-    col_width = _calculate_col_width(_get_col_items(ds.variables))
+-
++    # Calculate the maximum length needed for variable names with units
++    max_name_length = 0
++    
++    # Check coordinates
++    for name, var in ds.coords.items():
++        name_length = len(str(name))
++        if hasattr(var, 'attrs') and 'units' in var.attrs and var.attrs['units']:
++            name_length += len(", in ") + len(str(var.attrs['units']))
++        max_name_length = max(max_name_length, name_length)
++    
++    # Check data variables
++    for name, var in ds.data_vars.items():
++        name_length = len(str(name))
++        if hasattr(var, 'attrs') and 'units' in var.attrs and var.attrs['units']:
++            name_length += len(", in ") + len(str(var.attrs['units']))
++        max_name_length = max(max_name_length, name_length)
++    
++    # Add some padding
++    col_width = max_name_length + 6
++    
+     dims_start = pretty_print("Dimensions:", col_width)
+     summary.append("{}({})".format(dims_start, dim_summary(ds)))
+ 

@@ -1,0 +1,62 @@
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35cf7..df8eec6cf1 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -102,7 +102,7 @@ import tempfile
+ import warnings
+ 
+ import numpy
+-from packaging.version import parse as parse_version
++from packaging.version import parse as parse_version, Version
+ 
+ # cbook must import matplotlib only within function
+ # definitions, so it is safe to import from it here.
+@@ -148,6 +148,48 @@ def __getattr__(name):
+         else:  # Get the version from the _version.py setuptools_scm file.
+             __version__ = _version.version
+         return __version__
++    elif name == "version_info":
++        # Return a tuple of version components
++        # Get the version string first to ensure consistency
++        version_str = __getattr__("__version__")
++        # If we can use the existing tuple from _version, do so
++        if version_str == _version.__version__:
++            return _version.__version_tuple__
++        # Otherwise parse the version string
++        # This handles the case where the version was determined from git
++        components = []
++        # Split on dots for major.minor.patch
++        parts = version_str.split('.')
++        # Add the first three components as integers if possible
++        for i in range(min(3, len(parts))):
++            try:
++                components.append(int(parts[i]))
++            except ValueError:
++                # If we can't convert to int, just add the string
++                components.append(parts[i])
++        
++        # Add any remaining parts as strings
++        if len(parts) > 3:
++            # Join the rest with dots and split on special characters
++            rest = '.'.join(parts[3:])
++            # Split on + or - to separate pre/post/dev/local parts
++            for separator in ('+', '-', '.post', '.dev'):
++                if separator in rest:
++                    pre, post = rest.split(separator, 1)
++                    if pre:
++                        components.append(pre)
++                    if post:
++                        components.append(post)
++                    break
++            else:
++                # No special characters found
++                if rest:
++                    components.append(rest)
++                    
++        return tuple(components)
++    elif name == "LooseVersion":
++        # Return a Version instance that can be compared with other versions
++        return parse_version(__getattr__("__version__"))
+     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+ 
+ 

@@ -1,0 +1,71 @@
+diff --git a/lib/matplotlib/style/core.py b/lib/matplotlib/style/core.py
+index fb0a5426e6..c4b0d16928 100644
+--- a/lib/matplotlib/style/core.py
++++ b/lib/matplotlib/style/core.py
+@@ -259,3 +259,66 @@ def reload_library():
+ 
+ 
+ reload_library()
++
++
++# Add backward compatibility for direct access to seaborn styles
++class _StyleLibrary(dict):
++    """Dictionary-like object that provides backward compatibility for seaborn styles."""
++    
++    _SEABORN_STYLES = [
++        "seaborn",
++        "seaborn-bright",
++        "seaborn-colorblind",
++        "seaborn-dark",
++        "seaborn-darkgrid",
++        "seaborn-dark-palette",
++        "seaborn-deep",
++        "seaborn-muted",
++        "seaborn-notebook",
++        "seaborn-paper",
++        "seaborn-pastel",
++        "seaborn-poster",
++        "seaborn-talk",
++        "seaborn-ticks",
++        "seaborn-white",
++        "seaborn-whitegrid",
++    ]
++    
++    def _is_deprecated_seaborn_style(self, key):
++        """Check if the key is a deprecated seaborn style name."""
++        return (isinstance(key, str) and 
++                key.startswith('seaborn') and 
++                not key.startswith('seaborn-v0_8') and
++                key in self._SEABORN_STYLES)
++    
++    def _get_new_key(self, key):
++        """Convert old seaborn style name to new format."""
++        return key.replace("seaborn", "seaborn-v0_8")
++    
++    def _warn_deprecated(self):
++        """Issue a deprecation warning for seaborn styles."""
++        _api.warn_deprecated(
++            "3.6", message="The seaborn styles shipped by Matplotlib "
++            "are deprecated since %(since)s, as they no longer "
++            "correspond to the styles shipped by seaborn. However, "
++            "they will remain available as 'seaborn-v0_8-<style>'. "
++            "Alternatively, directly use the seaborn API instead.")
++    
++    def __getitem__(self, key):
++        # Handle deprecated seaborn style names for direct access
++        if self._is_deprecated_seaborn_style(key):
++            self._warn_deprecated()
++            new_key = self._get_new_key(key)
++            return super().__getitem__(new_key)
++        return super().__getitem__(key)
++    
++    def __contains__(self, key):
++        # Handle deprecated seaborn style names for 'in' operator
++        if self._is_deprecated_seaborn_style(key):
++            new_key = self._get_new_key(key)
++            return super().__contains__(new_key)
++        return super().__contains__(key)
++
++
++# Replace the library dict with our custom version that handles backward compatibility
++library = _StyleLibrary(library)

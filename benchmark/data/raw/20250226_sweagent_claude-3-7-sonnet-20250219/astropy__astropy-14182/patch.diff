@@ -1,0 +1,1606 @@
+diff --git a/astropy/io/ascii/core.py b/astropy/io/ascii/core.py
+index 381b5b13db..4db33a381d 100644
+--- a/astropy/io/ascii/core.py
++++ b/astropy/io/ascii/core.py
+@@ -1548,6 +1548,12 @@ class BaseReader(metaclass=MetaBaseReader):
+ 
+         """
+ 
++        # Copy description attribute from column to column.info
++        for col_name in table.colnames:
++            col = table[col_name]
++            if hasattr(col, 'description') and col.description is not None:
++                col.info.description = col.description
++
+         # Check column names before altering
+         self.header.cols = list(table.columns.values())
+         self.header.check_column_names(self.names, self.strict_names, False)
+diff --git a/astropy/io/ascii/fixedwidth.py b/astropy/io/ascii/fixedwidth.py
+index fdadbbc050..6f87cf3dff 100644
+--- a/astropy/io/ascii/fixedwidth.py
++++ b/astropy/io/ascii/fixedwidth.py
+@@ -271,10 +271,23 @@ class FixedWidthData(basic.BasicData):
+         # List (rows) of list (columns values) for header lines.
+         hdrs_list = []
+         for col_attr in header_rows:
+-            vals = [
+-                "" if (val := getattr(col.info, col_attr)) is None else str(val)
+-                for col in self.cols
+-            ]
++            vals = []
++            for col in self.cols:
++                # Try to get attribute from col.info first
++                val = getattr(col.info, col_attr, None)
++                
++                # Special handling for description attribute
++                if col_attr == 'description' and val is None:
++                    # For description, we need to handle it specially
++                    # The description attribute is on the column object, not on col.info
++                    # We need to get it from the original table
++                    
++                    # First, try to get it from the parent_table
++                    if hasattr(col, 'parent_table') and col.parent_table is not None:
++                        parent_col = col.parent_table[col.name]
++                        val = getattr(parent_col, 'description', None)
++                
++                vals.append("" if val is None else str(val))
+             hdrs_list.append(vals)
+ 
+         # Widths for data columns
+diff --git a/astropy/io/ascii/rst.py b/astropy/io/ascii/rst.py
+index abdeba8efb..e61d91e3ff 100644
+--- a/astropy/io/ascii/rst.py
++++ b/astropy/io/ascii/rst.py
+@@ -57,10 +57,49 @@ class RST(FixedWidth):
+     data_class = SimpleRSTData
+     header_class = SimpleRSTHeader
+ 
+-    def __init__(self):
+-        super().__init__(delimiter_pad=None, bookend=False)
+-
+-    def write(self, lines):
+-        lines = super().write(lines)
+-        lines = [lines[1]] + lines + [lines[1]]
++    def __init__(self, header_rows=None):
++        super().__init__(delimiter_pad=None, bookend=False, header_rows=header_rows)
++
++    def write(self, table):
++        """Write table as a reStructuredText simple table.
++        
++        Parameters
++        ----------
++        table : `~astropy.table.Table`
++            Input table data
++            
++        Returns
++        -------
++        lines : list
++            List of strings corresponding to the table in RST format
++        """
++        # Get the header rows
++        header_rows = getattr(self.header, 'header_rows', ['name'])
++        
++        # If description is in header_rows, we need to handle it specially
++        if 'description' in header_rows:
++            # Create a copy of the table to avoid modifying the original
++            table = table.copy()
++            
++            # Store the descriptions in the column info objects
++            for col_name in table.colnames:
++                col = table[col_name]
++                if hasattr(col, 'description') and col.description is not None:
++                    col.info.description = col.description
++        
++        # Call the parent class write method to get the lines
++        lines = super().write(table)
++        
++        # If there are no header rows, we need to handle it specially
++        if not header_rows:
++            # For empty header_rows, we still need a separator line
++            separator_line = lines[0]
++            # Return separator line + data rows + separator line
++            return [separator_line] + lines[1:] + [separator_line]
++            
++        # Add the separator line at the beginning, and at the end
++        # The separator line is after the header rows
++        separator_line_index = len(header_rows)
++        separator_line = lines[separator_line_index]
++        lines = [separator_line] + lines + [separator_line]
+         return lines
+diff --git a/astropy/io/ascii/ui.py b/astropy/io/ascii/ui.py
+index 993dacf512..f76034149c 100644
+--- a/astropy/io/ascii/ui.py
++++ b/astropy/io/ascii/ui.py
+@@ -951,6 +951,12 @@ def write(
+     else:
+         # Otherwise, create a table from the input.
+         table = Table(table, names=names, copy=False)
++        
++    # Copy description attribute from column to column.info
++    for col_name in table.colnames:
++        col = table[col_name]
++        if hasattr(col, 'description') and col.description is not None:
++            col.info.description = col.description
+ 
+     table0 = table[:0].copy()
+     core._apply_include_exclude_names(
+diff --git a/check_column_attrs.py b/check_column_attrs.py
+new file mode 100644
+index 0000000000..73c66933b4
+--- /dev/null
++++ b/check_column_attrs.py
+@@ -0,0 +1,18 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Print column info
++for col_name in tbl.colnames:
++    col = tbl[col_name]
++    print(f"Column: {col_name}")
++    print(f"  Description on column: {getattr(col, 'description', None)}")
++    print(f"  Description on col.info: {getattr(col.info, 'description', None)}")
++    print()
+\ No newline at end of file
+diff --git a/check_description.py b/check_description.py
+new file mode 100644
+index 0000000000..1f70fb258a
+--- /dev/null
++++ b/check_description.py
+@@ -0,0 +1,19 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Print column info
++for col_name in tbl.colnames:
++    col = tbl[col_name]
++    print(f"Column: {col_name}")
++    print(f"  Unit: {col.unit}")
++    print(f"  Description: {col.description}")
++    print(f"  Info attributes: {dir(col.info)}")
++    print()
+\ No newline at end of file
+diff --git a/check_description_attr.py b/check_description_attr.py
+new file mode 100644
+index 0000000000..3972fb23a8
+--- /dev/null
++++ b/check_description_attr.py
+@@ -0,0 +1,20 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Print column info
++for col_name in tbl.colnames:
++    col = tbl[col_name]
++    print(f"Column: {col_name}")
++    print(f"  Description attribute exists on column: {'description' in dir(col)}")
++    print(f"  Description attribute exists on col.info: {'description' in dir(col.info)}")
++    print(f"  Description value from column: {getattr(col, 'description', None)}")
++    print(f"  Description value from col.info: {getattr(col.info, 'description', None)}")
++    print()
+\ No newline at end of file
+diff --git a/check_fixed_width.py b/check_fixed_width.py
+new file mode 100644
+index 0000000000..a7701cb2b8
+--- /dev/null
++++ b/check_fixed_width.py
+@@ -0,0 +1,14 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Test with fixed_width format
++print("Testing fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
+\ No newline at end of file
+diff --git a/debug_column_attrs.py b/debug_column_attrs.py
+new file mode 100644
+index 0000000000..95ba535569
+--- /dev/null
++++ b/debug_column_attrs.py
+@@ -0,0 +1,20 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Print column info
++for col_name in tbl.colnames:
++    col = tbl[col_name]
++    print(f"Column: {col_name}")
++    print(f"  Description: {getattr(col, 'description', None)}")
++    print(f"  Description on info: {getattr(col.info, 'description', None)}")
++    print(f"  dir(col): {dir(col)}")
++    print(f"  dir(col.info): {dir(col.info)}")
++    print()
+\ No newline at end of file
+diff --git a/debug_description.py b/debug_description.py
+new file mode 100644
+index 0000000000..e9e4fb0d82
+--- /dev/null
++++ b/debug_description.py
+@@ -0,0 +1,55 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Print column info
++for col_name in tbl.colnames:
++    col = tbl[col_name]
++    print(f"Column: {col_name}")
++    print(f"  Description: {col.description}")
++    print()
++
++# Let's trace the execution of the FixedWidthData.write method
++import astropy.io.ascii.fixedwidth as fw
++import functools
++
++# Save the original method
++original_write = fw.FixedWidthData.write
++
++# Define a wrapper function to trace execution
++def trace_write(func):
++    @functools.wraps(func)
++    def wrapper(self, lines):
++        print("Entering FixedWidthData.write")
++        header_rows = getattr(self, "header_rows", ["name"])
++        print(f"  header_rows: {header_rows}")
++        
++        # Trace column attributes
++        for col in self.cols:
++            print(f"  Column: {col.name}")
++            for attr in header_rows:
++                info_val = getattr(col.info, attr, None)
++                col_val = getattr(col, attr, None)
++                print(f"    {attr}: info={info_val}, col={col_val}")
++        
++        result = func(self, lines)
++        print("Exiting FixedWidthData.write")
++        return result
++    return wrapper
++
++# Apply the trace wrapper
++fw.FixedWidthData.write = trace_write(original_write)
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++fw.FixedWidthData.write = original_write
+\ No newline at end of file
+diff --git a/debug_description10.py b/debug_description10.py
+new file mode 100644
+index 0000000000..1e1c86cecd
+--- /dev/null
++++ b/debug_description10.py
+@@ -0,0 +1,98 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's modify the FixedWidthData.write method to handle description correctly
++import astropy.io.ascii.fixedwidth as fw
++
++# Save the original method
++original_write = fw.FixedWidthData.write
++
++# Define a patched method
++def patched_write(self, lines):
++    default_header_rows = [] if self.header.start_line is None else ["name"]
++    header_rows = getattr(self, "header_rows", default_header_rows)
++    
++    # List (rows) of list (column values) for data lines
++    vals_list = []
++    col_str_iters = self.str_vals()
++    for vals in zip(*col_str_iters):
++        vals_list.append(vals)
++
++    # List (rows) of list (columns values) for header lines.
++    hdrs_list = []
++    for col_attr in header_rows:
++        vals = []
++        for col in self.cols:
++            # Try to get attribute from col.info
++            val = getattr(col.info, col_attr, None)
++            
++            # Special handling for description attribute
++            if col_attr == 'description' and val is None:
++                # For description, we need to check if the column has a description attribute
++                # This is a hack to get the description from the original table
++                if hasattr(self, '_table') and hasattr(self._table, 'colnames'):
++                    # Get the column from the original table
++                    orig_col = self._table[col.info.name]
++                    val = getattr(orig_col, 'description', None)
++                    
++                    # Print debug info
++                    print(f"Column {col.info.name}: description from original table = {val}")
++            
++            vals.append("" if val is None else str(val))
++        hdrs_list.append(vals)
++
++    # Rest of the method is the same
++    # Widths for data columns
++    widths = [
++        max(len(vals[i_col]) for vals in vals_list)
++        for i_col in range(len(self.cols))
++    ]
++    # Incorporate widths for header columns (if there are any)
++    if hdrs_list:
++        for i_col in range(len(self.cols)):
++            widths[i_col] = max(
++                widths[i_col], max(len(vals[i_col]) for vals in hdrs_list)
++            )
++
++    # Now collect formatted header and data lines into the output lines
++    for vals in hdrs_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    if self.header.position_line is not None:
++        vals = [self.header.position_char * width for width in widths]
++        lines.append(self.splitter.join(vals, widths))
++
++    for vals in vals_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    return lines
++
++# Let's also modify the FixedWidth.write method to store the table
++original_fw_write = fw.FixedWidth.write
++
++def patched_fw_write(self, table):
++    # Store the table for later use
++    self.data._table = table
++    
++    # Call the original method
++    return original_fw_write(self, table)
++
++# Apply the patches
++fw.FixedWidthData.write = patched_write
++fw.FixedWidth.write = patched_fw_write
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Restore the original methods
++fw.FixedWidthData.write = original_write
++fw.FixedWidth.write = original_fw_write
+\ No newline at end of file
+diff --git a/debug_description11.py b/debug_description11.py
+new file mode 100644
+index 0000000000..88d8a68ec6
+--- /dev/null
++++ b/debug_description11.py
+@@ -0,0 +1,104 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's modify the FixedWidthData.write method to handle description correctly
++import astropy.io.ascii.fixedwidth as fw
++
++# Save the original method
++original_write = fw.FixedWidthData.write
++
++# Define a patched method
++def patched_write(self, lines):
++    default_header_rows = [] if self.header.start_line is None else ["name"]
++    header_rows = getattr(self, "header_rows", default_header_rows)
++    
++    # List (rows) of list (column values) for data lines
++    vals_list = []
++    col_str_iters = self.str_vals()
++    for vals in zip(*col_str_iters):
++        vals_list.append(vals)
++
++    # List (rows) of list (columns values) for header lines.
++    hdrs_list = []
++    for col_attr in header_rows:
++        vals = []
++        for col in self.cols:
++            # Try to get attribute from col.info
++            val = getattr(col.info, col_attr, None)
++            
++            # Special handling for description attribute
++            if col_attr == 'description':
++                # For description, we need to check if the column has a description attribute
++                # This is a hack to get the description from the original table
++                if hasattr(self, '_table') and hasattr(self._table, 'colnames'):
++                    # Get the column from the original table
++                    orig_col = self._table[col.info.name]
++                    val = getattr(orig_col, 'description', None)
++                    
++                    # Print debug info
++                    print(f"Column {col.info.name}: description from original table = {val}")
++                else:
++                    print(f"Column {col.info.name}: no _table attribute")
++            
++            vals.append("" if val is None else str(val))
++        hdrs_list.append(vals)
++
++    # Rest of the method is the same
++    # Widths for data columns
++    widths = [
++        max(len(vals[i_col]) for vals in vals_list)
++        for i_col in range(len(self.cols))
++    ]
++    # Incorporate widths for header columns (if there are any)
++    if hdrs_list:
++        for i_col in range(len(self.cols)):
++            widths[i_col] = max(
++                widths[i_col], max(len(vals[i_col]) for vals in hdrs_list)
++            )
++
++    # Now collect formatted header and data lines into the output lines
++    for vals in hdrs_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    if self.header.position_line is not None:
++        vals = [self.header.position_char * width for width in widths]
++        lines.append(self.splitter.join(vals, widths))
++
++    for vals in vals_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    return lines
++
++# Let's also modify the FixedWidth.write method to store the table
++original_fw_write = fw.FixedWidth.write
++
++def patched_fw_write(self, table):
++    # Store the table for later use
++    self.data._table = table
++    
++    # Call the original method
++    return original_fw_write(self, table)
++
++# Apply the patches
++fw.FixedWidthData.write = patched_write
++fw.FixedWidth.write = patched_fw_write
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Test with rst format
++print("\nTesting rst with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit", "description"])
++
++# Restore the original methods
++fw.FixedWidthData.write = original_write
++fw.FixedWidth.write = original_fw_write
+\ No newline at end of file
+diff --git a/debug_description12.py b/debug_description12.py
+new file mode 100644
+index 0000000000..00d11eb946
+--- /dev/null
++++ b/debug_description12.py
+@@ -0,0 +1,84 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's modify the RST.write method to handle description correctly
++import astropy.io.ascii.rst as rst
++
++# Save the original method
++original_write = rst.RST.write
++
++# Define a patched method
++def patched_write(self, table):
++    """Write table as a reStructuredText simple table.
++    
++    Parameters
++    ----------
++    table : `~astropy.table.Table`
++        Input table data
++        
++    Returns
++    -------
++    lines : list
++        List of strings corresponding to the table in RST format
++    """
++    # Store the original descriptions
++    descriptions = {}
++    for col_name in table.colnames:
++        col = table[col_name]
++        if hasattr(col, 'description') and col.description is not None:
++            descriptions[col_name] = col.description
++    
++    # Call the parent class write method to get the lines
++    lines = super(rst.RST, self).write(table)
++    
++    # Get the header rows
++    header_rows = getattr(self.header, 'header_rows', ['name'])
++    
++    # If description is in header_rows, we need to modify the lines
++    if 'description' in header_rows:
++        # Find the index of the description row
++        description_index = header_rows.index('description')
++        
++        # Get the column names
++        col_names = [col.info.name for col in self.data.cols]
++        
++        # Create a new description line
++        description_line = self.data.splitter.join(
++            [descriptions.get(name, '') for name in col_names],
++            [len(line) for line in lines[description_index].split(self.data.splitter.delimiter)]
++        )
++        
++        # Replace the description line
++        lines[description_index] = description_line
++    
++    # If there are no header rows, we need to handle it specially
++    if not header_rows:
++        # For empty header_rows, we still need a separator line
++        separator_line = lines[0]
++        # Return separator line + data rows + separator line
++        return [separator_line] + lines[1:] + [separator_line]
++        
++    # Add the separator line at the beginning, and at the end
++    # The separator line is after the header rows
++    separator_line_index = len(header_rows)
++    separator_line = lines[separator_line_index]
++    lines = [separator_line] + lines + [separator_line]
++    return lines
++
++# Apply the patch
++rst.RST.write = patched_write
++
++# Test with rst format
++print("\nTesting rst with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++rst.RST.write = original_write
+\ No newline at end of file
+diff --git a/debug_description13.py b/debug_description13.py
+new file mode 100644
+index 0000000000..24499801ef
+--- /dev/null
++++ b/debug_description13.py
+@@ -0,0 +1,105 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's modify the RST.write method to handle description correctly
++import astropy.io.ascii.rst as rst
++
++# Save the original method
++original_write = rst.RST.write
++
++# Define a patched method
++def patched_write(self, table):
++    """Write table as a reStructuredText simple table.
++    
++    Parameters
++    ----------
++    table : `~astropy.table.Table`
++        Input table data
++        
++    Returns
++    -------
++    lines : list
++        List of strings corresponding to the table in RST format
++    """
++    # Store the original descriptions
++    descriptions = {}
++    for col_name in table.colnames:
++        col = table[col_name]
++        if hasattr(col, 'description') and col.description is not None:
++            descriptions[col_name] = col.description
++            # Also copy to col.info for the parent class write method
++            col.info.description = col.description
++    
++    # Print the descriptions
++    print("Descriptions:")
++    for col_name, desc in descriptions.items():
++        print(f"  {col_name}: {desc}")
++    
++    # Call the parent class write method to get the lines
++    lines = super().write(table)
++    
++    # Print the lines
++    print("Lines:")
++    for i, line in enumerate(lines):
++        print(f"  {i}: {line}")
++    
++    # Get the header rows
++    header_rows = getattr(self.header, 'header_rows', ['name'])
++    print(f"Header rows: {header_rows}")
++    
++    # If description is in header_rows, we need to modify the lines
++    if 'description' in header_rows:
++        # Find the index of the description row
++        description_index = header_rows.index('description')
++        print(f"Description index: {description_index}")
++        
++        # Get the column names
++        col_names = table.colnames
++        print(f"Column names: {col_names}")
++        
++        # Create a new description line with proper padding
++        parts = lines[description_index].split(' ')
++        print(f"Parts: {parts}")
++        new_parts = []
++        for i, part in enumerate(parts):
++            if i < len(col_names) and col_names[i] in descriptions:
++                # Replace with the actual description
++                new_parts.append(descriptions[col_names[i]])
++            else:
++                # Keep the original part
++                new_parts.append(part)
++        
++        # Replace the description line
++        lines[description_index] = ' '.join(new_parts)
++    
++    # If there are no header rows, we need to handle it specially
++    if not header_rows:
++        # For empty header_rows, we still need a separator line
++        separator_line = lines[0]
++        # Return separator line + data rows + separator line
++        return [separator_line] + lines[1:] + [separator_line]
++        
++    # Add the separator line at the beginning, and at the end
++    # The separator line is after the header rows
++    separator_line_index = len(header_rows)
++    separator_line = lines[separator_line_index]
++    lines = [separator_line] + lines + [separator_line]
++    return lines
++
++# Apply the patch
++rst.RST.write = patched_write
++
++# Test with rst format
++print("\nTesting rst with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++rst.RST.write = original_write
+\ No newline at end of file
+diff --git a/debug_description14.py b/debug_description14.py
+new file mode 100644
+index 0000000000..d0f29e64b0
+--- /dev/null
++++ b/debug_description14.py
+@@ -0,0 +1,106 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's modify the RST.write method to handle description correctly
++import astropy.io.ascii.rst as rst
++import astropy.io.ascii.fixedwidth as fw
++
++# Save the original method
++original_write = rst.RST.write
++
++# Define a patched method
++def patched_write(self, table):
++    """Write table as a reStructuredText simple table.
++    
++    Parameters
++    ----------
++    table : `~astropy.table.Table`
++        Input table data
++        
++    Returns
++    -------
++    lines : list
++        List of strings corresponding to the table in RST format
++    """
++    # Store the original descriptions
++    descriptions = {}
++    for col_name in table.colnames:
++        col = table[col_name]
++        if hasattr(col, 'description') and col.description is not None:
++            descriptions[col_name] = col.description
++            # Also copy to col.info for the parent class write method
++            col.info.description = col.description
++    
++    # Print the descriptions
++    print("Descriptions:")
++    for col_name, desc in descriptions.items():
++        print(f"  {col_name}: {desc}")
++    
++    # Call the parent class write method to get the lines
++    lines = fw.FixedWidth.write(self, table)
++    
++    # Print the lines
++    print("Lines:")
++    for i, line in enumerate(lines):
++        print(f"  {i}: {line}")
++    
++    # Get the header rows
++    header_rows = getattr(self.header, 'header_rows', ['name'])
++    print(f"Header rows: {header_rows}")
++    
++    # If description is in header_rows, we need to modify the lines
++    if 'description' in header_rows:
++        # Find the index of the description row
++        description_index = header_rows.index('description')
++        print(f"Description index: {description_index}")
++        
++        # Get the column names
++        col_names = table.colnames
++        print(f"Column names: {col_names}")
++        
++        # Create a new description line with proper padding
++        parts = lines[description_index].split(' ')
++        print(f"Parts: {parts}")
++        new_parts = []
++        for i, part in enumerate(parts):
++            if i < len(col_names) and col_names[i] in descriptions:
++                # Replace with the actual description
++                new_parts.append(descriptions[col_names[i]])
++            else:
++                # Keep the original part
++                new_parts.append(part)
++        
++        # Replace the description line
++        lines[description_index] = ' '.join(new_parts)
++    
++    # If there are no header rows, we need to handle it specially
++    if not header_rows:
++        # For empty header_rows, we still need a separator line
++        separator_line = lines[0]
++        # Return separator line + data rows + separator line
++        return [separator_line] + lines[1:] + [separator_line]
++        
++    # Add the separator line at the beginning, and at the end
++    # The separator line is after the header rows
++    separator_line_index = len(header_rows)
++    separator_line = lines[separator_line_index]
++    lines = [separator_line] + lines + [separator_line]
++    return lines
++
++# Apply the patch
++rst.RST.write = patched_write
++
++# Test with rst format
++print("\nTesting rst with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++rst.RST.write = original_write
+\ No newline at end of file
+diff --git a/debug_description2.py b/debug_description2.py
+new file mode 100644
+index 0000000000..0feceb0406
+--- /dev/null
++++ b/debug_description2.py
+@@ -0,0 +1,92 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Print column info
++for col_name in tbl.colnames:
++    col = tbl[col_name]
++    print(f"Column: {col_name}")
++    print(f"  Description: {col.description}")
++    print()
++
++# Let's modify the FixedWidthData.write method to handle description correctly
++import astropy.io.ascii.fixedwidth as fw
++
++# Save the original method
++original_write = fw.FixedWidthData.write
++
++# Define a patched method
++def patched_write(self, lines):
++    default_header_rows = [] if self.header.start_line is None else ["name"]
++    header_rows = getattr(self, "header_rows", default_header_rows)
++    
++    # List (rows) of list (column values) for data lines
++    vals_list = []
++    col_str_iters = self.str_vals()
++    for vals in zip(*col_str_iters):
++        vals_list.append(vals)
++
++    # List (rows) of list (columns values) for header lines.
++    hdrs_list = []
++    for col_attr in header_rows:
++        vals = []
++        for i, col in enumerate(self.cols):
++            # Get the column from the table
++            table_col = self.table[col.name]
++            
++            # Try to get attribute from col.info first
++            val = getattr(col.info, col_attr, None)
++            
++            # If not found and it's description or format, try the column itself
++            if val is None and col_attr in ('description', 'format'):
++                val = getattr(table_col, col_attr, None)
++                
++            vals.append("" if val is None else str(val))
++        hdrs_list.append(vals)
++
++    # Rest of the method is the same
++    # Widths for data columns
++    widths = [
++        max(len(vals[i_col]) for vals in vals_list)
++        for i_col in range(len(self.cols))
++    ]
++    # Incorporate widths for header columns (if there are any)
++    if hdrs_list:
++        for i_col in range(len(self.cols)):
++            widths[i_col] = max(
++                widths[i_col], max(len(vals[i_col]) for vals in hdrs_list)
++            )
++
++    # Now collect formatted header and data lines into the output lines
++    for vals in hdrs_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    if self.header.position_line is not None:
++        vals = [self.header.position_char * width for width in widths]
++        lines.append(self.splitter.join(vals, widths))
++
++    for vals in vals_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    return lines
++
++# Apply the patch
++fw.FixedWidthData.write = patched_write
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Test with rst format
++print("\nTesting rst with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++fw.FixedWidthData.write = original_write
+\ No newline at end of file
+diff --git a/debug_description3.py b/debug_description3.py
+new file mode 100644
+index 0000000000..00d501d7be
+--- /dev/null
++++ b/debug_description3.py
+@@ -0,0 +1,56 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Print column info
++for col_name in tbl.colnames:
++    col = tbl[col_name]
++    print(f"Column: {col_name}")
++    print(f"  Description: {col.description}")
++    print()
++
++# Let's look at how the table is processed in the writer
++import astropy.io.ascii.core as core
++
++# Save the original method
++original_get_writer = core._get_writer
++
++# Define a wrapper function to trace execution
++def trace_get_writer(Writer, fast_writer, **kwargs):
++    print(f"Creating writer: {Writer.__name__}")
++    
++    # Call the original method
++    writer = original_get_writer(Writer, fast_writer, **kwargs)
++    
++    # Trace the table setup
++    original_write = writer.write
++    
++    def trace_write(table):
++        print(f"Writing table with {len(table.columns)} columns")
++        for col_name in table.colnames:
++            col = table[col_name]
++            print(f"  Column: {col_name}")
++            print(f"    Description: {getattr(col, 'description', None)}")
++        
++        # Call the original write method
++        return original_write(table)
++    
++    writer.write = trace_write
++    return writer
++
++# Apply the trace wrapper
++core._get_writer = trace_get_writer
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++core._get_writer = original_get_writer
+\ No newline at end of file
+diff --git a/debug_description4.py b/debug_description4.py
+new file mode 100644
+index 0000000000..25f8721203
+--- /dev/null
++++ b/debug_description4.py
+@@ -0,0 +1,95 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's modify the core.py file to handle the description attribute
++import astropy.io.ascii.core as core
++
++# Save the original method
++original_write = core.BaseReader.write
++
++# Define a patched method
++def patched_write(self, table):
++    """Write ``table`` as list of strings.
++
++    Parameters
++    ----------
++    table : `~astropy.table.Table`
++        Input table data.
++
++    Returns
++    -------
++    lines : list
++        List of strings corresponding to ASCII table.
++    """
++    # For a masked table, we want to fill masked values with the fill
++    # value defined by the output format (e.g., '---' for latex.  However,
++    # _write_table_as_dict expects all the data to be present, so we make a copy
++    # of the table and fill it.
++    if table.masked:
++        table = table.filled()
++
++    # This is a hook to allow updating the table columns before writing.
++    # This is currently used by ECSV and is otherwise just a pass-through.
++    table = self.update_table_before_write(table)
++
++    # Transfer description attributes from the table columns to the column info objects
++    for col_name in table.colnames:
++        col = table[col_name]
++        if hasattr(col, 'description') and col.description is not None:
++            col.info.description = col.description
++
++    # Check column names before altering
++    self.header.cols = list(table.columns.values())
++    self.header.check_column_names(self.names, self.strict_names, False)
++
++    # In-place update of columns in input ``table`` to reflect column
++    # filtering.  Note that ``table`` is guaranteed to be a copy of the
++    # original user-supplied table.
++    _apply_include_exclude_names(
++        table, self.names, self.include_names, self.exclude_names
++    )
++
++    # This is a hook to allow updating the table columns after name
++    # filtering but before setting up to write the data.  This is currently
++    # only used by ECSV and is otherwise just a pass-through.
++    table = self.update_table_data(table)
++
++    # Check that table column dimensions are supported by this format class.
++    # Most formats support only 1-d columns, but some like ECSV support N-d.
++    self._check_multidim_table(table)
++
++    # Now use altered columns
++    new_cols = list(table.columns.values())
++    # link information about the columns to the writer object (i.e. self)
++    self.header.cols = new_cols
++    self.data.cols = new_cols
++    self.header.table_meta = table.meta
++
++    # Write header and data to lines list
++    lines = []
++    self.write_header(lines, table.meta)
++    self.data.write(lines)
++
++    return lines
++
++# Apply the patch
++core.BaseReader.write = patched_write
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Test with rst format
++print("\nTesting rst with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++core.BaseReader.write = original_write
+\ No newline at end of file
+diff --git a/debug_description5.py b/debug_description5.py
+new file mode 100644
+index 0000000000..401857aef7
+--- /dev/null
++++ b/debug_description5.py
+@@ -0,0 +1,52 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's trace the execution of the BaseReader.write method
++import astropy.io.ascii.core as core
++import functools
++
++# Save the original method
++original_write = core.BaseReader.write
++
++# Define a wrapper function to trace execution
++def trace_write(func):
++    @functools.wraps(func)
++    def wrapper(self, table):
++        print("Entering BaseReader.write")
++        
++        # Trace column attributes before copying
++        for col_name in table.colnames:
++            col = table[col_name]
++            print(f"  Column: {col_name}")
++            print(f"    Description on column: {getattr(col, 'description', None)}")
++            print(f"    Description on col.info: {getattr(col.info, 'description', None)}")
++        
++        # Call the original function
++        result = func(self, table)
++        
++        # Trace column attributes after copying
++        print("After copying description to col.info:")
++        for i, col in enumerate(self.data.cols):
++            print(f"  Column {i}: {col.name}")
++            print(f"    Description on col.info: {getattr(col.info, 'description', None)}")
++        
++        return result
++    return wrapper
++
++# Apply the trace wrapper
++core.BaseReader.write = trace_write(original_write)
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++core.BaseReader.write = original_write
+\ No newline at end of file
+diff --git a/debug_description6.py b/debug_description6.py
+new file mode 100644
+index 0000000000..69981cb7ae
+--- /dev/null
++++ b/debug_description6.py
+@@ -0,0 +1,46 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's trace the execution of the FixedWidth.write method
++import astropy.io.ascii.fixedwidth as fw
++import functools
++
++# Save the original method
++original_write = fw.FixedWidth.write
++
++# Define a wrapper function to trace execution
++def trace_write(func):
++    @functools.wraps(func)
++    def wrapper(self, table):
++        print("Entering FixedWidth.write")
++        
++        # Trace column attributes
++        for col_name in table.colnames:
++            col = table[col_name]
++            print(f"  Column: {col_name}")
++            print(f"    Description on column: {getattr(col, 'description', None)}")
++            print(f"    Description on col.info: {getattr(col.info, 'description', None)}")
++        
++        # Call the original function
++        result = func(self, table)
++        
++        return result
++    return wrapper
++
++# Apply the trace wrapper
++fw.FixedWidth.write = trace_write(original_write)
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++fw.FixedWidth.write = original_write
+\ No newline at end of file
+diff --git a/debug_description7.py b/debug_description7.py
+new file mode 100644
+index 0000000000..4e3768e69d
+--- /dev/null
++++ b/debug_description7.py
+@@ -0,0 +1,44 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's trace the execution of the write function
++import astropy.io.ascii.ui as ui
++import functools
++
++# Save the original method
++original_write = ui.write
++
++# Define a wrapper function to trace execution
++def trace_write(func):
++    @functools.wraps(func)
++    def wrapper(table, output=None, format=None, **kwargs):
++        print("Entering ui.write")
++        
++        # Trace column attributes
++        for col_name in table.colnames:
++            col = table[col_name]
++            print(f"  Column: {col_name}")
++            print(f"    Description on column: {getattr(col, 'description', None)}")
++            print(f"    Description on col.info: {getattr(col.info, 'description', None)}")
++        
++        # Call the original function
++        return func(table, output, format, **kwargs)
++    return wrapper
++
++# Apply the trace wrapper
++ui.write = trace_write(original_write)
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++ui.write = original_write
+\ No newline at end of file
+diff --git a/debug_description8.py b/debug_description8.py
+new file mode 100644
+index 0000000000..e0661f319f
+--- /dev/null
++++ b/debug_description8.py
+@@ -0,0 +1,48 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's trace the execution of the FixedWidthData.write method
++import astropy.io.ascii.fixedwidth as fw
++import functools
++
++# Save the original method
++original_write = fw.FixedWidthData.write
++
++# Define a wrapper function to trace execution
++def trace_write(func):
++    @functools.wraps(func)
++    def wrapper(self, lines):
++        print("Entering FixedWidthData.write")
++        
++        # Trace header_rows
++        header_rows = getattr(self, "header_rows", ["name"])
++        print(f"  header_rows: {header_rows}")
++        
++        # Trace column attributes
++        for i, col in enumerate(self.cols):
++            print(f"  Column {i}: {col.name}")
++            for attr in header_rows:
++                val = getattr(col.info, attr, None)
++                print(f"    {attr}: {val}")
++        
++        # Call the original function
++        return func(self, lines)
++    return wrapper
++
++# Apply the trace wrapper
++fw.FixedWidthData.write = trace_write(original_write)
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++fw.FixedWidthData.write = original_write
+\ No newline at end of file
+diff --git a/debug_description9.py b/debug_description9.py
+new file mode 100644
+index 0000000000..1918faec14
+--- /dev/null
++++ b/debug_description9.py
+@@ -0,0 +1,78 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's modify the FixedWidthData.write method to print the description values
++import astropy.io.ascii.fixedwidth as fw
++
++# Save the original method
++original_write = fw.FixedWidthData.write
++
++# Define a patched method
++def patched_write(self, lines):
++    default_header_rows = [] if self.header.start_line is None else ["name"]
++    header_rows = getattr(self, "header_rows", default_header_rows)
++    
++    # List (rows) of list (column values) for data lines
++    vals_list = []
++    col_str_iters = self.str_vals()
++    for vals in zip(*col_str_iters):
++        vals_list.append(vals)
++
++    # List (rows) of list (columns values) for header lines.
++    hdrs_list = []
++    for col_attr in header_rows:
++        vals = []
++        for col in self.cols:
++            # Try to get attribute from col.info
++            val = getattr(col.info, col_attr, None)
++            
++            # Print debug info
++            if col_attr == 'description':
++                print(f"Column {col.info.name}: description = {val}")
++            
++            vals.append("" if val is None else str(val))
++        hdrs_list.append(vals)
++
++    # Rest of the method is the same
++    # Widths for data columns
++    widths = [
++        max(len(vals[i_col]) for vals in vals_list)
++        for i_col in range(len(self.cols))
++    ]
++    # Incorporate widths for header columns (if there are any)
++    if hdrs_list:
++        for i_col in range(len(self.cols)):
++            widths[i_col] = max(
++                widths[i_col], max(len(vals[i_col]) for vals in hdrs_list)
++            )
++
++    # Now collect formatted header and data lines into the output lines
++    for vals in hdrs_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    if self.header.position_line is not None:
++        vals = [self.header.position_char * width for width in widths]
++        lines.append(self.splitter.join(vals, widths))
++
++    for vals in vals_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    return lines
++
++# Apply the patch
++fw.FixedWidthData.write = patched_write
++
++# Test with fixed_width format
++print("\nTesting fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++fw.FixedWidthData.write = original_write
+\ No newline at end of file
+diff --git a/fix_fixedwidth.py b/fix_fixedwidth.py
+new file mode 100644
+index 0000000000..fd1382c029
+--- /dev/null
++++ b/fix_fixedwidth.py
+@@ -0,0 +1,79 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Let's patch the FixedWidthData.write method to handle description correctly
++import astropy.io.ascii.fixedwidth as fw
++
++# Save the original method
++original_write = fw.FixedWidthData.write
++
++# Define a patched method
++def patched_write(self, lines):
++    default_header_rows = [] if self.header.start_line is None else ["name"]
++    header_rows = getattr(self, "header_rows", default_header_rows)
++    
++    # List (rows) of list (column values) for data lines
++    vals_list = []
++    col_str_iters = self.str_vals()
++    for vals in zip(*col_str_iters):
++        vals_list.append(vals)
++
++    # List (rows) of list (columns values) for header lines.
++    hdrs_list = []
++    for col_attr in header_rows:
++        vals = []
++        for col in self.cols:
++            # Try to get attribute from col.info first, then from col directly
++            val = getattr(col.info, col_attr, None)
++            if val is None:
++                val = getattr(col, col_attr, None)
++            vals.append("" if val is None else str(val))
++        hdrs_list.append(vals)
++
++    # Rest of the method is the same
++    # Widths for data columns
++    widths = [
++        max(len(vals[i_col]) for vals in vals_list)
++        for i_col in range(len(self.cols))
++    ]
++    # Incorporate widths for header columns (if there are any)
++    if hdrs_list:
++        for i_col in range(len(self.cols)):
++            widths[i_col] = max(
++                widths[i_col], max(len(vals[i_col]) for vals in hdrs_list)
++            )
++
++    # Now collect formatted header and data lines into the output lines
++    for vals in hdrs_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    if self.header.position_line is not None:
++        vals = [self.header.position_char * width for width in widths]
++        lines.append(self.splitter.join(vals, widths))
++
++    for vals in vals_list:
++        lines.append(self.splitter.join(vals, widths))
++
++    return lines
++
++# Apply the patch
++fw.FixedWidthData.write = patched_write
++
++# Test with fixed_width format
++print("Testing fixed_width with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit", "description"])
++
++# Test with rst format
++print("\nTesting rst with header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit", "description"])
++
++# Restore the original method
++fw.FixedWidthData.write = original_write
+\ No newline at end of file
+diff --git a/reproduce_error.py b/reproduce_error.py
+new file mode 100644
+index 0000000000..bc1bceb633
+--- /dev/null
++++ b/reproduce_error.py
+@@ -0,0 +1,23 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# This works fine
++print("Writing with format='ascii.rst':")
++tbl.write(sys.stdout, format="ascii.rst")
++print()
++
++# This works fine too
++print("Writing with format='ascii.fixed_width', header_rows=['name', 'unit']:")
++tbl.write(sys.stdout, format="ascii.fixed_width", header_rows=["name", "unit"])
++print()
++
++# This fails
++print("Writing with format='ascii.rst', header_rows=['name', 'unit']:")
++try:
++    tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit"])
++except Exception as e:
++    print(f"Error: {type(e).__name__}: {e}")
+\ No newline at end of file
+diff --git a/reproduce_with_description.py b/reproduce_with_description.py
+new file mode 100644
+index 0000000000..4c5571b252
+--- /dev/null
++++ b/reproduce_with_description.py
+@@ -0,0 +1,21 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++
++# Print column info
++for col_name in tbl.colnames:
++    col = tbl[col_name]
++    print(f"Column: {col_name}")
++    print(f"  Description: {col.description}")
++    print()
++
++# Test with rst format
++print("Writing with format='ascii.rst', header_rows=['name', 'unit', 'description']:")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit", "description"])
+\ No newline at end of file
+diff --git a/test_edge_cases.py b/test_edge_cases.py
+new file mode 100644
+index 0000000000..9423a7c9d7
+--- /dev/null
++++ b/test_edge_cases.py
+@@ -0,0 +1,42 @@
++from astropy.table import QTable
++import astropy.units as u
++import sys
++
++# Create a simple table
++tbl = QTable({'wave': [350, 950]*u.nm, 'response': [0.7, 1.2]*u.count})
++
++# Test case 1: Default behavior (no header_rows parameter)
++print("Test case 1: Default behavior (no header_rows parameter)")
++tbl.write(sys.stdout, format="ascii.rst")
++print()
++
++# Test case 2: With header_rows=['name', 'unit']
++print("Test case 2: With header_rows=['name', 'unit']")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit"])
++print()
++
++# Test case 3: With header_rows=['name', 'unit', 'description']
++# Add description metadata to columns
++tbl['wave'].description = 'Wavelength'
++tbl['response'].description = 'Response function'
++print("Test case 3: With header_rows=['name', 'unit', 'description']")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "unit", "description"])
++print()
++
++# Test case 4: With header_rows=[] (empty list)
++print("Test case 4: With header_rows=[] (empty list)")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=[])
++print()
++
++# Test case 5: With header_rows=None (should default to ['name'])
++print("Test case 5: With header_rows=None (should default to ['name'])")
++tbl.write(sys.stdout, format="ascii.rst", header_rows=None)
++print()
++
++# Test case 6: With a non-existent attribute
++print("Test case 6: With a non-existent attribute")
++try:
++    tbl.write(sys.stdout, format="ascii.rst", header_rows=["name", "non_existent"])
++except Exception as e:
++    print(f"Error: {type(e).__name__}: {e}")
++print()
+\ No newline at end of file

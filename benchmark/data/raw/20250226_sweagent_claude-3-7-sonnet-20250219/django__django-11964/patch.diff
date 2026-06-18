@@ -1,0 +1,70 @@
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index d610dc86f0..eaa528b995 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -2,6 +2,7 @@ import collections.abc
+ import copy
+ import datetime
+ import decimal
++import enum
+ import operator
+ import uuid
+ import warnings
+@@ -15,6 +16,27 @@ from django.core import checks, exceptions, validators
+ from django.db import connection, connections, router
+ from django.db.models.constants import LOOKUP_SEP
+ from django.db.models.query_utils import DeferredAttribute, RegisterLookupMixin
++
++
++class ChoicesDescriptor(DeferredAttribute):
++    """
++    A descriptor that converts TextChoices/IntegerChoices enum values to their
++    primitive values (str/int) when accessed.
++    """
++    def __get__(self, instance, cls=None):
++        value = super().__get__(instance, cls)
++        # Convert enum values to their primitive values
++        if value is not None and isinstance(value, enum.Enum) and isinstance(value.value, (str, int)):
++            return value.value
++        return value
++        
++    def __set__(self, instance, value):
++        # Convert enum values to their primitive values when setting
++        if value is not None and isinstance(value, enum.Enum) and isinstance(value.value, (str, int)):
++            instance.__dict__[self.field.attname] = value.value
++        else:
++            instance.__dict__[self.field.attname] = value
++
+ from django.utils import timezone
+ from django.utils.datastructures import DictWrapper
+ from django.utils.dateparse import (
+@@ -119,7 +141,7 @@ class Field(RegisterLookupMixin):
+     one_to_one = None
+     related_model = None
+ 
+-    descriptor_class = DeferredAttribute
++    descriptor_class = ChoicesDescriptor
+ 
+     # Generic field type description, usually overridden by subclasses
+     def _description(self):
+@@ -786,12 +808,19 @@ class Field(RegisterLookupMixin):
+ 
+     def pre_save(self, model_instance, add):
+         """Return field's value just before saving."""
+-        return getattr(model_instance, self.attname)
++        value = getattr(model_instance, self.attname)
++        # Convert enum values to their primitive values
++        if value is not None and isinstance(value, enum.Enum) and isinstance(value.value, (str, int)):
++            value = value.value
++        return value
+ 
+     def get_prep_value(self, value):
+         """Perform preliminary non-db specific value checks and conversions."""
+         if isinstance(value, Promise):
+             value = value._proxy____cast()
++        # Handle TextChoices and IntegerChoices enum values
++        if value is not None and isinstance(value, enum.Enum) and isinstance(value.value, (str, int)):
++            value = value.value
+         return value
+ 
+     def get_db_prep_value(self, value, connection, prepared=False):

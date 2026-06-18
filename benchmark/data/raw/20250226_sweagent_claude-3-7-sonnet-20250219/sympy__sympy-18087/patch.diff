@@ -1,0 +1,98 @@
+diff --git a/sympy/functions/elementary/complexes.py b/sympy/functions/elementary/complexes.py
+index 95904e33d1..4410640f27 100644
+--- a/sympy/functions/elementary/complexes.py
++++ b/sympy/functions/elementary/complexes.py
+@@ -544,7 +544,11 @@ def eval(cls, arg):
+             ignore = arg.atoms(Abs)
+             abs_free_arg = arg.xreplace({i: Dummy(real=True) for i in ignore})
+             unk = [a for a in abs_free_arg.free_symbols if a.is_extended_real is None]
+-            if not unk or not all(conj.has(conjugate(u)) for u in unk):
++            # Only apply this simplification if all symbols are real or if there are no unknown symbols
++            if not unk:
++                return sqrt(expand_mul(arg*conj))
++            # If there are unknown symbols (potentially complex), only apply if all are confirmed to be real
++            if all(u.is_extended_real for u in arg.free_symbols):
+                 return sqrt(expand_mul(arg*conj))
+ 
+     def _eval_is_real(self):
+diff --git a/sympy/simplify/fu.py b/sympy/simplify/fu.py
+index 612bc0bb69..88ee27d1be 100644
+--- a/sympy/simplify/fu.py
++++ b/sympy/simplify/fu.py
+@@ -830,6 +830,34 @@ def TR10i(rv):
+     global _ROOT2, _ROOT3, _invROOT3
+     if _ROOT2 is None:
+         _roots()
++        
++    # Check for expressions containing sqrt(sin(x)**2) or sqrt(cos(x)**2)
++    # These should not be simplified for complex arguments
++    from sympy.functions.elementary.trigonometric import sin, cos
++    from sympy.core.singleton import S
++    from sympy.core.mul import Mul
++    
++    if rv.is_Add:
++        for arg in rv.args:
++            # Check for sqrt(sin(x)**2) or -sqrt(sin(x)**2)
++            if isinstance(arg, Mul):
++                coeff, expr = arg.as_coeff_Mul()
++                if (expr.is_Pow and expr.exp == S.Half and 
++                    expr.base.is_Pow and expr.base.exp == 2 and 
++                    isinstance(expr.base.base, (sin, cos))):
++                    # If we find sqrt(sin(x)**2) or sqrt(cos(x)**2) in the expression,
++                    # and the argument is not explicitly real, don't simplify
++                    trig_arg = expr.base.base.args[0]
++                    if not trig_arg.is_extended_real:
++                        return rv
++            elif (arg.is_Pow and arg.exp == S.Half and 
++                  arg.base.is_Pow and arg.base.exp == 2 and 
++                  isinstance(arg.base.base, (sin, cos))):
++                # If we find sqrt(sin(x)**2) or sqrt(cos(x)**2) in the expression,
++                # and the argument is not explicitly real, don't simplify
++                trig_arg = arg.base.base.args[0]
++                if not trig_arg.is_extended_real:
++                    return rv
+ 
+     def f(rv):
+         if not rv.is_Add:
+diff --git a/sympy/simplify/trigsimp.py b/sympy/simplify/trigsimp.py
+index 7ca05f0304..a3ac2d66c6 100644
+--- a/sympy/simplify/trigsimp.py
++++ b/sympy/simplify/trigsimp.py
+@@ -1088,6 +1088,9 @@ def futrig(e, **kwargs):
+     """
+     from sympy.simplify.fu import hyper_as_trig
+     from sympy.simplify.simplify import bottom_up
++    from sympy.functions.elementary.miscellaneous import sqrt
++    from sympy.functions.elementary.trigonometric import sin, cos
++    from sympy.functions.elementary.complexes import Abs
+ 
+     e = sympify(e)
+ 
+@@ -1097,6 +1100,27 @@ def futrig(e, **kwargs):
+     if not e.args:
+         return e
+ 
++    # Check for expressions like sqrt(sin(x)**2) which should be Abs(sin(x)) for complex x
++    # but can be simplified to sin(x) for real x
++    def handle_sqrt_trig_square(expr):
++        if expr.is_Pow and expr.exp == S.Half:  # sqrt
++            base = expr.base
++            if (base.is_Pow and base.exp == 2 and 
++                (isinstance(base.base, (sin, cos)) or 
++                 isinstance(base.base, TrigonometricFunction))):
++                # For sqrt(sin(x)**2) or sqrt(cos(x)**2)
++                arg = base.base.args[0]
++                # Check if the argument is known to be real
++                if arg.is_extended_real:
++                    # For real arguments, sqrt(sin(x)**2) = |sin(x)|
++                    return Abs(base.base)
++                # For complex arguments, leave as is
++                return expr
++        return expr
++
++    # Apply the sqrt(sin(x)**2) handling first
++    e = bottom_up(e, handle_sqrt_trig_square)
++
+     old = e
+     e = bottom_up(e, lambda x: _futrig(x, **kwargs))
+ 

@@ -1,0 +1,36 @@
+diff --git a/django/db/backends/sqlite3/schema.py b/django/db/backends/sqlite3/schema.py
+index f0c81c123b..3c7059e9b3 100644
+--- a/django/db/backends/sqlite3/schema.py
++++ b/django/db/backends/sqlite3/schema.py
+@@ -236,7 +236,30 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
+                 if delete_field.name not in index.fields
+             ]
+ 
+-        constraints = list(model._meta.constraints)
++        # Filter out constraints with F expressions when remaking tables
++        # as SQLite doesn't support them in index expressions
++        constraints = []
++        for constraint in model._meta.constraints:
++            if isinstance(constraint, UniqueConstraint) and constraint.contains_expressions:
++                # Convert F expressions to field names for UniqueConstraint
++                fields = []
++                for expr in constraint.expressions:
++                    if hasattr(expr, 'name'):
++                        fields.append(expr.name)
++                if fields:
++                    # Create a new constraint using field names instead of F expressions
++                    constraints.append(
++                        UniqueConstraint(
++                            fields=fields,
++                            name=constraint.name,
++                            condition=constraint.condition,
++                            deferrable=constraint.deferrable,
++                            include=constraint.include,
++                            opclasses=constraint.opclasses,
++                        )
++                    )
++            else:
++                constraints.append(constraint)
+ 
+         # Provide isolated instances of the fields to the new model body so
+         # that the existing model's internals aren't interfered with when

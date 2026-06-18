@@ -1,0 +1,80 @@
+diff --git a/sympy/printing/mathml.py b/sympy/printing/mathml.py
+index 1aa0ee01a2..9992d4277f 100644
+--- a/sympy/printing/mathml.py
++++ b/sympy/printing/mathml.py
+@@ -390,6 +390,9 @@ def translate(s):
+ 
+     _print_MatrixSymbol = _print_Symbol
+     _print_RandomSymbol = _print_Symbol
++    
++    def _print_IndexedBase(self, e):
++        return self._print(e.label)
+ 
+     def _print_Pow(self, e):
+         # Here we use root instead of power if the exponent is the reciprocal of an integer
+@@ -448,6 +451,23 @@ def _print_Basic(self, e):
+         for arg in e.args:
+             x.appendChild(self._print(arg))
+         return x
++        
++    def _print_Indexed(self, e):
++        x = self.dom.createElement('apply')
++        x.appendChild(self.dom.createElement('subscript'))
++        x.appendChild(self._print(e.base))
++        
++        if len(e.indices) == 1:
++            # Single index
++            x.appendChild(self._print(e.indices[0]))
++        else:
++            # Multiple indices - use a vector
++            vec = self.dom.createElement('vector')
++            for arg in e.indices:
++                vec.appendChild(self._print(arg))
++            x.appendChild(vec)
++        
++        return x
+ 
+     def _print_AssocOp(self, e):
+         x = self.dom.createElement('apply')
+@@ -847,6 +867,9 @@ def _print_MatrixSymbol(self, sym):
+         return self._print_Symbol(sym, style=self._settings['mat_symbol_style'])
+ 
+     _print_RandomSymbol = _print_Symbol
++    
++    def _print_IndexedBase(self, e):
++        return self._print(e.label)
+ 
+     def _print_conjugate(self, expr):
+         enc = self.dom.createElement('menclose')
+@@ -1016,6 +1039,31 @@ def _print_Basic(self, e):
+             brac.appendChild(self._print(arg))
+         mrow.appendChild(brac)
+         return mrow
++        
++    def _print_Indexed(self, e):
++        # Create a subscripted element
++        msub = self.dom.createElement('msub')
++        
++        # Add the base
++        msub.appendChild(self._print(e.base))
++        
++        # Add the indices
++        if len(e.indices) == 1:
++            # Single index
++            msub.appendChild(self._print(e.indices[0]))
++        else:
++            # Multiple indices - use a row with commas
++            indices_row = self.dom.createElement('mrow')
++            for i, arg in enumerate(e.indices):
++                if i > 0:
++                    # Add comma separator between indices
++                    sep = self.dom.createElement('mo')
++                    sep.appendChild(self.dom.createTextNode(','))
++                    indices_row.appendChild(sep)
++                indices_row.appendChild(self._print(arg))
++            msub.appendChild(indices_row)
++        
++        return msub
+ 
+     def _print_Tuple(self, e):
+         mrow = self.dom.createElement('mrow')

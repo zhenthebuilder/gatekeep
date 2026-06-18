@@ -1,0 +1,79 @@
+diff --git a/django/core/checks/model_checks.py b/django/core/checks/model_checks.py
+index 5c2266ca1d..8d800c81b3 100644
+--- a/django/core/checks/model_checks.py
++++ b/django/core/checks/model_checks.py
+@@ -9,6 +9,8 @@ from django.core.checks import Error, Tags, register
+ 
+ @register(Tags.models)
+ def check_all_models(app_configs=None, **kwargs):
++    from django.db import router
++    
+     db_table_models = defaultdict(list)
+     indexes = defaultdict(list)
+     constraints = defaultdict(list)
+@@ -19,7 +21,14 @@ def check_all_models(app_configs=None, **kwargs):
+         models = chain.from_iterable(app_config.get_models() for app_config in app_configs)
+     for model in models:
+         if model._meta.managed and not model._meta.proxy:
+-            db_table_models[model._meta.db_table].append(model._meta.label)
++            # Get the database for this model using the router
++            db = router.db_for_read(model)
++            if db is None:
++                # If no specific database is assigned, use the table name as the key
++                db_table_models[model._meta.db_table].append(model._meta.label)
++            else:
++                # If a specific database is assigned, use (db, table_name) as the key
++                db_table_models[(db, model._meta.db_table)].append(model._meta.label)
+         if not inspect.ismethod(model.check):
+             errors.append(
+                 Error(
+@@ -35,16 +44,33 @@ def check_all_models(app_configs=None, **kwargs):
+             indexes[model_index.name].append(model._meta.label)
+         for model_constraint in model._meta.constraints:
+             constraints[model_constraint.name].append(model._meta.label)
+-    for db_table, model_labels in db_table_models.items():
+-        if len(model_labels) != 1:
+-            errors.append(
+-                Error(
+-                    "db_table '%s' is used by multiple models: %s."
+-                    % (db_table, ', '.join(db_table_models[db_table])),
+-                    obj=db_table,
+-                    id='models.E028',
++    
++    # Check for duplicate table names
++    for key, model_labels in db_table_models.items():
++        if len(model_labels) > 1:
++            if isinstance(key, tuple):
++                # This is a (db, table) tuple
++                db, table = key
++                errors.append(
++                    Error(
++                        "db_table '%s' is used by multiple models in the same database (%s): %s."
++                        % (table, db, ', '.join(model_labels)),
++                        obj=table,
++                        id='models.E028',
++                    )
+                 )
+-            )
++            else:
++                # This is just a table name (no specific database)
++                table = key
++                errors.append(
++                    Error(
++                        "db_table '%s' is used by multiple models: %s."
++                        % (table, ', '.join(model_labels)),
++                        obj=table,
++                        id='models.E028',
++                    )
++                )
++    
+     for index_name, model_labels in indexes.items():
+         if len(model_labels) > 1:
+             model_labels = set(model_labels)
+@@ -195,4 +221,4 @@ def _check_lazy_references(apps, ignore=None):
+ 
+ @register(Tags.models)
+ def check_lazy_references(app_configs=None, **kwargs):
+-    return _check_lazy_references(apps)
++    return _check_lazy_references(apps)
+\ No newline at end of file

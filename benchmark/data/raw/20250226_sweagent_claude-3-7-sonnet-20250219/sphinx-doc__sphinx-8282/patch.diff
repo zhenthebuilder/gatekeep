@@ -1,0 +1,186 @@
+diff --git a/sphinx/ext/autodoc/__init__.py b/sphinx/ext/autodoc/__init__.py
+index 978fd5df8..021972060 100644
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -547,6 +547,38 @@ class Documenter:
+             return '%s:docstring of %s' % (self.analyzer.srcname, self.fullname)
+         return 'docstring of %s' % self.fullname
+ 
++    def add_overload_typehints_to_description(self) -> None:
++        """Add typehints from overloaded functions to the description."""
++        if self.env.config.autodoc_typehints != 'description':
++            return
++            
++        overload_typehints = self.env.temp_data.get('overload_typehints', {})
++        if self.fullname not in overload_typehints:
++            return
++            
++        sourcename = self.get_sourcename()
++        typehints = overload_typehints[self.fullname]
++        
++        # Add a blank line
++        self.add_line('', sourcename)
++        
++        # Add field list
++        self.add_line('.. rubric:: Parameters', sourcename)
++        self.add_line('', sourcename)
++        
++        # Add parameter types
++        for param_name, param_type in typehints.items():
++            if param_name == 'return':
++                continue
++            self.add_line(':param %s:' % param_name, sourcename)
++            self.add_line(':type %s: %s' % (param_name, param_type), sourcename)
++            self.add_line('', sourcename)
++        
++        # Add return type
++        if 'return' in typehints:
++            self.add_line(':returns:', sourcename)
++            self.add_line(':rtype: %s' % typehints['return'], sourcename)
++            
+     def add_content(self, more_content: Any, no_docstring: bool = False) -> None:
+         """Add content from docstrings, attribute documentation and user."""
+         # set sourcename and add content from attribute documentation
+@@ -823,6 +855,8 @@ class Documenter:
+         True, only generate if the object is defined in the module name it is
+         imported from. If *all_members* is True, document all members.
+         """
++        # Store the documenter in the environment's temp_data for use in record_typehints
++        self.env.temp_data['autodoc:documenter'] = self
+         if not self.parse_name():
+             # need a module to import
+             logger.warning(
+@@ -1237,6 +1271,10 @@ class FunctionDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # typ
+ 
+         if inspect.iscoroutinefunction(self.object):
+             self.add_line('   :async:', sourcename)
++            
++    def add_content(self, more_content: Any, no_docstring: bool = False) -> None:
++        super().add_content(more_content, no_docstring)
++        self.add_overload_typehints_to_description()
+ 
+     def format_signature(self, **kwargs: Any) -> str:
+         sigs = []
+@@ -1262,12 +1300,34 @@ class FunctionDocumenter(DocstringSignatureMixin, ModuleLevelDocumenter):  # typ
+                     sigs.append(documenter.format_signature())
+         if overloaded:
+             __globals__ = safe_getattr(self.object, '__globals__', {})
+-            for overload in self.analyzer.overloads.get('.'.join(self.objpath)):
++            overloads_list = self.analyzer.overloads.get('.'.join(self.objpath))
++            
++            for overload in overloads_list:
+                 overload = evaluate_signature(overload, __globals__,
+                                               self.env.config.autodoc_type_aliases)
+ 
+-                sig = stringify_signature(overload, **kwargs)
++                # Apply the same typehints settings to overloaded functions
++                if self.env.config.autodoc_typehints in ('none', 'description'):
++                    sig = stringify_signature(overload, show_annotation=False, **kwargs)
++                else:
++                    sig = stringify_signature(overload, **kwargs)
+                 sigs.append(sig)
++                
++            # For 'description' mode, manually add the type information to the field list
++            if self.env.config.autodoc_typehints == 'description':
++                # Store type information for later use in add_content
++                self.env.temp_data.setdefault('overload_typehints', {})
++                typehints = {}
++                
++                for overload in overloads_list:
++                    for param in overload.parameters.values():
++                        if param.annotation is not param.empty:
++                            typehints[param.name] = stringify_typehint(param.annotation)
++                    
++                    if overload.return_annotation is not overload.empty:
++                        typehints['return'] = stringify_typehint(overload.return_annotation)
++                
++                self.env.temp_data['overload_typehints'][self.fullname] = typehints
+ 
+         return "\n".join(sigs)
+ 
+@@ -1876,6 +1936,10 @@ class MethodDocumenter(DocstringSignatureMixin, ClassLevelDocumenter):  # type:
+             self.add_line('   :staticmethod:', sourcename)
+         if self.analyzer and '.'.join(self.objpath) in self.analyzer.finals:
+             self.add_line('   :final:', sourcename)
++            
++    def add_content(self, more_content: Any, no_docstring: bool = False) -> None:
++        super().add_content(more_content, no_docstring)
++        self.add_overload_typehints_to_description()
+ 
+     def document_members(self, all_members: bool = False) -> None:
+         pass
+@@ -1914,8 +1978,31 @@ class MethodDocumenter(DocstringSignatureMixin, ClassLevelDocumenter):  # type:
+                                               name=self.object_name):
+                     parameters = list(overload.parameters.values())
+                     overload = overload.replace(parameters=parameters[1:])
+-                sig = stringify_signature(overload, **kwargs)
++                
++                # Apply the same typehints settings to overloaded methods
++                if self.env.config.autodoc_typehints in ('none', 'description'):
++                    sig = stringify_signature(overload, show_annotation=False, **kwargs)
++                else:
++                    sig = stringify_signature(overload, **kwargs)
+                 sigs.append(sig)
++                
++            # For 'description' mode, manually add the type information to the field list
++            if self.env.config.autodoc_typehints == 'description':
++                # Store type information for later use in add_content
++                self.env.temp_data.setdefault('overload_typehints', {})
++                typehints = {}
++                
++                for overload in self.analyzer.overloads.get('.'.join(self.objpath)):
++                    for param in overload.parameters.values():
++                        if param.name == 'self':
++                            continue
++                        if param.annotation is not param.empty:
++                            typehints[param.name] = stringify_typehint(param.annotation)
++                    
++                    if overload.return_annotation is not overload.empty:
++                        typehints['return'] = stringify_typehint(overload.return_annotation)
++                
++                self.env.temp_data['overload_typehints'][self.fullname] = typehints
+ 
+         return "\n".join(sigs)
+ 
+diff --git a/sphinx/ext/autodoc/typehints.py b/sphinx/ext/autodoc/typehints.py
+index 4f81a6eae..e85a7906b 100644
+--- a/sphinx/ext/autodoc/typehints.py
++++ b/sphinx/ext/autodoc/typehints.py
+@@ -28,12 +28,31 @@ def record_typehints(app: Sphinx, objtype: str, name: str, obj: Any,
+         if callable(obj):
+             annotations = app.env.temp_data.setdefault('annotations', {})
+             annotation = annotations.setdefault(name, OrderedDict())
+-            sig = inspect.signature(obj)
+-            for param in sig.parameters.values():
+-                if param.annotation is not param.empty:
+-                    annotation[param.name] = typing.stringify(param.annotation)
+-            if sig.return_annotation is not sig.empty:
+-                annotation['return'] = typing.stringify(sig.return_annotation)
++            
++            # Check if this is an overloaded function
++            documenter = app.env.temp_data.get('autodoc:documenter')
++            overloaded = False
++            
++            if documenter and hasattr(documenter, 'analyzer') and documenter.analyzer:
++                objpath = getattr(documenter, 'objpath', [])
++                if objpath and '.'.join(objpath) in getattr(documenter.analyzer, 'overloads', {}):
++                    overloaded = True
++                    # Record typehints from all overloaded signatures
++                    for overload_sig in documenter.analyzer.overloads.get('.'.join(objpath)):
++                        for param in overload_sig.parameters.values():
++                            if param.annotation is not param.empty:
++                                annotation[param.name] = typing.stringify(param.annotation)
++                        if overload_sig.return_annotation is not overload_sig.empty:
++                            annotation['return'] = typing.stringify(overload_sig.return_annotation)
++            
++            # If not overloaded, proceed with the normal signature
++            if not overloaded:
++                sig = inspect.signature(obj)
++                for param in sig.parameters.values():
++                    if param.annotation is not param.empty:
++                        annotation[param.name] = typing.stringify(param.annotation)
++                if sig.return_annotation is not sig.empty:
++                    annotation['return'] = typing.stringify(sig.return_annotation)
+     except (TypeError, ValueError):
+         pass
+ 

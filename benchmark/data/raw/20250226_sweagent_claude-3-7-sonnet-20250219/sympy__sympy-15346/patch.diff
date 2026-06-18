@@ -1,0 +1,33 @@
+diff --git a/sympy/simplify/trigsimp.py b/sympy/simplify/trigsimp.py
+index 8ba346adbe..b7d8d3ca30 100644
+--- a/sympy/simplify/trigsimp.py
++++ b/sympy/simplify/trigsimp.py
+@@ -471,7 +471,7 @@ def trigsimp(expr, **opts):
+     tanh(x)**7
+ 
+     """
+-    from sympy.simplify.fu import fu
++    from sympy.simplify.fu import fu, TR10i
+ 
+     expr = sympify(expr)
+ 
+@@ -501,6 +501,19 @@ def traverse(e):
+             return new
+         return trigsimp_groebner(new, **opts)
+ 
++    # Special case for expressions like sin(a)*sin(b) + cos(a)*cos(b)
++    # where a and b are Rational
++    if expr.is_Add and len(expr.args) == 2:
++        args = list(expr.args)
++        if (all(arg.is_Mul for arg in args) and 
++            all(len(arg.args) == 2 for arg in args) and
++            all(isinstance(term, (sin, cos)) and term.args[0].is_Rational 
++                for arg in args for term in arg.args if isinstance(term, (sin, cos)))):
++            # Try TR10i directly
++            result = TR10i(expr)
++            if result != expr:
++                return result
++
+     trigsimpfunc = {
+         'fu': (lambda x: fu(x, **opts)),
+         'matching': (lambda x: futrig(x)),

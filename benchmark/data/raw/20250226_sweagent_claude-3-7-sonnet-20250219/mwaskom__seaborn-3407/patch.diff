@@ -1,0 +1,63 @@
+diff --git a/seaborn/axisgrid.py b/seaborn/axisgrid.py
+index 75349099..eef3bda9 100644
+--- a/seaborn/axisgrid.py
++++ b/seaborn/axisgrid.py
+@@ -1488,6 +1488,7 @@ class PairGrid(Grid):
+                 plt.sca(ax)
+ 
+             vector = self.data[var]
++                
+             if self._hue_var is not None:
+                 hue = self.data[self._hue_var]
+             else:
+@@ -2109,6 +2110,50 @@ def pairplot(
+         else:
+             diag_kind = "hist" if kind == "hist" else "kde"
+ 
++    # Handle MultiIndex columns by flattening them
++    if isinstance(data.columns, pd.MultiIndex):
++        # Create a copy of the dataframe with flattened column names
++        flat_data = pd.DataFrame()
++        
++        # Keep track of column names to avoid duplicates
++        used_names = set()
++        
++        # Process MultiIndex columns
++        for col in data.columns:
++            if isinstance(col, tuple):
++                # Join the tuple elements with underscores for MultiIndex columns
++                new_col_name = '_'.join(str(c) for c in col)
++                
++                # Handle potential name conflicts
++                original_name = new_col_name
++                counter = 1
++                while new_col_name in used_names:
++                    new_col_name = f"{original_name}_{counter}"
++                    counter += 1
++                
++                used_names.add(new_col_name)
++                flat_data[new_col_name] = data[col]
++            else:
++                # Keep non-MultiIndex columns as they are
++                if col in used_names:
++                    # If there's a conflict, add a suffix
++                    counter = 1
++                    new_col_name = f"{col}_{counter}"
++                    while new_col_name in used_names:
++                        counter += 1
++                        new_col_name = f"{col}_{counter}"
++                    used_names.add(new_col_name)
++                    flat_data[new_col_name] = data[col]
++                else:
++                    used_names.add(col)
++                    flat_data[col] = data[col]
++        
++        # If hue is specified and it's a column in the original data, make sure it's in the flat data
++        if hue is not None and hue in data.columns:
++            flat_data[hue] = data[hue]
++            
++        data = flat_data
++    
+     # Set up the PairGrid
+     grid_kws.setdefault("diag_sharey", diag_kind == "hist")
+     grid = PairGrid(data, vars=vars, x_vars=x_vars, y_vars=y_vars, hue=hue,

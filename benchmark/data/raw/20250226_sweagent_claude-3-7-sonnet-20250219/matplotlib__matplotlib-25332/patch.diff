@@ -1,0 +1,28 @@
+diff --git a/lib/matplotlib/cbook.py b/lib/matplotlib/cbook.py
+index c9699b2e21..b793ccd1c8 100644
+--- a/lib/matplotlib/cbook.py
++++ b/lib/matplotlib/cbook.py
+@@ -845,6 +845,23 @@ class Grouper:
+         self.clean()
+         siblings = self._mapping.get(weakref.ref(a), [weakref.ref(a)])
+         return [x() for x in siblings]
++        
++    def __getstate__(self):
++        """
++        Return state for pickling.
++        
++        Since weakrefs can't be pickled, we return an empty mapping.
++        """
++        return {'_mapping': {}}
++        
++    def __setstate__(self, state):
++        """
++        Restore state after pickling.
++        
++        The mapping will be empty, but that's okay because the grouping
++        information is only needed for the current figure session.
++        """
++        self.__dict__ = state
+ 
+ 
+ class GrouperView:

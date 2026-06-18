@@ -1,0 +1,25 @@
+diff --git a/sympy/printing/pretty/pretty.py b/sympy/printing/pretty/pretty.py
+index 6d3cc05bd3..17c4d53406 100644
+--- a/sympy/printing/pretty/pretty.py
++++ b/sympy/printing/pretty/pretty.py
+@@ -490,10 +490,17 @@ def _print_Product(self, expr):
+         sign_height = 0
+ 
+         for lim in expr.limits:
+-            width = (func_height + 2) * 5 // 3 - 2
++            # Make the product symbol less fat by reducing the width
++            width = (func_height + 2) * 4 // 3 - 2
+             sign_lines = []
+-            sign_lines.append(corner_chr + (horizontal_chr*width) + corner_chr)
+-            for i in range(func_height + 1):
++            # Extend the top bar by adding horizontal characters on both sides
++            if self._use_unicode:
++                sign_lines.append(horizontal_chr + corner_chr + (horizontal_chr*width) + corner_chr + horizontal_chr)
++            else:
++                sign_lines.append(corner_chr + (horizontal_chr*width) + corner_chr)
++            
++            # Remove the empty line at the bottom by using func_height instead of func_height + 1
++            for i in range(func_height):
+                 sign_lines.append(vertical_chr + (' '*width) + vertical_chr)
+ 
+             pretty_sign = stringPict('')

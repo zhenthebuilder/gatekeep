@@ -1,0 +1,19 @@
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 8837881579..dc3519050d 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -2086,7 +2086,13 @@ class Query(BaseExpression):
+             self.deferred_loading = existing.union(field_names), True
+         else:
+             # Remove names from the set of any existing "immediate load" names.
+-            self.deferred_loading = existing.difference(field_names), False
++            new_existing = existing.difference(field_names)
++            # If we've removed all fields from the "immediate load" set,
++            # switch to defer mode to avoid loading all fields.
++            if not new_existing and existing:
++                self.deferred_loading = frozenset(field_names), True
++            else:
++                self.deferred_loading = new_existing, False
+ 
+     def add_immediate_loading(self, field_names):
+         """

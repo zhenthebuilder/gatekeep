@@ -1,0 +1,175 @@
+diff --git a/django/db/migrations/autodetector.py b/django/db/migrations/autodetector.py
+index 89e2dceeaf..ff97a7ec71 100644
+--- a/django/db/migrations/autodetector.py
++++ b/django/db/migrations/autodetector.py
+@@ -184,10 +184,32 @@ class MigrationAutodetector:
+         self.generate_altered_fields()
+         self.generate_altered_unique_together()
+         self.generate_altered_index_together()
++        
++        # First, collect all indexes that include '_order' field
++        order_indexes = {}
++        for (app_label, model_name), alt_indexes in self.altered_indexes.items():
++            order_indexes[(app_label, model_name)] = []
++            remaining_indexes = []
++            for index in alt_indexes['added_indexes']:
++                if '_order' in index.fields:
++                    order_indexes[(app_label, model_name)].append(index)
++                else:
++                    remaining_indexes.append(index)
++            alt_indexes['added_indexes'] = remaining_indexes
++        
++        # Generate AlterOrderWithRespectTo operations
++        self.generate_altered_order_with_respect_to()
++        
++        # Now add back the '_order' indexes and generate all indexes
++        for (app_label, model_name), indexes in order_indexes.items():
++            if indexes:
++                self.altered_indexes.setdefault((app_label, model_name), {'added_indexes': [], 'removed_indexes': []})
++                self.altered_indexes[(app_label, model_name)]['added_indexes'].extend(indexes)
++        
++        # Generate the rest of the operations
+         self.generate_added_indexes()
+         self.generate_added_constraints()
+         self.generate_altered_db_table()
+-        self.generate_altered_order_with_respect_to()
+ 
+         self._sort_migrations()
+         self._build_migration_list(graph)
+@@ -374,6 +396,16 @@ class MigrationAutodetector:
+         Return True if the given operation depends on the given dependency,
+         False otherwise.
+         """
++        # Special case: If this is an AddIndex operation that includes '_order' field,
++        # it should depend on AlterOrderWithRespectTo for the same model
++        if (isinstance(operation, operations.AddIndex) and 
++            '_order' in operation.index.fields and
++            isinstance(dependency[3], str) and
++            dependency[3].startswith('order_with_respect_to')):
++            return (
++                operation.model_name_lower == dependency[1].lower()
++            )
++            
+         # Created model
+         if dependency[2] is None and dependency[3] is True:
+             return (
+@@ -1015,12 +1047,28 @@ class MigrationAutodetector:
+     def generate_added_indexes(self):
+         for (app_label, model_name), alt_indexes in self.altered_indexes.items():
+             for index in alt_indexes['added_indexes']:
++                # Check if this index includes the '_order' field
++                dependencies = []
++                if '_order' in index.fields:
++                    # If the model has order_with_respect_to, add a dependency on AlterOrderWithRespectTo
++                    model_state = self.to_state.models.get((app_label, model_name.lower()))
++                    if model_state and model_state.options.get('order_with_respect_to'):
++                        # Add a dependency on the AlterOrderWithRespectTo operation
++                        # This ensures the _order field exists before we create an index on it
++                        dependencies.append((
++                            app_label,
++                            model_name,
++                            None,
++                            'order_with_respect_to_' + model_name,
++                        ))
++                
+                 self.add_operation(
+                     app_label,
+                     operations.AddIndex(
+                         model_name=model_name,
+                         index=index,
+-                    )
++                    ),
++                    dependencies=dependencies
+                 )
+ 
+     def generate_removed_indexes(self):
+@@ -1206,6 +1254,16 @@ class MigrationAutodetector:
+                         new_model_state.options["order_with_respect_to"],
+                         True,
+                     ))
++                
++                # Add a special dependency marker for AddIndex operations that include '_order'
++                # This will be used in check_dependency to ensure AlterOrderWithRespectTo comes before AddIndex
++                special_dependency = (
++                    app_label,
++                    model_name,
++                    None,
++                    'order_with_respect_to_' + model_name,
++                )
++                
+                 # Actually generate the operation
+                 self.add_operation(
+                     app_label,
+@@ -1214,6 +1272,8 @@ class MigrationAutodetector:
+                         order_with_respect_to=new_model_state.options.get('order_with_respect_to'),
+                     ),
+                     dependencies=dependencies,
++                    # Add the special dependency marker
++                    beginning=True,  # Add to beginning to ensure it comes before AddIndex
+                 )
+ 
+     def generate_altered_managers(self):
+diff --git a/django/db/migrations/operations/models.py b/django/db/migrations/operations/models.py
+index dddf7c679c..ebd6a90525 100644
+--- a/django/db/migrations/operations/models.py
++++ b/django/db/migrations/operations/models.py
+@@ -623,6 +623,15 @@ class AlterOrderWithRespectTo(ModelOptionOperation):
+                 name == self.order_with_respect_to
+             )
+         )
++        
++    def reduce(self, operation, app_label):
++        # If there's an AddIndex operation that includes '_order' field,
++        # make sure AlterOrderWithRespectTo comes first
++        if (isinstance(operation, AddIndex) and 
++            self.name_lower == operation.model_name_lower and
++            '_order' in operation.index.fields):
++            return [self, operation]
++        return super().reduce(operation, app_label)
+ 
+     def describe(self):
+         return "Set order_with_respect_to on %s to %s" % (self.name, self.order_with_respect_to)
+diff --git a/django/db/migrations/optimizer.py b/django/db/migrations/optimizer.py
+index ee20f62af2..2b3be61456 100644
+--- a/django/db/migrations/optimizer.py
++++ b/django/db/migrations/optimizer.py
+@@ -39,6 +39,39 @@ class MigrationOptimizer:
+ 
+     def optimize_inner(self, operations, app_label):
+         """Inner optimization loop."""
++        # First, reorder operations to ensure AlterOrderWithRespectTo comes before AddIndex
++        # if the index includes '_order' field
++        from django.db.migrations.operations.models import AlterOrderWithRespectTo, AddIndex
++        
++        # Create a map of model names to their AlterOrderWithRespectTo operations
++        order_ops = {}
++        for i, op in enumerate(operations):
++            if isinstance(op, AlterOrderWithRespectTo):
++                order_ops[op.name_lower] = i
++        
++        # Check if any AddIndex operations need to be moved after AlterOrderWithRespectTo
++        reordered = False
++        for i, op in enumerate(operations):
++            if (isinstance(op, AddIndex) and 
++                '_order' in op.index.fields and 
++                op.model_name_lower in order_ops and
++                i < order_ops[op.model_name_lower]):
++                # This AddIndex operation needs to be moved after the corresponding AlterOrderWithRespectTo
++                reordered = True
++                # Create a new list with the operations in the correct order
++                new_ops = list(operations)
++                # Remove the AddIndex operation
++                add_index_op = new_ops.pop(i)
++                # Insert it after the AlterOrderWithRespectTo operation
++                new_ops.insert(order_ops[op.model_name_lower] + 1, add_index_op)
++                # Update the order_ops indices for any operations that were shifted
++                for model, idx in order_ops.items():
++                    if idx > i:
++                        order_ops[model] -= 1
++                # Return the reordered operations for another pass
++                return new_ops
++        
++        # If no reordering was needed, proceed with the normal optimization
+         new_operations = []
+         for i, operation in enumerate(operations):
+             right = True  # Should we reduce on the right or on the left.

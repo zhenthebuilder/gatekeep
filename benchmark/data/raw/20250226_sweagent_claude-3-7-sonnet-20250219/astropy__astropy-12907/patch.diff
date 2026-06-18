@@ -1,0 +1,19 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index a308e27297..a6be949c9a 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -241,8 +241,13 @@ def _cstack(left, right):
+     if isinstance(right, Model):
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
++        # For arrays (which are the result of _separable on a CompoundModel),
++        # we need to ensure we preserve the separability structure
+         cright = np.zeros((noutp, right.shape[1]))
+-        cright[-right.shape[0]:, -right.shape[1]:] = 1
++        
++        # Instead of setting all elements to 1, copy the actual values
++        # This preserves the separability information from nested compound models
++        cright[-right.shape[0]:, -right.shape[1]:] = right
+ 
+     return np.hstack([cleft, cright])
+ 

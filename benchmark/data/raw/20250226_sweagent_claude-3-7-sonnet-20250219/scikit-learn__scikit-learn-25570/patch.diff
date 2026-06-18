@@ -1,0 +1,60 @@
+diff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py
+index a26145117..3c56145f2 100644
+--- a/sklearn/compose/_column_transformer.py
++++ b/sklearn/compose/_column_transformer.py
+@@ -862,14 +862,50 @@ class ColumnTransformer(TransformerMixin, _BaseComposition):
+                 if not self.verbose_feature_names_out:
+                     return output
+ 
++                # For pandas output with verbose_feature_names_out=True, we need to handle
++                # the case where some transformers have no features, which means they don't
++                # appear in the output DataFrame after pd.concat
++                
++                # If there are no columns in the output, just return it as is
++                if output.shape[1] == 0:
++                    return output
++                
++                # Get the names of transformers that actually contributed to the output
++                # This is more reliable than using self._iter(fitted=True) because
++                # transformers with no features might be skipped during fitting
++                
++                # Map each column in the output back to its transformer
++                feature_indices = []
++                for X_df in Xs:
++                    if X_df.shape[1] > 0:
++                        feature_indices.append(len(X_df.columns))
++                
++                # Get transformer names from fitted transformers
+                 transformer_names = [
+                     t[0] for t in self._iter(fitted=True, replace_strings=True)
+                 ]
+-                feature_names_outs = [X.columns for X in Xs]
+-                names_out = self._add_prefix_for_feature_names_out(
+-                    list(zip(transformer_names, feature_names_outs))
+-                )
+-                output.columns = names_out
++                
++                # Create a mapping from column index to transformer name
++                col_to_transformer = {}
++                col_idx = 0
++                for i, n_cols in enumerate(feature_indices):
++                    if i < len(transformer_names):
++                        for j in range(n_cols):
++                            col_to_transformer[col_idx + j] = transformer_names[i]
++                    col_idx += n_cols
++                
++                # Create new column names with transformer prefixes
++                if len(col_to_transformer) > 0:
++                    new_names = []
++                    for i, col in enumerate(output.columns):
++                        if i in col_to_transformer:
++                            new_names.append(f"{col_to_transformer[i]}__{col}")
++                        else:
++                            new_names.append(col)
++                    
++                    # Set the new column names
++                    output.columns = new_names
++                
+                 return output
+ 
+             return np.hstack(Xs)

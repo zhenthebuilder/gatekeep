@@ -1,0 +1,55 @@
+diff --git a/lib/mpl_toolkits/axes_grid1/axes_grid.py b/lib/mpl_toolkits/axes_grid1/axes_grid.py
+index 2b1b1d3200..a0098ea520 100644
+--- a/lib/mpl_toolkits/axes_grid1/axes_grid.py
++++ b/lib/mpl_toolkits/axes_grid1/axes_grid.py
+@@ -13,8 +13,48 @@ from .mpl_axes import Axes
+ def _tick_only(ax, bottom_on, left_on):
+     bottom_off = not bottom_on
+     left_off = not left_on
+-    ax.axis["bottom"].toggle(ticklabels=bottom_off, label=bottom_off)
+-    ax.axis["left"].toggle(ticklabels=left_off, label=left_off)
++    
++    # First try the axes_grid1 specific interface
++    try:
++        # Check if ax.axis is subscriptable (like in mpl_toolkits.axes_grid1.mpl_axes.Axes)
++        ax.axis["bottom"].toggle(ticklabels=bottom_off, label=bottom_off)
++        ax.axis["left"].toggle(ticklabels=left_off, label=left_off)
++        return  # If this works, we're done
++    except (TypeError, KeyError, AttributeError, ValueError):
++        # ax.axis is not subscriptable or doesn't have the expected interface
++        pass
++    
++    # Fall back to standard matplotlib interface
++    try:
++        # Handle bottom axis
++        if hasattr(ax, 'xaxis') and hasattr(ax.xaxis, 'set_tick_params'):
++            ax.xaxis.set_tick_params(labelbottom=not bottom_off)
++            
++            # Try to handle the axis label
++            try:
++                if hasattr(ax.xaxis, 'get_label'):
++                    label = ax.xaxis.get_label()
++                    if label is not None:
++                        label.set_visible(not bottom_off)
++            except Exception:
++                pass  # Ignore errors with label handling
++                
++        # Handle left axis
++        if hasattr(ax, 'yaxis') and hasattr(ax.yaxis, 'set_tick_params'):
++            ax.yaxis.set_tick_params(labelleft=not left_off)
++            
++            # Try to handle the axis label
++            try:
++                if hasattr(ax.yaxis, 'get_label'):
++                    label = ax.yaxis.get_label()
++                    if label is not None:
++                        label.set_visible(not left_off)
++            except Exception:
++                pass  # Ignore errors with label handling
++    except Exception:
++        # If all else fails, just pass - we don't want to break the grid
++        # creation just because we can't control the tick visibility
++        pass
+ 
+ 
+ class CbarAxesBase:

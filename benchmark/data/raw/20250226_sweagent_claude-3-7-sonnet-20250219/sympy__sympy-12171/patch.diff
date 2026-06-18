@@ -1,0 +1,22 @@
+diff --git a/sympy/printing/mathematica.py b/sympy/printing/mathematica.py
+index 4c2ffd81e1..81b5c23769 100644
+--- a/sympy/printing/mathematica.py
++++ b/sympy/printing/mathematica.py
+@@ -109,6 +109,17 @@ def _print_Integral(self, expr):
+     def _print_Sum(self, expr):
+         return "Hold[Sum[" + ', '.join(self.doprint(a) for a in expr.args) + "]]"
+ 
++    def _print_Derivative(self, expr):
++        return "D[%s]" % (self.stringify(expr.args, ", "))
++
++    def _print_Float(self, expr):
++        # Special case for zero
++        if expr == 0:
++            return "0"
++        # Format as Python float with scientific notation and replace 'e' with '*^'
++        res = "{:.16e}".format(float(expr))
++        return res.replace('e', '*^')
++
+ 
+ def mathematica_code(expr, **settings):
+     r"""Converts an expr to a string of the Wolfram Mathematica code

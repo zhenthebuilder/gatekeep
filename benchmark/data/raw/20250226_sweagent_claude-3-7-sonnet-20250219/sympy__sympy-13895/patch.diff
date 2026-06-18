@@ -1,0 +1,45 @@
+diff --git a/reproduce_issue.py b/reproduce_issue.py
+new file mode 100644
+index 0000000000..d50a2378b7
+--- /dev/null
++++ b/reproduce_issue.py
+@@ -0,0 +1,38 @@
++from sympy import *
++import sys
++
++def test_issue():
++    x = Symbol('x')
++    e = (-x/4 - S(1)/12)**x - 1
++    print("Original expression:")
++    print(e)
++    
++    f = simplify(e)
++    print("\nSimplified expression:")
++    print(f)
++    
++    a = S(9)/5
++    
++    print("\nSubstituting x = 9/5 into original expression:")
++    e_subs = simplify(e.subs(x, a))
++    print(e_subs)
++    
++    print("\nSubstituting x = 9/5 into simplified expression:")
++    f_subs = simplify(f.subs(x, a))
++    print(f_subs)
++    
++    print("\nNumerical evaluation of original expression at x = 9/5:")
++    print(N(e.subs(x, a)))
++    
++    print("\nNumerical evaluation of simplified expression at x = 9/5:")
++    print(N(f.subs(x, a)))
++    
++    # Check if they're equal
++    if N(e.subs(x, a)) == N(f.subs(x, a)):
++        print("\nThe expressions evaluate to the same value.")
++    else:
++        print("\nERROR: The expressions evaluate to different values!")
++        print("Difference:", N(e.subs(x, a) - f.subs(x, a)))
++
++if __name__ == "__main__":
++    test_issue()
+\ No newline at end of file

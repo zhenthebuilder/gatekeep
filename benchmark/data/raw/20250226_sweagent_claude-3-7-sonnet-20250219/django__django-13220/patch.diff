@@ -1,0 +1,61 @@
+diff --git a/django/core/exceptions.py b/django/core/exceptions.py
+index dc084b8692..ab35c22b62 100644
+--- a/django/core/exceptions.py
++++ b/django/core/exceptions.py
+@@ -181,6 +181,56 @@ class ValidationError(Exception):
+ 
+     def __repr__(self):
+         return 'ValidationError(%s)' % self
++        
++    def __eq__(self, other):
++        if not isinstance(other, ValidationError):
++            return NotImplemented
++            
++        if hasattr(self, 'error_dict') and hasattr(other, 'error_dict'):
++            if set(self.error_dict) != set(other.error_dict):
++                return False
++                
++            # Compare error dictionaries, ignoring the order of errors within each field
++            for field in self.error_dict:
++                if field not in other.error_dict:
++                    return False
++                    
++                # Create a comparable representation of each error
++                self_errors = sorted(
++                    (str(e.message), e.code, str(e.params) if e.params is not None else None) 
++                    for e in self.error_dict[field]
++                )
++                other_errors = sorted(
++                    (str(e.message), e.code, str(e.params) if e.params is not None else None) 
++                    for e in other.error_dict[field]
++                )
++                
++                if self_errors != other_errors:
++                    return False
++            return True
++            
++        elif hasattr(self, 'error_list') and hasattr(other, 'error_list'):
++            # Compare error lists, ignoring order
++            self_errors = sorted(
++                (str(e.message), e.code, str(e.params) if e.params is not None else None) 
++                for e in self.error_list
++            )
++            other_errors = sorted(
++                (str(e.message), e.code, str(e.params) if e.params is not None else None) 
++                for e in other.error_list
++            )
++            return self_errors == other_errors
++            
++        elif hasattr(self, 'message') and hasattr(other, 'message'):
++            # Compare simple messages
++            return (
++                self.message == other.message and
++                self.code == other.code and
++                self.params == other.params
++            )
++            
++        # Different types of ValidationErrors
++        return False
+ 
+ 
+ class EmptyResultSet(Exception):

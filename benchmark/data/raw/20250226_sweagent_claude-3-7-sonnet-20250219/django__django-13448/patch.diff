@@ -1,0 +1,67 @@
+diff --git a/django/db/backends/base/creation.py b/django/db/backends/base/creation.py
+index 503f7f56fd..34e0e546d6 100644
+--- a/django/db/backends/base/creation.py
++++ b/django/db/backends/base/creation.py
+@@ -74,7 +74,8 @@ class BaseDatabaseCreation:
+         # and store it on the connection. This slightly horrific process is so people
+         # who are testing on databases without transactions or who are using
+         # a TransactionTestCase still get a clean database on every test run.
+-        if serialize:
++        # Skip serialization if migrations are disabled as the tables won't exist
++        if serialize and self.connection.settings_dict['TEST'].get('MIGRATE', True):
+             self.connection._test_serialized_contents = self.serialize_db_to_string()
+ 
+         call_command('createcachetable', database=self.connection.alias)
+diff --git a/solution.md b/solution.md
+new file mode 100644
+index 0000000000..e3d18ff0da
+--- /dev/null
++++ b/solution.md
+@@ -0,0 +1,46 @@
++# Fix for "TEST": {"MIGRATE": False} Issue
++
++## Problem Description
++
++When using the Django test runner with the database setting `"TEST": {"MIGRATE": False}`, the test runner crashes with an error like:
++
++```
++django.db.utils.OperationalError: no such table: django_admin_log
++```
++
++This happens because:
++
++1. When `"TEST": {"MIGRATE": False}` is set, migrations are not run, so the database tables are not created.
++2. However, the test runner still tries to serialize the database state, which requires accessing the tables.
++3. Since the tables don't exist, an error is raised.
++
++## Solution
++
++The fix is to modify the `create_test_db` method in `django/db/backends/base/creation.py` to skip serialization when migrations are disabled:
++
++```python
++# We then serialize the current state of the database into a string
++# and store it on the connection. This slightly horrific process is so people
++# who are testing on databases without transactions or who are using
++# a TransactionTestCase still get a clean database on every test run.
++# Skip serialization if migrations are disabled as the tables won't exist
++if serialize and self.connection.settings_dict['TEST'].get('MIGRATE', True):
++    self.connection._test_serialized_contents = self.serialize_db_to_string()
++```
++
++This change ensures that serialization is only attempted when migrations are enabled, preventing the error.
++
++## Testing
++
++The fix has been tested with both simple and complex test setups:
++
++1. A simple test with a single database and `"TEST": {"MIGRATE": False}`.
++2. A complex test with multiple databases, one with migrations disabled and one with migrations enabled.
++
++Both tests pass with the fix applied.
++
++## Implementation Details
++
++The fix is minimal and only affects the serialization step in the test database creation process. It doesn't change any other behavior of the test runner or the database creation process.
++
++The change is backward compatible and doesn't affect existing code that doesn't use the `"TEST": {"MIGRATE": False}` setting.
+\ No newline at end of file

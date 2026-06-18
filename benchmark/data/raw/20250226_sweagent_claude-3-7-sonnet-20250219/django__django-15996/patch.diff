@@ -1,0 +1,34 @@
+diff --git a/django/db/migrations/serializer.py b/django/db/migrations/serializer.py
+index 38da1e6ecc..756f1eff2e 100644
+--- a/django/db/migrations/serializer.py
++++ b/django/db/migrations/serializer.py
+@@ -125,6 +125,29 @@ class EnumSerializer(BaseSerializer):
+     def serialize(self):
+         enum_class = self.value.__class__
+         module = enum_class.__module__
++        
++        # Handle empty flag (value == 0)
++        if self.value.value == 0 and issubclass(enum_class, enum.Flag):
++            return f"{module}.{enum_class.__qualname__}(0)", {"import %s" % module}
++        
++        # Handle combined flags (when name is None)
++        if self.value.name is None and hasattr(enum_class, "_decompose"):
++            # Use the _decompose method if available
++            flags = enum_class._decompose(self.value)
++            if flags:
++                flags_str = " | ".join(f"{module}.{enum_class.__qualname__}.{flag.name}" for flag in flags)
++                return flags_str, {"import %s" % module}
++        elif self.value.name is None and issubclass(enum_class, enum.Flag):
++            # Manual decomposition for Flag enums without _decompose
++            flags = []
++            for flag in enum_class:
++                if flag.value & self.value.value and flag.value != 0:
++                    flags.append(flag)
++            if flags:
++                flags_str = " | ".join(f"{module}.{enum_class.__qualname__}.{flag.name}" for flag in flags)
++                return flags_str, {"import %s" % module}
++                
++        # Default behavior for regular enum values
+         return (
+             "%s.%s[%r]" % (module, enum_class.__qualname__, self.value.name),
+             {"import %s" % module},

@@ -54,7 +54,13 @@ perfect recall (1.00) and improves precision over the status-quo baseline
 unsound before any test suite is run, at zero added false negatives.
 We report the full precision/recall/F1 table, document two real
 false-positive bugs we found and fixed during the experiment, and discuss
-honestly what a cheap deterministic check can and cannot catch. The system,
+honestly what a cheap deterministic check can and cannot catch. A second,
+independent replication on a different real agent submission (SWE-agent +
+Claude 3.7 Sonnet, 289 instances) reproduces the same qualitative pattern
+--- zero baseline true negatives, a strictly positive, zero-false-negative
+catch rate for \textsc{gatekeep} --- and surfaces an additional, more
+severe real failure mode (an agent's submitted patch that accidentally
+includes its entire 3{,}658-file virtual environment). The system,
 benchmark scoring code, and raw logs are publicly released.
 \end{abstract}
 
@@ -394,6 +400,83 @@ check and may want to narrow the pattern (e.g.\ to
 \texttt{raise NotImplementedError} only, excluding
 \texttt{except}/\texttt{assertRaises} contexts).
 
+\section{Generalization: A Second, Independent Agent Run}
+\label{sec:generalization}
+
+The result in Section~\ref{sec:results} uses a single agent submission
+(SWE-agent + Claude 3.5 Sonnet). To check whether the pattern is specific
+to that one agent/model pairing, we repeated the identical methodology on
+a second, independent, real public submission to the same
+\texttt{swe-bench/experiments} repository: run
+\texttt{20250226\_sweagent\_claude-3-7-sonnet-20250219} (SWE-agent + Claude
+3.7 Sonnet, submitted roughly eight months later). This run's public
+assets do not include full \texttt{.traj} trajectories, so Arm A here is
+adapted to ``the agent produced any non-empty \texttt{patch.diff}'' rather
+than additionally requiring a clean \texttt{exit\_status} string --- if
+anything a \emph{more permissive} (easier-to-satisfy) baseline than in the
+primary experiment, so this is a fair or conservative comparison point, not
+one stacked in \textsc{gatekeep}'s favor. We fetched all 300 instances; 289
+have a usable ground-truth report.
+
+\begin{table}[h]
+  \caption{Generalization check: same methodology, a second independent
+  real agent submission (SWE-agent + Claude 3.7 Sonnet), 289 instances.
+  Arm A is adapted for this run (non-empty patch present; no
+  \texttt{exit\_status} field available) -- see Section~\ref{sec:generalization}.}
+  \label{tab:ab2}
+  \centering
+  \small
+  \begin{tabular}{lrrrrrrrr}
+    \toprule
+    Arm & TP & FP & FN & TN & Precision & Recall & F1 & Accuracy \\
+    \midrule
+    A: baseline (adapted) & 136 & 153 & 0 & 0 & 0.4706 & 1.0000 & 0.6400 & 0.4706 \\
+    B: gatekeep            & 136 & 151 & 0 & 2 & 0.4739 & 1.0000 & 0.6430 & 0.4775 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The qualitative pattern from Section~\ref{sec:results} replicates exactly:
+Arm A again has zero true negatives, and gatekeep again catches a strictly
+positive number of doomed deliverables (2 of 153) at zero added false
+negatives. The baseline rate of resolution is much higher for this later
+run (136/289 $=$ 47.1\% vs.\ 69/287 $=$ 24.0\% for the first run, consistent
+with general model improvement over the eight months between submissions),
+which is itself an interesting, independently-sourced data point but not
+something we are claiming credit for.
+
+One of the two catches in this second run surfaced a failure mode we had
+not seen in the first: instance \texttt{sphinx-doc\_\_sphinx-8627}'s
+submitted patch is 888{,}278 lines long and touches 3{,}666 files, of which
+\textbf{3{,}658 are inside a vendored \texttt{venv/} directory} (the
+agent's own Python virtual environment, accidentally swept into its
+``patch'' alongside two real edits to the Sphinx source). gatekeep's
+placeholder-marker check happened to flag this instance (a
+\texttt{NotImplementedError} inside the vendored \texttt{babel} locale
+library, not code the agent wrote), but the more important, honestly-stated
+point is that our current check \emph{kind} is not the right tool to catch
+this specific failure mode \emph{by design} --- it was a lucky catch, not
+a targeted one. A dedicated check (e.g.\ ``forbid diffs touching a
+vendor/dependency directory,'' or ``flag diffs exceeding $N$ touched
+files as a deliverable that needs human attention before any automated
+check'') would catch this class of failure on purpose rather than by
+accident, and we list it as the most concrete near-term extension this
+experiment suggests. The other catch, \texttt{django\_\_django-16229},
+shows a related but distinct mess: its patch includes backup artifacts
+(\texttt{fields.py.orig}, \texttt{fields.py.patch}) and four scratch
+debugging scripts (\texttt{final\_fix.py}, \texttt{reproduce\_issue.py},
+etc.) alongside the real edit --- the kind of leftover-workspace clutter a
+``forbid\_glob'' rule (already implemented; Section~\ref{sec:results} did
+not need it) is built to catch, but our benchmark contract did not enable
+for this experiment.
+
+Raw data and a separately reproducible scoring script for this section are
+in \texttt{benchmark/scripts/run\_ab\_second\_run.py},
+\texttt{benchmark/results/ab\_summary\_run2.json}, and
+\texttt{ab\_raw\_rows\_run2.json}, kept distinct from
+Table~\ref{tab:ab}'s files to avoid conflating the two different Arm-A
+definitions.
+
 \section{Discussion}
 
 The headline finding of this paper is not that \textsc{gatekeep} is a
@@ -427,7 +510,11 @@ re-downloads the 300 instances' raw artifacts from the public,
 unauthenticated S3 bucket; \texttt{benchmark/scripts/distill\_trajs.py}
 extracts the trajectory summary used for Arm A;
 \texttt{benchmark/scripts/run\_ab.py} reproduces Table~\ref{tab:ab} and
-both raw-row and summary JSON files exactly. The \textsc{gatekeep} engine
+both raw-row and summary JSON files exactly;
+\texttt{benchmark/scripts/fetch\_swebench\_run2.py} and
+\texttt{run\_ab\_second\_run.py} reproduce Table~\ref{tab:ab2}
+(Section~\ref{sec:generalization}) the same way, against a second,
+independently-fetched real agent submission. The \textsc{gatekeep} engine
 itself has 22 unit/regression/parity test executions
 (\texttt{gatekeep/tests/}), all passing at submission time, including a
 dedicated regression test for each bug in Section~\ref{sec:limitations}.
