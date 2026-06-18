@@ -24,9 +24,10 @@ from __future__ import annotations
 import json
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import urlopen
+
+import requests
 
 RUN = "20240620_sweagent_claude3.5sonnet"
 BASE = f"https://swe-bench-submissions.s3.amazonaws.com/lite/{RUN}"
@@ -34,67 +35,84 @@ HERE = Path(__file__).resolve().parent
 DATA_DIR = HERE.parent / "data"
 RAW_DIR = DATA_DIR / "raw" / RUN
 
+SESSION = requests.Session()
+
 
 def fetch(url: str, timeout: int = 20) -> bytes | None:
-    for attempt in range(3):
+    for attempt in range(4):
         try:
-            with urlopen(url, timeout=timeout) as resp:
-                return resp.read()
-        except HTTPError as e:
-            if e.code == 404:
+            resp = SESSION.get(url, timeout=timeout)
+            if resp.status_code == 404:
                 return None
-            time.sleep(1 + attempt)
-        except URLError:
+            resp.raise_for_status()
+            return resp.content
+        except requests.RequestException:
             time.sleep(1 + attempt)
     return None
+
+
+def fetch_instance(iid: str) -> tuple[str, dict]:
+    inst_dir = RAW_DIR / iid
+    inst_dir.mkdir(parents=True, exist_ok=True)
+    status = {"report": True, "patch": True, "traj": True}
+
+    report_path = inst_dir / "report.json"
+    if not report_path.exists():
+        data = fetch(f"{BASE}/logs/{iid}/report.json")
+        if data is None:
+            status["report"] = False
+        else:
+            report_path.write_bytes(data)
+
+    patch_path = inst_dir / "patch.diff"
+    if not patch_path.exists():
+        data = fetch(f"{BASE}/logs/{iid}/patch.diff")
+        if data is None:
+            status["patch"] = False
+        else:
+            patch_path.write_bytes(data)
+
+    traj_path = inst_dir / "traj.json"
+    if not traj_path.exists():
+        data = fetch(f"{BASE}/trajs/{iid}.traj")
+        if data is None:
+            status["traj"] = False
+        else:
+            traj_path.write_bytes(data)
+
+    return iid, status
 
 
 def main() -> int:
     ids_path = DATA_DIR / "instance_ids.txt"
     instance_ids = [l.strip() for l in ids_path.read_text().splitlines() if l.strip()]
-    print(f"fetching artifacts for {len(instance_ids)} instances from run={RUN}")
+    print(f"fetching artifacts for {len(instance_ids)} instances from run={RUN}", flush=True)
 
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     summary = {"run": RUN, "fetched": 0, "missing_report": [], "missing_patch": [], "missing_traj": []}
 
-    for i, iid in enumerate(instance_ids):
-        inst_dir = RAW_DIR / iid
-        inst_dir.mkdir(parents=True, exist_ok=True)
-
-        report_path = inst_dir / "report.json"
-        patch_path = inst_dir / "patch.diff"
-        traj_path = inst_dir / "traj.json"
-
-        if not report_path.exists():
-            data = fetch(f"{BASE}/logs/{iid}/report.json")
-            if data is None:
+    done = 0
+    with ThreadPoolExecutor(max_workers=16) as ex:
+        futures = {ex.submit(fetch_instance, iid): iid for iid in instance_ids}
+        for fut in as_completed(futures):
+            iid, status = fut.result()
+            if not status["report"]:
                 summary["missing_report"].append(iid)
-            else:
-                report_path.write_bytes(data)
-
-        if not patch_path.exists():
-            data = fetch(f"{BASE}/logs/{iid}/patch.diff")
-            if data is None:
+            if not status["patch"]:
                 summary["missing_patch"].append(iid)
-            else:
-                patch_path.write_bytes(data)
-
-        if not traj_path.exists():
-            data = fetch(f"{BASE}/trajs/{iid}.traj")
-            if data is None:
+            if not status["traj"]:
                 summary["missing_traj"].append(iid)
-            else:
-                traj_path.write_bytes(data)
-
-        summary["fetched"] += 1
-        if (i + 1) % 25 == 0:
-            print(f"  ...{i+1}/{len(instance_ids)}")
+            summary["fetched"] += 1
+            done += 1
+            if done % 25 == 0:
+                print(f"  ...{done}/{len(instance_ids)}", flush=True)
 
     (DATA_DIR / "fetch_summary.json").write_text(json.dumps(summary, indent=2))
-    print("done.")
+    print("done.", flush=True)
     print(
         f"missing: report={len(summary['missing_report'])} "
-        f"patch={len(summary['missing_patch'])} traj={len(summary['missing_traj'])}"
+        f"patch={len(summary['missing_patch'])} traj={len(summary['missing_traj'])}",
+        flush=True,
     )
     return 0
 

@@ -1,0 +1,3792 @@
+{
+  "astropy__astropy-12907": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 34,
+      "instance_cost": 1.7084940000000002,
+      "tokens_received": 5346,
+      "tokens_sent": 542768,
+      "total_cost": 142.15831799999987
+    },
+    "n_trajectory_steps": 34,
+    "submission_chars": 2281,
+    "traj_present": true
+  },
+  "astropy__astropy-14182": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 36,
+      "instance_cost": 2.0989890000000004,
+      "tokens_received": 3598,
+      "tokens_sent": 681673,
+      "total_cost": 18.982665000000004
+    },
+    "n_trajectory_steps": 36,
+    "submission_chars": 778,
+    "traj_present": true
+  },
+  "astropy__astropy-14365": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 34,
+      "instance_cost": 1.7683409999999997,
+      "tokens_received": 3307,
+      "tokens_sent": 572912,
+      "total_cost": 150.2845919999998
+    },
+    "n_trajectory_steps": 34,
+    "submission_chars": 3566,
+    "traj_present": true
+  },
+  "astropy__astropy-14995": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 51,
+      "instance_cost": 2.8820129999999997,
+      "tokens_received": 9076,
+      "tokens_sent": 915291,
+      "total_cost": 39.69898799999999
+    },
+    "n_trajectory_steps": 51,
+    "submission_chars": 6072,
+    "traj_present": true
+  },
+  "astropy__astropy-6938": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 28,
+      "instance_cost": 4.002861,
+      "tokens_received": 2488,
+      "tokens_sent": 1321847,
+      "total_cost": 72.7386839999999
+    },
+    "n_trajectory_steps": 28,
+    "submission_chars": 1795,
+    "traj_present": true
+  },
+  "astropy__astropy-7746": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 21,
+      "instance_cost": 0.9307800000000002,
+      "tokens_received": 5157,
+      "tokens_sent": 284475,
+      "total_cost": 106.96254600000009
+    },
+    "n_trajectory_steps": 21,
+    "submission_chars": 1501,
+    "traj_present": true
+  },
+  "django__django-10914": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.713829,
+      "tokens_received": 1644,
+      "tokens_sent": 229723,
+      "total_cost": 111.5890590000001
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 1594,
+    "traj_present": true
+  },
+  "django__django-10924": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 24,
+      "instance_cost": 1.1226960000000001,
+      "tokens_received": 3550,
+      "tokens_sent": 356482,
+      "total_cost": 5.149761000000002
+    },
+    "n_trajectory_steps": 24,
+    "submission_chars": 2736,
+    "traj_present": true
+  },
+  "django__django-11001": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 26,
+      "instance_cost": 1.2976739999999998,
+      "tokens_received": 2971,
+      "tokens_sent": 417703,
+      "total_cost": 381.5124600000015
+    },
+    "n_trajectory_steps": 26,
+    "submission_chars": 2126,
+    "traj_present": true
+  },
+  "django__django-11019": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.43769399999999997,
+      "tokens_received": 2014,
+      "tokens_sent": 135828,
+      "total_cost": 288.37571099999957
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 2896,
+    "traj_present": true
+  },
+  "django__django-11039": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 55,
+      "instance_cost": 3.1464870000000005,
+      "tokens_received": 15272,
+      "tokens_sent": 972469,
+      "total_cost": 190.87757700000003
+    },
+    "n_trajectory_steps": 54,
+    "submission_chars": 7111,
+    "traj_present": true
+  },
+  "django__django-11049": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 23,
+      "instance_cost": 0.8232419999999999,
+      "tokens_received": 2137,
+      "tokens_sent": 263729,
+      "total_cost": 382.33570200000156
+    },
+    "n_trajectory_steps": 23,
+    "submission_chars": 715,
+    "traj_present": true
+  },
+  "django__django-11099": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 14,
+      "instance_cost": 0.435918,
+      "tokens_received": 1656,
+      "tokens_sent": 137026,
+      "total_cost": 67.4177760000001
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 2003,
+    "traj_present": true
+  },
+  "django__django-11133": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 14,
+      "instance_cost": 0.5091300000000001,
+      "tokens_received": 1653,
+      "tokens_sent": 161445,
+      "total_cost": 223.9696440000003
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 2316,
+    "traj_present": true
+  },
+  "django__django-11179": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 27,
+      "instance_cost": 1.377822,
+      "tokens_received": 3363,
+      "tokens_sent": 442459,
+      "total_cost": 251.02918800000026
+    },
+    "n_trajectory_steps": 27,
+    "submission_chars": 1615,
+    "traj_present": true
+  },
+  "django__django-11283": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 36,
+      "instance_cost": 1.474257,
+      "tokens_received": 6035,
+      "tokens_sent": 461244,
+      "total_cost": 359.48365499999903
+    },
+    "n_trajectory_steps": 35,
+    "submission_chars": 5224,
+    "traj_present": true
+  },
+  "django__django-11422": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 51,
+      "instance_cost": 2.368005,
+      "tokens_received": 6299,
+      "tokens_sent": 757840,
+      "total_cost": 368.4285990000009
+    },
+    "n_trajectory_steps": 51,
+    "submission_chars": 3681,
+    "traj_present": true
+  },
+  "django__django-11564": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 64,
+      "instance_cost": 4.028766,
+      "tokens_received": 7367,
+      "tokens_sent": 1306087,
+      "total_cost": 85.20665699999992
+    },
+    "n_trajectory_steps": 64,
+    "submission_chars": 6655,
+    "traj_present": true
+  },
+  "django__django-11583": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 66,
+      "instance_cost": 3.570344999999999,
+      "tokens_received": 10319,
+      "tokens_sent": 1138520,
+      "total_cost": 287.67789899999974
+    },
+    "n_trajectory_steps": 66,
+    "submission_chars": 5839,
+    "traj_present": true
+  },
+  "django__django-11620": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 29,
+      "instance_cost": 1.280427,
+      "tokens_received": 3297,
+      "tokens_sent": 410324,
+      "total_cost": 124.19988600000002
+    },
+    "n_trajectory_steps": 28,
+    "submission_chars": 3993,
+    "traj_present": true
+  },
+  "django__django-11630": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 38,
+      "instance_cost": 2.172381,
+      "tokens_received": 5287,
+      "tokens_sent": 697692,
+      "total_cost": 355.36356899999976
+    },
+    "n_trajectory_steps": 38,
+    "submission_chars": 4222,
+    "traj_present": true
+  },
+  "django__django-11742": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 73,
+      "instance_cost": 4.065657,
+      "tokens_received": 10074,
+      "tokens_sent": 1304849,
+      "total_cost": 99.85457400000006
+    },
+    "n_trajectory_steps": 73,
+    "submission_chars": 6893,
+    "traj_present": true
+  },
+  "django__django-11797": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 49,
+      "instance_cost": 2.166741,
+      "tokens_received": 6916,
+      "tokens_sent": 687667,
+      "total_cost": 121.80166800000022
+    },
+    "n_trajectory_steps": 49,
+    "submission_chars": 8425,
+    "traj_present": true
+  },
+  "django__django-11815": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 61,
+      "instance_cost": 4.079097000000001,
+      "tokens_received": 13572,
+      "tokens_sent": 1291839,
+      "total_cost": 126.88422600000007
+    },
+    "n_trajectory_steps": 61,
+    "submission_chars": 14948,
+    "traj_present": true
+  },
+  "django__django-11848": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 28,
+      "instance_cost": 1.2665160000000002,
+      "tokens_received": 4899,
+      "tokens_sent": 397677,
+      "total_cost": 182.7140460000002
+    },
+    "n_trajectory_steps": 28,
+    "submission_chars": 5235,
+    "traj_present": true
+  },
+  "django__django-11905": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 26,
+      "instance_cost": 1.1276700000000002,
+      "tokens_received": 2363,
+      "tokens_sent": 364075,
+      "total_cost": 102.75080700000012
+    },
+    "n_trajectory_steps": 26,
+    "submission_chars": 981,
+    "traj_present": true
+  },
+  "django__django-11910": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 34,
+      "instance_cost": 1.4513250000000002,
+      "tokens_received": 3210,
+      "tokens_sent": 467725,
+      "total_cost": 324.607344
+    },
+    "n_trajectory_steps": 34,
+    "submission_chars": 1813,
+    "traj_present": true
+  },
+  "django__django-11964": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 65,
+      "instance_cost": 2.654853,
+      "tokens_received": 6672,
+      "tokens_sent": 851591,
+      "total_cost": 101.97096299999983
+    },
+    "n_trajectory_steps": 65,
+    "submission_chars": 7819,
+    "traj_present": true
+  },
+  "django__django-11999": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 39,
+      "instance_cost": 1.5442830000000005,
+      "tokens_received": 6906,
+      "tokens_sent": 480231,
+      "total_cost": 22.30736700000001
+    },
+    "n_trajectory_steps": 39,
+    "submission_chars": 2381,
+    "traj_present": true
+  },
+  "django__django-12113": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 54,
+      "instance_cost": 2.9931569999999996,
+      "tokens_received": 8515,
+      "tokens_sent": 955144,
+      "total_cost": 132.04590899999982
+    },
+    "n_trajectory_steps": 52,
+    "submission_chars": 4945,
+    "traj_present": true
+  },
+  "django__django-12125": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 46,
+      "instance_cost": 1.537968,
+      "tokens_received": 4189,
+      "tokens_sent": 491711,
+      "total_cost": 150.29249999999996
+    },
+    "n_trajectory_steps": 46,
+    "submission_chars": 5546,
+    "traj_present": true
+  },
+  "django__django-12184": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 33,
+      "instance_cost": 1.7673450000000002,
+      "tokens_received": 5339,
+      "tokens_sent": 562420,
+      "total_cost": 131.17548900000014
+    },
+    "n_trajectory_steps": 32,
+    "submission_chars": 4079,
+    "traj_present": true
+  },
+  "django__django-12284": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 74,
+      "instance_cost": 4.058121,
+      "tokens_received": 13584,
+      "tokens_sent": 1284787,
+      "total_cost": 54.216254999999926
+    },
+    "n_trajectory_steps": 74,
+    "submission_chars": 10870,
+    "traj_present": true
+  },
+  "django__django-12286": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 27,
+      "instance_cost": 1.1701949999999999,
+      "tokens_received": 5120,
+      "tokens_sent": 364465,
+      "total_cost": 150.7813379999999
+    },
+    "n_trajectory_steps": 27,
+    "submission_chars": 7370,
+    "traj_present": true
+  },
+  "django__django-12308": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.7090260000000002,
+      "tokens_received": 3364,
+      "tokens_sent": 219522,
+      "total_cost": 131.00235900000015
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 2286,
+    "traj_present": true
+  },
+  "django__django-12453": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 16,
+      "instance_cost": 0.5969790000000001,
+      "tokens_received": 1678,
+      "tokens_sent": 190603,
+      "total_cost": 215.28235799999942
+    },
+    "n_trajectory_steps": 16,
+    "submission_chars": 933,
+    "traj_present": true
+  },
+  "django__django-12470": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 71,
+      "instance_cost": 4.078812,
+      "tokens_received": 15635,
+      "tokens_sent": 1281429,
+      "total_cost": 60.30888000000003
+    },
+    "n_trajectory_steps": 71,
+    "submission_chars": 44003,
+    "traj_present": true
+  },
+  "django__django-12497": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 10,
+      "instance_cost": 1.177971,
+      "tokens_received": 982,
+      "tokens_sent": 387747,
+      "total_cost": 113.61978299999973
+    },
+    "n_trajectory_steps": 10,
+    "submission_chars": 1394,
+    "traj_present": true
+  },
+  "django__django-12589": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 33,
+      "instance_cost": 1.3402230000000002,
+      "tokens_received": 4990,
+      "tokens_sent": 421791,
+      "total_cost": 173.50656600000022
+    },
+    "n_trajectory_steps": 33,
+    "submission_chars": 7109,
+    "traj_present": true
+  },
+  "django__django-12700": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 7,
+      "instance_cost": 0.23656200000000005,
+      "tokens_received": 965,
+      "tokens_sent": 74029,
+      "total_cost": 383.6327250000017
+    },
+    "n_trajectory_steps": 7,
+    "submission_chars": 2104,
+    "traj_present": true
+  },
+  "django__django-12708": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.683745,
+      "tokens_received": 2844,
+      "tokens_sent": 213695,
+      "total_cost": 99.56205900000005
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 3066,
+    "traj_present": true
+  },
+  "django__django-12747": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 60,
+      "instance_cost": 4.022817000000002,
+      "tokens_received": 19308,
+      "tokens_sent": 1244399,
+      "total_cost": 38.34556499999997
+    },
+    "n_trajectory_steps": 60,
+    "submission_chars": 5699,
+    "traj_present": true
+  },
+  "django__django-12856": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 46,
+      "instance_cost": 3.3182640000000005,
+      "tokens_received": 8275,
+      "tokens_sent": 1064713,
+      "total_cost": 34.729812
+    },
+    "n_trajectory_steps": 45,
+    "submission_chars": 4516,
+    "traj_present": true
+  },
+  "django__django-12908": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 63,
+      "instance_cost": 4.115841,
+      "tokens_received": 19153,
+      "tokens_sent": 1276182,
+      "total_cost": 169.0111440000003
+    },
+    "n_trajectory_steps": 63,
+    "submission_chars": 6167,
+    "traj_present": true
+  },
+  "django__django-12915": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 20,
+      "instance_cost": 0.7338780000000001,
+      "tokens_received": 2094,
+      "tokens_sent": 234156,
+      "total_cost": 70.81726800000021
+    },
+    "n_trajectory_steps": 20,
+    "submission_chars": 1280,
+    "traj_present": true
+  },
+  "django__django-12983": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 23,
+      "instance_cost": 0.926448,
+      "tokens_received": 2979,
+      "tokens_sent": 293921,
+      "total_cost": 93.6698340000001
+    },
+    "n_trajectory_steps": 23,
+    "submission_chars": 2209,
+    "traj_present": true
+  },
+  "django__django-13028": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 14,
+      "instance_cost": 0.8436359999999999,
+      "tokens_received": 1729,
+      "tokens_sent": 272567,
+      "total_cost": 16.238003999999993
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 2024,
+    "traj_present": true
+  },
+  "django__django-13033": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 70,
+      "instance_cost": 4.0452390000000005,
+      "tokens_received": 10580,
+      "tokens_sent": 1295513,
+      "total_cost": 235.80673500000012
+    },
+    "n_trajectory_steps": 70,
+    "submission_chars": 8769,
+    "traj_present": true
+  },
+  "django__django-13158": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 74,
+      "instance_cost": 3.7169339999999997,
+      "tokens_received": 10443,
+      "tokens_sent": 1186763,
+      "total_cost": 4.212540000000001
+    },
+    "n_trajectory_steps": 74,
+    "submission_chars": 8589,
+    "traj_present": true
+  },
+  "django__django-13220": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 20,
+      "instance_cost": 0.8551350000000001,
+      "tokens_received": 3743,
+      "tokens_sent": 266330,
+      "total_cost": 72.77193600000001
+    },
+    "n_trajectory_steps": 20,
+    "submission_chars": 3417,
+    "traj_present": true
+  },
+  "django__django-13230": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.5424599999999999,
+      "tokens_received": 1745,
+      "tokens_sent": 172095,
+      "total_cost": 61.33422
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 1333,
+    "traj_present": true
+  },
+  "django__django-13265": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.6754469999999999,
+      "tokens_received": 2198,
+      "tokens_sent": 214159,
+      "total_cost": 22.69052100000003
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 2968,
+    "traj_present": true
+  },
+  "django__django-13315": {
+    "traj_present": false
+  },
+  "django__django-13321": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.9194430000000001,
+      "tokens_received": 2514,
+      "tokens_sent": 293911,
+      "total_cost": 212.38908599999954
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 2580,
+    "traj_present": true
+  },
+  "django__django-13401": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 61,
+      "instance_cost": 3.1087260000000003,
+      "tokens_received": 12583,
+      "tokens_sent": 973327,
+      "total_cost": 14.891937
+    },
+    "n_trajectory_steps": 61,
+    "submission_chars": 15744,
+    "traj_present": true
+  },
+  "django__django-13447": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 20,
+      "instance_cost": 0.815664,
+      "tokens_received": 1946,
+      "tokens_sent": 262158,
+      "total_cost": 247.74134099999952
+    },
+    "n_trajectory_steps": 20,
+    "submission_chars": 1743,
+    "traj_present": true
+  },
+  "django__django-13448": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 24,
+      "instance_cost": 1.0175910000000001,
+      "tokens_received": 3028,
+      "tokens_sent": 324057,
+      "total_cost": 80.86859999999999
+    },
+    "n_trajectory_steps": 24,
+    "submission_chars": 5606,
+    "traj_present": true
+  },
+  "django__django-13551": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 29,
+      "instance_cost": 1.4354190000000002,
+      "tokens_received": 4351,
+      "tokens_sent": 456718,
+      "total_cost": 12.558750000000003
+    },
+    "n_trajectory_steps": 29,
+    "submission_chars": 3048,
+    "traj_present": true
+  },
+  "django__django-13590": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 16,
+      "instance_cost": 0.592839,
+      "tokens_received": 2387,
+      "tokens_sent": 185678,
+      "total_cost": 51.186941999999945
+    },
+    "n_trajectory_steps": 16,
+    "submission_chars": 1484,
+    "traj_present": true
+  },
+  "django__django-13658": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 70,
+      "instance_cost": 4.000628999999999,
+      "tokens_received": 11767,
+      "tokens_sent": 1274708,
+      "total_cost": 167.1277920000001
+    },
+    "n_trajectory_steps": 70,
+    "submission_chars": 20019,
+    "traj_present": true
+  },
+  "django__django-13660": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 21,
+      "instance_cost": 0.7490370000000001,
+      "tokens_received": 2493,
+      "tokens_sent": 237214,
+      "total_cost": 37.03393800000004
+    },
+    "n_trajectory_steps": 21,
+    "submission_chars": 3313,
+    "traj_present": true
+  },
+  "django__django-13710": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 20,
+      "instance_cost": 0.9231000000000001,
+      "tokens_received": 3037,
+      "tokens_sent": 292515,
+      "total_cost": 87.69336600000005
+    },
+    "n_trajectory_steps": 20,
+    "submission_chars": 2473,
+    "traj_present": true
+  },
+  "django__django-13757": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 70,
+      "instance_cost": 4.027296,
+      "tokens_received": 11063,
+      "tokens_sent": 1287117,
+      "total_cost": 137.57881800000007
+    },
+    "n_trajectory_steps": 70,
+    "submission_chars": 2814,
+    "traj_present": true
+  },
+  "django__django-13768": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 40,
+      "instance_cost": 1.7549490000000003,
+      "tokens_received": 4494,
+      "tokens_sent": 562513,
+      "total_cost": 297.1958610000001
+    },
+    "n_trajectory_steps": 40,
+    "submission_chars": 4319,
+    "traj_present": true
+  },
+  "django__django-13925": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 16,
+      "instance_cost": 0.575259,
+      "tokens_received": 1788,
+      "tokens_sent": 182813,
+      "total_cost": 135.14446200000037
+    },
+    "n_trajectory_steps": 16,
+    "submission_chars": 2126,
+    "traj_present": true
+  },
+  "django__django-13933": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 27,
+      "instance_cost": 1.0566299999999997,
+      "tokens_received": 3892,
+      "tokens_sent": 332750,
+      "total_cost": 85.70722499999991
+    },
+    "n_trajectory_steps": 26,
+    "submission_chars": 2726,
+    "traj_present": true
+  },
+  "django__django-13964": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 56,
+      "instance_cost": 2.6214630000000008,
+      "tokens_received": 9537,
+      "tokens_sent": 826136,
+      "total_cost": 244.94185499999963
+    },
+    "n_trajectory_steps": 56,
+    "submission_chars": 3159,
+    "traj_present": true
+  },
+  "django__django-14016": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 22,
+      "instance_cost": 0.8019329999999999,
+      "tokens_received": 3051,
+      "tokens_sent": 252056,
+      "total_cost": 220.06621500000023
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 2236,
+    "traj_present": true
+  },
+  "django__django-14017": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 71,
+      "instance_cost": 4.029783000000001,
+      "tokens_received": 13655,
+      "tokens_sent": 1274986,
+      "total_cost": 44.463840000000026
+    },
+    "n_trajectory_steps": 71,
+    "submission_chars": 5404,
+    "traj_present": true
+  },
+  "django__django-14155": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 8,
+      "instance_cost": 0.285597,
+      "tokens_received": 1447,
+      "tokens_sent": 87964,
+      "total_cost": 271.97447400000067
+    },
+    "n_trajectory_steps": 8,
+    "submission_chars": 3543,
+    "traj_present": true
+  },
+  "django__django-14238": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 22,
+      "instance_cost": 0.8132730000000001,
+      "tokens_received": 2258,
+      "tokens_sent": 259801,
+      "total_cost": 385.4864130000016
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 2618,
+    "traj_present": true
+  },
+  "django__django-14382": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 28,
+      "instance_cost": 1.044213,
+      "tokens_received": 3381,
+      "tokens_sent": 331166,
+      "total_cost": 90.15405299999998
+    },
+    "n_trajectory_steps": 28,
+    "submission_chars": 3085,
+    "traj_present": true
+  },
+  "django__django-14411": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 39,
+      "instance_cost": 1.6484670000000006,
+      "tokens_received": 4626,
+      "tokens_sent": 526359,
+      "total_cost": 22.01507400000002
+    },
+    "n_trajectory_steps": 39,
+    "submission_chars": 4041,
+    "traj_present": true
+  },
+  "django__django-14534": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 40,
+      "instance_cost": 1.7483759999999995,
+      "tokens_received": 4049,
+      "tokens_sent": 562547,
+      "total_cost": 27.71879699999998
+    },
+    "n_trajectory_steps": 40,
+    "submission_chars": 1965,
+    "traj_present": true
+  },
+  "django__django-14580": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 38,
+      "instance_cost": 1.5898440000000003,
+      "tokens_received": 3736,
+      "tokens_sent": 511268,
+      "total_cost": 86.88500400000008
+    },
+    "n_trajectory_steps": 38,
+    "submission_chars": 1246,
+    "traj_present": true
+  },
+  "django__django-14608": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 17,
+      "instance_cost": 0.6988920000000001,
+      "tokens_received": 2066,
+      "tokens_sent": 222634,
+      "total_cost": 32.923547999999975
+    },
+    "n_trajectory_steps": 17,
+    "submission_chars": 2398,
+    "traj_present": true
+  },
+  "django__django-14667": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 76,
+      "instance_cost": 4.038711000000001,
+      "tokens_received": 11082,
+      "tokens_sent": 1290827,
+      "total_cost": 177.99525900000026
+    },
+    "n_trajectory_steps": 76,
+    "submission_chars": 6515,
+    "traj_present": true
+  },
+  "django__django-14672": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.7407090000000001,
+      "tokens_received": 1383,
+      "tokens_sent": 239988,
+      "total_cost": 207.4362570000003
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 513,
+    "traj_present": true
+  },
+  "django__django-14730": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 29,
+      "instance_cost": 1.231653,
+      "tokens_received": 3067,
+      "tokens_sent": 395216,
+      "total_cost": 75.107535
+    },
+    "n_trajectory_steps": 29,
+    "submission_chars": 3387,
+    "traj_present": true
+  },
+  "django__django-14752": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 6,
+      "instance_cost": 0.21657000000000004,
+      "tokens_received": 1091,
+      "tokens_sent": 66735,
+      "total_cost": 53.82078300000011
+    },
+    "n_trajectory_steps": 6,
+    "submission_chars": 1602,
+    "traj_present": true
+  },
+  "django__django-14787": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 7,
+      "instance_cost": 0.215229,
+      "tokens_received": 942,
+      "tokens_sent": 67033,
+      "total_cost": 223.5484649999995
+    },
+    "n_trajectory_steps": 7,
+    "submission_chars": 1537,
+    "traj_present": true
+  },
+  "django__django-14855": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 9,
+      "instance_cost": 0.30186300000000005,
+      "tokens_received": 880,
+      "tokens_sent": 96221,
+      "total_cost": 292.6833000000011
+    },
+    "n_trajectory_steps": 9,
+    "submission_chars": 698,
+    "traj_present": true
+  },
+  "django__django-14915": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.4057950000000001,
+      "tokens_received": 1387,
+      "tokens_sent": 128330,
+      "total_cost": 265.7628390000003
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 1236,
+    "traj_present": true
+  },
+  "django__django-14997": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 28,
+      "instance_cost": 1.0569600000000001,
+      "tokens_received": 2695,
+      "tokens_sent": 338845,
+      "total_cost": 63.03854400000006
+    },
+    "n_trajectory_steps": 28,
+    "submission_chars": 3780,
+    "traj_present": true
+  },
+  "django__django-14999": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 28,
+      "instance_cost": 2.5916520000000003,
+      "tokens_received": 4707,
+      "tokens_sent": 840349,
+      "total_cost": 6.611733000000001
+    },
+    "n_trajectory_steps": 28,
+    "submission_chars": 2506,
+    "traj_present": true
+  },
+  "django__django-15061": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 26,
+      "instance_cost": 0.955416,
+      "tokens_received": 3147,
+      "tokens_sent": 302737,
+      "total_cost": 23.072891999999992
+    },
+    "n_trajectory_steps": 26,
+    "submission_chars": 725,
+    "traj_present": true
+  },
+  "django__django-15202": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 34,
+      "instance_cost": 1.6288950000000002,
+      "tokens_received": 6355,
+      "tokens_sent": 511190,
+      "total_cost": 204.1680809999994
+    },
+    "n_trajectory_steps": 34,
+    "submission_chars": 2460,
+    "traj_present": true
+  },
+  "django__django-15213": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 57,
+      "instance_cost": 3.637749000000001,
+      "tokens_received": 11177,
+      "tokens_sent": 1156698,
+      "total_cost": 14.010063000000002
+    },
+    "n_trajectory_steps": 57,
+    "submission_chars": 5283,
+    "traj_present": true
+  },
+  "django__django-15252": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 6,
+      "instance_cost": 0.208389,
+      "tokens_received": 1337,
+      "tokens_sent": 62778,
+      "total_cost": 130.29024000000007
+    },
+    "n_trajectory_steps": 6,
+    "submission_chars": 2868,
+    "traj_present": true
+  },
+  "django__django-15320": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 11,
+      "instance_cost": 0.36042900000000005,
+      "tokens_received": 1340,
+      "tokens_sent": 113443,
+      "total_cost": 8.985506999999995
+    },
+    "n_trajectory_steps": 11,
+    "submission_chars": 2070,
+    "traj_present": true
+  },
+  "django__django-15347": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.43773300000000004,
+      "tokens_received": 2335,
+      "tokens_sent": 134236,
+      "total_cost": 101.56918200000004
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 2105,
+    "traj_present": true
+  },
+  "django__django-15388": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 33,
+      "instance_cost": 1.3182509999999998,
+      "tokens_received": 3963,
+      "tokens_sent": 419602,
+      "total_cost": 29.075078999999977
+    },
+    "n_trajectory_steps": 33,
+    "submission_chars": 1276,
+    "traj_present": true
+  },
+  "django__django-15400": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.426018,
+      "tokens_received": 1270,
+      "tokens_sent": 135656,
+      "total_cost": 225.52866600000053
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 1224,
+    "traj_present": true
+  },
+  "django__django-15498": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 24,
+      "instance_cost": 0.9454710000000001,
+      "tokens_received": 2987,
+      "tokens_sent": 300222,
+      "total_cost": 6.064397999999998
+    },
+    "n_trajectory_steps": 24,
+    "submission_chars": 2127,
+    "traj_present": true
+  },
+  "django__django-15695": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 32,
+      "instance_cost": 1.6971779999999994,
+      "tokens_received": 5951,
+      "tokens_sent": 535971,
+      "total_cost": 217.23627599999978
+    },
+    "n_trajectory_steps": 32,
+    "submission_chars": 6932,
+    "traj_present": true
+  },
+  "django__django-15738": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 37,
+      "instance_cost": 1.5588720000000003,
+      "tokens_received": 3494,
+      "tokens_sent": 502154,
+      "total_cost": 77.65452600000002
+    },
+    "n_trajectory_steps": 37,
+    "submission_chars": 2854,
+    "traj_present": true
+  },
+  "django__django-15781": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 33,
+      "instance_cost": 1.3061940000000003,
+      "tokens_received": 3333,
+      "tokens_sent": 418733,
+      "total_cost": 239.57567399999968
+    },
+    "n_trajectory_steps": 33,
+    "submission_chars": 1790,
+    "traj_present": true
+  },
+  "django__django-15789": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.641874,
+      "tokens_received": 1975,
+      "tokens_sent": 204083,
+      "total_cost": 341.20944000000105
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 3074,
+    "traj_present": true
+  },
+  "django__django-15790": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 44,
+      "instance_cost": 2.3961029999999996,
+      "tokens_received": 9842,
+      "tokens_sent": 749491,
+      "total_cost": 330.5859449999989
+    },
+    "n_trajectory_steps": 43,
+    "submission_chars": 4601,
+    "traj_present": true
+  },
+  "django__django-15814": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 27,
+      "instance_cost": 1.2708000000000004,
+      "tokens_received": 5383,
+      "tokens_sent": 396685,
+      "total_cost": 82.37768100000004
+    },
+    "n_trajectory_steps": 27,
+    "submission_chars": 4027,
+    "traj_present": true
+  },
+  "django__django-15819": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 37,
+      "instance_cost": 1.5587550000000001,
+      "tokens_received": 5731,
+      "tokens_sent": 490930,
+      "total_cost": 62.892975
+    },
+    "n_trajectory_steps": 37,
+    "submission_chars": 2598,
+    "traj_present": true
+  },
+  "django__django-15851": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 22,
+      "instance_cost": 0.978573,
+      "tokens_received": 2554,
+      "tokens_sent": 313421,
+      "total_cost": 9.921413999999997
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 7661,
+    "traj_present": true
+  },
+  "django__django-15902": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 59,
+      "instance_cost": 3.462009000000001,
+      "tokens_received": 13359,
+      "tokens_sent": 1087208,
+      "total_cost": 77.85428100000003
+    },
+    "n_trajectory_steps": 58,
+    "submission_chars": 3928,
+    "traj_present": true
+  },
+  "django__django-15996": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.6490020000000001,
+      "tokens_received": 2448,
+      "tokens_sent": 204094,
+      "total_cost": 158.18141699999967
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 2667,
+    "traj_present": true
+  },
+  "django__django-16041": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 34,
+      "instance_cost": 1.4519520000000001,
+      "tokens_received": 5459,
+      "tokens_sent": 456689,
+      "total_cost": 69.63155700000007
+    },
+    "n_trajectory_steps": 34,
+    "submission_chars": 2969,
+    "traj_present": true
+  },
+  "django__django-16046": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 27,
+      "instance_cost": 1.0104780000000002,
+      "tokens_received": 3023,
+      "tokens_sent": 321711,
+      "total_cost": 76.53829500000005
+    },
+    "n_trajectory_steps": 27,
+    "submission_chars": 2497,
+    "traj_present": true
+  },
+  "django__django-16139": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 73,
+      "instance_cost": 4.0518089999999995,
+      "tokens_received": 9040,
+      "tokens_sent": 1305403,
+      "total_cost": 65.02088100000002
+    },
+    "n_trajectory_steps": 73,
+    "submission_chars": 3970,
+    "traj_present": true
+  },
+  "django__django-16229": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 66,
+      "instance_cost": 4.0314119999999996,
+      "tokens_received": 14497,
+      "tokens_sent": 1271319,
+      "total_cost": 117.93678299999995
+    },
+    "n_trajectory_steps": 66,
+    "submission_chars": 5420,
+    "traj_present": true
+  },
+  "django__django-16255": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.41872200000000004,
+      "tokens_received": 1017,
+      "tokens_sent": 134489,
+      "total_cost": 130.0818510000001
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 525,
+    "traj_present": true
+  },
+  "django__django-16379": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 17,
+      "instance_cost": 0.6750480000000001,
+      "tokens_received": 2095,
+      "tokens_sent": 214541,
+      "total_cost": 206.64193800000004
+    },
+    "n_trajectory_steps": 17,
+    "submission_chars": 1207,
+    "traj_present": true
+  },
+  "django__django-16400": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 26,
+      "instance_cost": 0.940218,
+      "tokens_received": 2621,
+      "tokens_sent": 300301,
+      "total_cost": 231.28334999999984
+    },
+    "n_trajectory_steps": 26,
+    "submission_chars": 1309,
+    "traj_present": true
+  },
+  "django__django-16408": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 72,
+      "instance_cost": 4.035813,
+      "tokens_received": 6257,
+      "tokens_sent": 1313986,
+      "total_cost": 154.74267300000025
+    },
+    "n_trajectory_steps": 72,
+    "submission_chars": 765,
+    "traj_present": true
+  },
+  "django__django-16527": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 8,
+      "instance_cost": 0.251442,
+      "tokens_received": 586,
+      "tokens_sent": 80884,
+      "total_cost": 141.6869909999998
+    },
+    "n_trajectory_steps": 8,
+    "submission_chars": 564,
+    "traj_present": true
+  },
+  "django__django-16595": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 17,
+      "instance_cost": 1.533138,
+      "tokens_received": 3737,
+      "tokens_sent": 492361,
+      "total_cost": 241.94545200000002
+    },
+    "n_trajectory_steps": 17,
+    "submission_chars": 4586,
+    "traj_present": true
+  },
+  "django__django-16816": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 64,
+      "instance_cost": 3.7566240000000013,
+      "tokens_received": 14430,
+      "tokens_sent": 1180058,
+      "total_cost": 114.90441900000008
+    },
+    "n_trajectory_steps": 64,
+    "submission_chars": 6197,
+    "traj_present": true
+  },
+  "django__django-16820": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 66,
+      "instance_cost": 3.3226440000000004,
+      "tokens_received": 9477,
+      "tokens_sent": 1060163,
+      "total_cost": 224.38552499999986
+    },
+    "n_trajectory_steps": 66,
+    "submission_chars": 8331,
+    "traj_present": true
+  },
+  "django__django-16873": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 16,
+      "instance_cost": 0.558894,
+      "tokens_received": 1697,
+      "tokens_sent": 177813,
+      "total_cost": 66.42815100000007
+    },
+    "n_trajectory_steps": 16,
+    "submission_chars": 1965,
+    "traj_present": true
+  },
+  "django__django-16910": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 64,
+      "instance_cost": 4.038003000000001,
+      "tokens_received": 13979,
+      "tokens_sent": 1276106,
+      "total_cost": 33.895476
+    },
+    "n_trajectory_steps": 64,
+    "submission_chars": 5877,
+    "traj_present": true
+  },
+  "django__django-17051": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 1.8296459999999999,
+      "tokens_received": 2580,
+      "tokens_sent": 596982,
+      "total_cost": 104.13281100000006
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 2687,
+    "traj_present": true
+  },
+  "django__django-17087": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 58,
+      "instance_cost": 4.004994000000002,
+      "tokens_received": 7845,
+      "tokens_sent": 1295773,
+      "total_cost": 77.19540000000002
+    },
+    "n_trajectory_steps": 58,
+    "submission_chars": 3801,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-18869": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 20,
+      "instance_cost": 0.757431,
+      "tokens_received": 2406,
+      "tokens_sent": 240447,
+      "total_cost": 165.10590599999978
+    },
+    "n_trajectory_steps": 20,
+    "submission_chars": 566,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-22711": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 8,
+      "instance_cost": 0.287742,
+      "tokens_received": 1167,
+      "tokens_sent": 90079,
+      "total_cost": 205.7020529999994
+    },
+    "n_trajectory_steps": 8,
+    "submission_chars": 2111,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-22835": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.41603700000000005,
+      "tokens_received": 1068,
+      "tokens_sent": 133339,
+      "total_cost": 210.06721199999942
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 1734,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-23299": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 77,
+      "instance_cost": 4.058534999999999,
+      "tokens_received": 9888,
+      "tokens_sent": 1303405,
+      "total_cost": 258.56291700000014
+    },
+    "n_trajectory_steps": 77,
+    "submission_chars": 4999,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-23314": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 55,
+      "instance_cost": 2.770236,
+      "tokens_received": 9493,
+      "tokens_sent": 875947,
+      "total_cost": 24.494295000000015
+    },
+    "n_trajectory_steps": 53,
+    "submission_chars": 4929,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-23476": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 38,
+      "instance_cost": 1.9999379999999998,
+      "tokens_received": 6641,
+      "tokens_sent": 633441,
+      "total_cost": 256.73496900000004
+    },
+    "n_trajectory_steps": 38,
+    "submission_chars": 5613,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-23562": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 16,
+      "instance_cost": 0.611529,
+      "tokens_received": 1645,
+      "tokens_sent": 195618,
+      "total_cost": 96.10724100000004
+    },
+    "n_trajectory_steps": 16,
+    "submission_chars": 1205,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-23563": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 20,
+      "instance_cost": 1.027332,
+      "tokens_received": 4539,
+      "tokens_sent": 319749,
+      "total_cost": 160.4031959999998
+    },
+    "n_trajectory_steps": 20,
+    "submission_chars": 3491,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-23913": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 24,
+      "instance_cost": 1.1329770000000003,
+      "tokens_received": 5327,
+      "tokens_sent": 351024,
+      "total_cost": 66.33952799999999
+    },
+    "n_trajectory_steps": 24,
+    "submission_chars": 2472,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-23964": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 11,
+      "instance_cost": 0.450594,
+      "tokens_received": 1359,
+      "tokens_sent": 143403,
+      "total_cost": 46.82570400000003
+    },
+    "n_trajectory_steps": 11,
+    "submission_chars": 14860,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-23987": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 23,
+      "instance_cost": 1.37055,
+      "tokens_received": 2635,
+      "tokens_sent": 443675,
+      "total_cost": 95.69493000000018
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 2155,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-24149": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 29,
+      "instance_cost": 1.1332530000000003,
+      "tokens_received": 2663,
+      "tokens_sent": 364436,
+      "total_cost": 191.35035599999952
+    },
+    "n_trajectory_steps": 29,
+    "submission_chars": 1556,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-24265": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.6221909999999999,
+      "tokens_received": 2572,
+      "tokens_sent": 194537,
+      "total_cost": 153.50937300000027
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 2596,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-24334": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.47199899999999995,
+      "tokens_received": 2110,
+      "tokens_sent": 146783,
+      "total_cost": 133.51951800000012
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 1338,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-24970": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 22,
+      "instance_cost": 0.8046930000000001,
+      "tokens_received": 2466,
+      "tokens_sent": 255901,
+      "total_cost": 43.47264000000005
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 2319,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-25079": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 27,
+      "instance_cost": 1.20672,
+      "tokens_received": 3645,
+      "tokens_sent": 384015,
+      "total_cost": 117.58293600000007
+    },
+    "n_trajectory_steps": 27,
+    "submission_chars": 1691,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-25311": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 22,
+      "instance_cost": 0.8391,
+      "tokens_received": 3958,
+      "tokens_sent": 259910,
+      "total_cost": 107.2335629999998
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 3492,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-25332": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 39,
+      "instance_cost": 1.7899200000000002,
+      "tokens_received": 6258,
+      "tokens_sent": 565350,
+      "total_cost": 59.59265700000007
+    },
+    "n_trajectory_steps": 39,
+    "submission_chars": 4284,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-25433": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 42,
+      "instance_cost": 2.021628,
+      "tokens_received": 7719,
+      "tokens_sent": 635281,
+      "total_cost": 8.086025999999999
+    },
+    "n_trajectory_steps": 42,
+    "submission_chars": 7920,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-25442": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 36,
+      "instance_cost": 1.4169960000000001,
+      "tokens_received": 6620,
+      "tokens_sent": 439232,
+      "total_cost": 223.16299800000004
+    },
+    "n_trajectory_steps": 36,
+    "submission_chars": 2335,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-25498": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.7624109999999998,
+      "tokens_received": 3029,
+      "tokens_sent": 238992,
+      "total_cost": 21.146784
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 1412,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-26011": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 14,
+      "instance_cost": 0.500436,
+      "tokens_received": 1549,
+      "tokens_sent": 159067,
+      "total_cost": 247.55592299999967
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 1546,
+    "traj_present": true
+  },
+  "matplotlib__matplotlib-26020": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.5906910000000001,
+      "tokens_received": 1699,
+      "tokens_sent": 188402,
+      "total_cost": 143.46863700000014
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 1552,
+    "traj_present": true
+  },
+  "mwaskom__seaborn-2848": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.8085420000000001,
+      "tokens_received": 1544,
+      "tokens_sent": 261794,
+      "total_cost": 117.96806999999991
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 1319,
+    "traj_present": true
+  },
+  "mwaskom__seaborn-3010": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 30,
+      "instance_cost": 2.21235,
+      "tokens_received": 5744,
+      "tokens_sent": 708730,
+      "total_cost": 243.06648299999995
+    },
+    "n_trajectory_steps": 30,
+    "submission_chars": 2370,
+    "traj_present": true
+  },
+  "mwaskom__seaborn-3190": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 54,
+      "instance_cost": 2.2298489999999997,
+      "tokens_received": 6392,
+      "tokens_sent": 711323,
+      "total_cost": 124.03747200000008
+    },
+    "n_trajectory_steps": 53,
+    "submission_chars": 3636,
+    "traj_present": true
+  },
+  "mwaskom__seaborn-3407": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 23,
+      "instance_cost": 1.767048,
+      "tokens_received": 6630,
+      "tokens_sent": 555866,
+      "total_cost": 3.718164
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 4846,
+    "traj_present": true
+  },
+  "pallets__flask-4045": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.452523,
+      "tokens_received": 1397,
+      "tokens_sent": 143856,
+      "total_cost": 65.33058900000003
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 1364,
+    "traj_present": true
+  },
+  "pallets__flask-4992": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 15,
+      "instance_cost": 0.5385540000000001,
+      "tokens_received": 1723,
+      "tokens_sent": 170903,
+      "total_cost": 69.18985500000008
+    },
+    "n_trajectory_steps": 15,
+    "submission_chars": 2610,
+    "traj_present": true
+  },
+  "pallets__flask-5063": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 8,
+      "instance_cost": 0.294864,
+      "tokens_received": 1788,
+      "tokens_sent": 89348,
+      "total_cost": 299.788980000001
+    },
+    "n_trajectory_steps": 8,
+    "submission_chars": 2143,
+    "traj_present": true
+  },
+  "psf__requests-1963": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 60,
+      "instance_cost": 4.000629,
+      "tokens_received": 18277,
+      "tokens_sent": 1242158,
+      "total_cost": 209.38432200000025
+    },
+    "n_trajectory_steps": 60,
+    "submission_chars": 6964,
+    "traj_present": true
+  },
+  "psf__requests-2148": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.484893,
+      "tokens_received": 1617,
+      "tokens_sent": 153546,
+      "total_cost": 363.6359639999989
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 769,
+    "traj_present": true
+  },
+  "psf__requests-2317": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 9,
+      "instance_cost": 0.298038,
+      "tokens_received": 881,
+      "tokens_sent": 94941,
+      "total_cost": 138.22870200000045
+    },
+    "n_trajectory_steps": 9,
+    "submission_chars": 399,
+    "traj_present": true
+  },
+  "psf__requests-2674": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.745632,
+      "tokens_received": 2528,
+      "tokens_sent": 235904,
+      "total_cost": 223.59395700000013
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 3707,
+    "traj_present": true
+  },
+  "psf__requests-3362": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 15,
+      "instance_cost": 0.517272,
+      "tokens_received": 2196,
+      "tokens_sent": 161444,
+      "total_cost": 180.0834690000003
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 2186,
+    "traj_present": true
+  },
+  "psf__requests-863": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.6468660000000002,
+      "tokens_received": 1825,
+      "tokens_sent": 206497,
+      "total_cost": 104.70802199999974
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 874847,
+    "traj_present": true
+  },
+  "pydata__xarray-3364": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 64,
+      "instance_cost": 4.022712000000001,
+      "tokens_received": 12291,
+      "tokens_sent": 1279449,
+      "total_cost": 119.69245799999986
+    },
+    "n_trajectory_steps": 64,
+    "submission_chars": 10598,
+    "traj_present": true
+  },
+  "pydata__xarray-4094": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 21,
+      "instance_cost": 0.8260259999999997,
+      "tokens_received": 2690,
+      "tokens_sent": 261892,
+      "total_cost": 207.83317199999996
+    },
+    "n_trajectory_steps": 21,
+    "submission_chars": 1670,
+    "traj_present": true
+  },
+  "pydata__xarray-4248": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 62,
+      "instance_cost": 2.9519159999999998,
+      "tokens_received": 7541,
+      "tokens_sent": 946267,
+      "total_cost": 262.46458199999887
+    },
+    "n_trajectory_steps": 62,
+    "submission_chars": 5339,
+    "traj_present": true
+  },
+  "pydata__xarray-4493": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 71,
+      "instance_cost": 4.014534,
+      "tokens_received": 12876,
+      "tokens_sent": 1273798,
+      "total_cost": 51.283776
+    },
+    "n_trajectory_steps": 71,
+    "submission_chars": 5542,
+    "traj_present": true
+  },
+  "pydata__xarray-5131": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 11,
+      "instance_cost": 0.37504800000000005,
+      "tokens_received": 925,
+      "tokens_sent": 120391,
+      "total_cost": 179.0269319999998
+    },
+    "n_trajectory_steps": 11,
+    "submission_chars": 1060,
+    "traj_present": true
+  },
+  "pylint-dev__pylint-5859": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 33,
+      "instance_cost": 1.2775560000000001,
+      "tokens_received": 2838,
+      "tokens_sent": 411662,
+      "total_cost": 12.070049999999995
+    },
+    "n_trajectory_steps": 33,
+    "submission_chars": 1125,
+    "traj_present": true
+  },
+  "pylint-dev__pylint-6506": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 7,
+      "instance_cost": 0.218811,
+      "tokens_received": 721,
+      "tokens_sent": 69332,
+      "total_cost": 257.05587299999945
+    },
+    "n_trajectory_steps": 7,
+    "submission_chars": 736,
+    "traj_present": true
+  },
+  "pylint-dev__pylint-7080": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 15,
+      "instance_cost": 1.5810990000000003,
+      "tokens_received": 1660,
+      "tokens_sent": 518733,
+      "total_cost": 154.05328799999975
+    },
+    "n_trajectory_steps": 15,
+    "submission_chars": 848,
+    "traj_present": true
+  },
+  "pylint-dev__pylint-7114": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 20,
+      "instance_cost": 1.243665,
+      "tokens_received": 2104,
+      "tokens_sent": 404035,
+      "total_cost": 213.875712
+    },
+    "n_trajectory_steps": 20,
+    "submission_chars": 1866,
+    "traj_present": true
+  },
+  "pylint-dev__pylint-7228": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 30,
+      "instance_cost": 1.7836319999999999,
+      "tokens_received": 2959,
+      "tokens_sent": 579749,
+      "total_cost": 316.5175979999992
+    },
+    "n_trajectory_steps": 30,
+    "submission_chars": 688,
+    "traj_present": true
+  },
+  "pylint-dev__pylint-7993": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.4033649999999999,
+      "tokens_received": 1200,
+      "tokens_sent": 128455,
+      "total_cost": 201.61598399999997
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 1440,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-11143": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 10,
+      "instance_cost": 0.415449,
+      "tokens_received": 1047,
+      "tokens_sent": 133248,
+      "total_cost": 121.62210300000014
+    },
+    "n_trajectory_steps": 10,
+    "submission_chars": 1158,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-11148": {
+    "traj_present": false
+  },
+  "pytest-dev__pytest-5103": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 31,
+      "instance_cost": 1.412163,
+      "tokens_received": 6704,
+      "tokens_sent": 437201,
+      "total_cost": 100.39356600000028
+    },
+    "n_trajectory_steps": 31,
+    "submission_chars": 4208,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-5221": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 69,
+      "instance_cost": 3.5474549999999994,
+      "tokens_received": 8965,
+      "tokens_sent": 1137660,
+      "total_cost": 226.71045300000006
+    },
+    "n_trajectory_steps": 69,
+    "submission_chars": 3902,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-5227": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 14,
+      "instance_cost": 0.4621500000000001,
+      "tokens_received": 1251,
+      "tokens_sent": 147795,
+      "total_cost": 167.35032000000044
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 1178,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-5413": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 21,
+      "instance_cost": 0.7641000000000002,
+      "tokens_received": 1935,
+      "tokens_sent": 245025,
+      "total_cost": 161.19469500000037
+    },
+    "n_trajectory_steps": 21,
+    "submission_chars": 1131,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-5495": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 31,
+      "instance_cost": 1.457721,
+      "tokens_received": 6765,
+      "tokens_sent": 452082,
+      "total_cost": 196.69449900000026
+    },
+    "n_trajectory_steps": 31,
+    "submission_chars": 3821,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-5692": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 23,
+      "instance_cost": 0.9600240000000001,
+      "tokens_received": 3119,
+      "tokens_sent": 304413,
+      "total_cost": 52.37666700000003
+    },
+    "n_trajectory_steps": 23,
+    "submission_chars": 1983,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-6116": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 25,
+      "instance_cost": 0.9264690000000001,
+      "tokens_received": 2162,
+      "tokens_sent": 298013,
+      "total_cost": 175.7885039999997
+    },
+    "n_trajectory_steps": 25,
+    "submission_chars": 1181,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-7168": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.585276,
+      "tokens_received": 1298,
+      "tokens_sent": 188602,
+      "total_cost": 345.2714820000005
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 759,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-7220": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 50,
+      "instance_cost": 2.289042,
+      "tokens_received": 5914,
+      "tokens_sent": 733444,
+      "total_cost": 197.08757100000054
+    },
+    "n_trajectory_steps": 50,
+    "submission_chars": 3148,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-7373": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.6143940000000001,
+      "tokens_received": 1791,
+      "tokens_sent": 195843,
+      "total_cost": 72.55646400000002
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 2396,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-7432": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 15,
+      "instance_cost": 0.573546,
+      "tokens_received": 2562,
+      "tokens_sent": 178372,
+      "total_cost": 371.57265899999874
+    },
+    "n_trajectory_steps": 15,
+    "submission_chars": 1930,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-7490": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 35,
+      "instance_cost": 2.094912,
+      "tokens_received": 6223,
+      "tokens_sent": 667189,
+      "total_cost": 105.96885900000001
+    },
+    "n_trajectory_steps": 35,
+    "submission_chars": 1670,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-8365": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.6535439999999999,
+      "tokens_received": 2173,
+      "tokens_sent": 206983,
+      "total_cost": 105.41879399999974
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 1510,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-8906": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.750321,
+      "tokens_received": 3107,
+      "tokens_sent": 234572,
+      "total_cost": 181.31441399999983
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 3647,
+    "traj_present": true
+  },
+  "pytest-dev__pytest-9359": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 84,
+      "instance_cost": 4.028451,
+      "tokens_received": 7416,
+      "tokens_sent": 1305737,
+      "total_cost": 178.22857500000023
+    },
+    "n_trajectory_steps": 84,
+    "submission_chars": 1548,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-10297": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 32,
+      "instance_cost": 1.3110300000000001,
+      "tokens_received": 4411,
+      "tokens_sent": 414955,
+      "total_cost": 139.6072680000001
+    },
+    "n_trajectory_steps": 32,
+    "submission_chars": 2916,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-10508": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.4283640000000001,
+      "tokens_received": 1449,
+      "tokens_sent": 135543,
+      "total_cost": 132.7267320000002
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 1360,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-10949": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 61,
+      "instance_cost": 2.7754950000000007,
+      "tokens_received": 6271,
+      "tokens_sent": 893810,
+      "total_cost": 102.19985100000002
+    },
+    "n_trajectory_steps": 61,
+    "submission_chars": 4422,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-11040": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 38,
+      "instance_cost": 1.6173480000000002,
+      "tokens_received": 4818,
+      "tokens_sent": 515026,
+      "total_cost": 24.142200000000013
+    },
+    "n_trajectory_steps": 38,
+    "submission_chars": 2897,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-11281": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 55,
+      "instance_cost": 3.4131780000000003,
+      "tokens_received": 13444,
+      "tokens_sent": 1070506,
+      "total_cost": 264.283809
+    },
+    "n_trajectory_steps": 55,
+    "submission_chars": 25967,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-12471": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 23,
+      "instance_cost": 1.05825,
+      "tokens_received": 5167,
+      "tokens_sent": 326915,
+      "total_cost": 133.5515220000001
+    },
+    "n_trajectory_steps": 23,
+    "submission_chars": 8212,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-13142": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 21,
+      "instance_cost": 0.811575,
+      "tokens_received": 2691,
+      "tokens_sent": 257070,
+      "total_cost": 251.92072800000022
+    },
+    "n_trajectory_steps": 21,
+    "submission_chars": 1841,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-13241": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 30,
+      "instance_cost": 1.3173540000000001,
+      "tokens_received": 4524,
+      "tokens_sent": 416498,
+      "total_cost": 29.457684000000018
+    },
+    "n_trajectory_steps": 30,
+    "submission_chars": 3231,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-13439": {
+    "traj_present": false
+  },
+  "scikit-learn__scikit-learn-13496": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 21,
+      "instance_cost": 0.7751100000000001,
+      "tokens_received": 2429,
+      "tokens_sent": 246225,
+      "total_cost": 5.3202690000000015
+    },
+    "n_trajectory_steps": 21,
+    "submission_chars": 2799,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-13497": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 35,
+      "instance_cost": 1.559199,
+      "tokens_received": 4626,
+      "tokens_sent": 496603,
+      "total_cost": 21.22288199999999
+    },
+    "n_trajectory_steps": 35,
+    "submission_chars": 3438,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-13584": {
+    "traj_present": false
+  },
+  "scikit-learn__scikit-learn-13779": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 9,
+      "instance_cost": 0.27192900000000003,
+      "tokens_received": 860,
+      "tokens_sent": 86343,
+      "total_cost": 33.26899799999999
+    },
+    "n_trajectory_steps": 9,
+    "submission_chars": 1351,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-14087": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 15,
+      "instance_cost": 0.628998,
+      "tokens_received": 2010,
+      "tokens_sent": 199616,
+      "total_cost": 70.31057700000008
+    },
+    "n_trajectory_steps": 15,
+    "submission_chars": 2788,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-14092": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 25,
+      "instance_cost": 1.074615,
+      "tokens_received": 3794,
+      "tokens_sent": 339235,
+      "total_cost": 168.10682099999994
+    },
+    "n_trajectory_steps": 25,
+    "submission_chars": 22674,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-14894": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.6930330000000001,
+      "tokens_received": 2576,
+      "tokens_sent": 218131,
+      "total_cost": 23.58399299999998
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 2351,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-14983": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 34,
+      "instance_cost": 1.7646510000000002,
+      "tokens_received": 6672,
+      "tokens_sent": 554857,
+      "total_cost": 23.272904999999984
+    },
+    "n_trajectory_steps": 34,
+    "submission_chars": 2689,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-15512": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 17,
+      "instance_cost": 0.638655,
+      "tokens_received": 2071,
+      "tokens_sent": 202530,
+      "total_cost": 9.763400999999996
+    },
+    "n_trajectory_steps": 17,
+    "submission_chars": 1831,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-15535": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 58,
+      "instance_cost": 4.095693,
+      "tokens_received": 20117,
+      "tokens_sent": 1264646,
+      "total_cost": 161.84089500000002
+    },
+    "n_trajectory_steps": 58,
+    "submission_chars": 15777,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-25500": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 11,
+      "instance_cost": 0.42891,
+      "tokens_received": 1273,
+      "tokens_sent": 136605,
+      "total_cost": 196.458408
+    },
+    "n_trajectory_steps": 11,
+    "submission_chars": 1244,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-25570": {
+    "traj_present": false
+  },
+  "scikit-learn__scikit-learn-25638": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.6645840000000001,
+      "tokens_received": 2904,
+      "tokens_sent": 207008,
+      "total_cost": 27.75682799999998
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 3437,
+    "traj_present": true
+  },
+  "scikit-learn__scikit-learn-25747": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 14,
+      "instance_cost": 0.580917,
+      "tokens_received": 2809,
+      "tokens_sent": 179594,
+      "total_cost": 20.979212999999994
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 1252,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-10325": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 25,
+      "instance_cost": 0.9561779999999999,
+      "tokens_received": 2373,
+      "tokens_sent": 306861,
+      "total_cost": 366.36501000000163
+    },
+    "n_trajectory_steps": 25,
+    "submission_chars": 5369,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-10451": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 39,
+      "instance_cost": 1.9294920000000002,
+      "tokens_received": 6329,
+      "tokens_sent": 611519,
+      "total_cost": 51.693318
+    },
+    "n_trajectory_steps": 39,
+    "submission_chars": 4691,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-11445": {
+    "traj_present": false
+  },
+  "sphinx-doc__sphinx-7686": {
+    "traj_present": false
+  },
+  "sphinx-doc__sphinx-7738": {
+    "traj_present": false
+  },
+  "sphinx-doc__sphinx-7975": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 45,
+      "instance_cost": 4.146504,
+      "tokens_received": 8140,
+      "tokens_sent": 1341468,
+      "total_cost": 115.12566599999994
+    },
+    "n_trajectory_steps": 45,
+    "submission_chars": 5991,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-8273": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 55,
+      "instance_cost": 4.0543320000000005,
+      "tokens_received": 7535,
+      "tokens_sent": 1313769,
+      "total_cost": 281.85381000000064
+    },
+    "n_trajectory_steps": 55,
+    "submission_chars": 6351,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-8282": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 79,
+      "instance_cost": 4.037592,
+      "tokens_received": 10556,
+      "tokens_sent": 1293084,
+      "total_cost": 16.705356000000002
+    },
+    "n_trajectory_steps": 79,
+    "submission_chars": 9816,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-8435": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 25,
+      "instance_cost": 0.8797799999999999,
+      "tokens_received": 2664,
+      "tokens_sent": 279940,
+      "total_cost": 48.190386000000025
+    },
+    "n_trajectory_steps": 25,
+    "submission_chars": 3339,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-8474": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 76,
+      "instance_cost": 4.013705999999998,
+      "tokens_received": 10219,
+      "tokens_sent": 1286807,
+      "total_cost": 186.9770219999999
+    },
+    "n_trajectory_steps": 75,
+    "submission_chars": 1793,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-8506": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 61,
+      "instance_cost": 4.019091,
+      "tokens_received": 7957,
+      "tokens_sent": 1299912,
+      "total_cost": 138.17034000000027
+    },
+    "n_trajectory_steps": 61,
+    "submission_chars": 5693,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-8595": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 69,
+      "instance_cost": 4.116257999999999,
+      "tokens_received": 12133,
+      "tokens_sent": 1311421,
+      "total_cost": 50.44173600000003
+    },
+    "n_trajectory_steps": 69,
+    "submission_chars": 6830,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-8627": {
+    "traj_present": false
+  },
+  "sphinx-doc__sphinx-8713": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 78,
+      "instance_cost": 4.009518000000001,
+      "tokens_received": 9390,
+      "tokens_sent": 1289556,
+      "total_cost": 49.763825999999995
+    },
+    "n_trajectory_steps": 78,
+    "submission_chars": 5112,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-8721": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 10,
+      "instance_cost": 0.35174700000000003,
+      "tokens_received": 1117,
+      "tokens_sent": 111664,
+      "total_cost": 0.35174700000000003
+    },
+    "n_trajectory_steps": 10,
+    "submission_chars": 3163,
+    "traj_present": true
+  },
+  "sphinx-doc__sphinx-8801": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.6697379999999999,
+      "tokens_received": 1615,
+      "tokens_sent": 215171,
+      "total_cost": 13.882604999999996
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 2640,
+    "traj_present": true
+  },
+  "sympy__sympy-11400": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 21,
+      "instance_cost": 0.780594,
+      "tokens_received": 2371,
+      "tokens_sent": 248343,
+      "total_cost": 30.01232699999999
+    },
+    "n_trajectory_steps": 21,
+    "submission_chars": 1052,
+    "traj_present": true
+  },
+  "sympy__sympy-11870": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 21,
+      "instance_cost": 0.8763060000000001,
+      "tokens_received": 3913,
+      "tokens_sent": 272537,
+      "total_cost": 157.97897400000014
+    },
+    "n_trajectory_steps": 21,
+    "submission_chars": 2601,
+    "traj_present": true
+  },
+  "sympy__sympy-11897": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 17,
+      "instance_cost": 0.6579510000000001,
+      "tokens_received": 1927,
+      "tokens_sent": 209682,
+      "total_cost": 27.34686
+    },
+    "n_trajectory_steps": 17,
+    "submission_chars": 2008,
+    "traj_present": true
+  },
+  "sympy__sympy-12171": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 46,
+      "instance_cost": 1.9935300000000002,
+      "tokens_received": 4930,
+      "tokens_sent": 639860,
+      "total_cost": 26.517504000000038
+    },
+    "n_trajectory_steps": 46,
+    "submission_chars": 2830,
+    "traj_present": true
+  },
+  "sympy__sympy-12236": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 67,
+      "instance_cost": 4.040591999999999,
+      "tokens_received": 15343,
+      "tokens_sent": 1270149,
+      "total_cost": 121.59346800000004
+    },
+    "n_trajectory_steps": 67,
+    "submission_chars": 7891,
+    "traj_present": true
+  },
+  "sympy__sympy-12419": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 81,
+      "instance_cost": 4.035354000000002,
+      "tokens_received": 10029,
+      "tokens_sent": 1294973,
+      "total_cost": 55.769282999999994
+    },
+    "n_trajectory_steps": 81,
+    "submission_chars": 3336,
+    "traj_present": true
+  },
+  "sympy__sympy-12454": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 11,
+      "instance_cost": 0.34755900000000006,
+      "tokens_received": 1029,
+      "tokens_sent": 110708,
+      "total_cost": 22.000664999999998
+    },
+    "n_trajectory_steps": 11,
+    "submission_chars": 1100,
+    "traj_present": true
+  },
+  "sympy__sympy-12481": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 37,
+      "instance_cost": 1.6059779999999992,
+      "tokens_received": 5017,
+      "tokens_sent": 510241,
+      "total_cost": 14.014455000000003
+    },
+    "n_trajectory_steps": 37,
+    "submission_chars": 3736,
+    "traj_present": true
+  },
+  "sympy__sympy-13031": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 15,
+      "instance_cost": 0.475695,
+      "tokens_received": 1830,
+      "tokens_sent": 149415,
+      "total_cost": 135.82929300000006
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 1829,
+    "traj_present": true
+  },
+  "sympy__sympy-13043": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 59,
+      "instance_cost": 4.034565,
+      "tokens_received": 17490,
+      "tokens_sent": 1257405,
+      "total_cost": 117.76804499999986
+    },
+    "n_trajectory_steps": 59,
+    "submission_chars": 4806,
+    "traj_present": true
+  },
+  "sympy__sympy-13146": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 10,
+      "instance_cost": 0.28875,
+      "tokens_received": 1294,
+      "tokens_sent": 89780,
+      "total_cost": 61.98158400000006
+    },
+    "n_trajectory_steps": 10,
+    "submission_chars": 1880,
+    "traj_present": true
+  },
+  "sympy__sympy-13177": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 11,
+      "instance_cost": 0.332199,
+      "tokens_received": 1184,
+      "tokens_sent": 104813,
+      "total_cost": 286.685301
+    },
+    "n_trajectory_steps": 11,
+    "submission_chars": 1071,
+    "traj_present": true
+  },
+  "sympy__sympy-13437": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 38,
+      "instance_cost": 1.54308,
+      "tokens_received": 4033,
+      "tokens_sent": 494195,
+      "total_cost": 32.314509000000015
+    },
+    "n_trajectory_steps": 38,
+    "submission_chars": 2191,
+    "traj_present": true
+  },
+  "sympy__sympy-13471": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.43007399999999996,
+      "tokens_received": 1740,
+      "tokens_sent": 134658,
+      "total_cost": 84.48518700000002
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 1251,
+    "traj_present": true
+  },
+  "sympy__sympy-13480": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 8,
+      "instance_cost": 0.24295500000000003,
+      "tokens_received": 762,
+      "tokens_sent": 77175,
+      "total_cost": 188.51784300000003
+    },
+    "n_trajectory_steps": 8,
+    "submission_chars": 1201,
+    "traj_present": true
+  },
+  "sympy__sympy-13647": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 82,
+      "instance_cost": 4.044117000000001,
+      "tokens_received": 9242,
+      "tokens_sent": 1301829,
+      "total_cost": 35.341884
+    },
+    "n_trajectory_steps": 82,
+    "submission_chars": 4513,
+    "traj_present": true
+  },
+  "sympy__sympy-13773": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 36,
+      "instance_cost": 1.4284049999999997,
+      "tokens_received": 3392,
+      "tokens_sent": 459175,
+      "total_cost": 66.44928600000001
+    },
+    "n_trajectory_steps": 36,
+    "submission_chars": 1798,
+    "traj_present": true
+  },
+  "sympy__sympy-13895": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 79,
+      "instance_cost": 4.0503360000000015,
+      "tokens_received": 11948,
+      "tokens_sent": 1290372,
+      "total_cost": 58.440363000000026
+    },
+    "n_trajectory_steps": 79,
+    "submission_chars": 3209,
+    "traj_present": true
+  },
+  "sympy__sympy-13915": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 33,
+      "instance_cost": 1.3105590000000003,
+      "tokens_received": 4841,
+      "tokens_sent": 412648,
+      "total_cost": 68.01576299999999
+    },
+    "n_trajectory_steps": 33,
+    "submission_chars": 2308,
+    "traj_present": true
+  },
+  "sympy__sympy-13971": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 52,
+      "instance_cost": 2.2419119999999997,
+      "tokens_received": 6355,
+      "tokens_sent": 715529,
+      "total_cost": 132.51446399999983
+    },
+    "n_trajectory_steps": 51,
+    "submission_chars": 2766,
+    "traj_present": true
+  },
+  "sympy__sympy-14024": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 54,
+      "instance_cost": 2.674721999999999,
+      "tokens_received": 8274,
+      "tokens_sent": 850204,
+      "total_cost": 7.937721
+    },
+    "n_trajectory_steps": 54,
+    "submission_chars": 4167,
+    "traj_present": true
+  },
+  "sympy__sympy-14308": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 45,
+      "instance_cost": 2.001207,
+      "tokens_received": 7886,
+      "tokens_sent": 627639,
+      "total_cost": 53.68031700000006
+    },
+    "n_trajectory_steps": 44,
+    "submission_chars": 6487,
+    "traj_present": true
+  },
+  "sympy__sympy-14317": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.40397399999999994,
+      "tokens_received": 1513,
+      "tokens_sent": 127093,
+      "total_cost": 342.33607199999835
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 1983,
+    "traj_present": true
+  },
+  "sympy__sympy-14396": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 26,
+      "instance_cost": 1.047483,
+      "tokens_received": 2517,
+      "tokens_sent": 336576,
+      "total_cost": 162.50369100000017
+    },
+    "n_trajectory_steps": 26,
+    "submission_chars": 3467,
+    "traj_present": true
+  },
+  "sympy__sympy-14774": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 7,
+      "instance_cost": 0.212613,
+      "tokens_received": 673,
+      "tokens_sent": 67506,
+      "total_cost": 212.63204699999994
+    },
+    "n_trajectory_steps": 7,
+    "submission_chars": 970,
+    "traj_present": true
+  },
+  "sympy__sympy-14817": {
+    "traj_present": false
+  },
+  "sympy__sympy-15011": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 18,
+      "instance_cost": 0.708249,
+      "tokens_received": 2432,
+      "tokens_sent": 223923,
+      "total_cost": 7.369008
+    },
+    "n_trajectory_steps": 18,
+    "submission_chars": 2473,
+    "traj_present": true
+  },
+  "sympy__sympy-15308": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 25,
+      "instance_cost": 0.9491429999999998,
+      "tokens_received": 2267,
+      "tokens_sent": 305046,
+      "total_cost": 255.11641799999902
+    },
+    "n_trajectory_steps": 25,
+    "submission_chars": 1431,
+    "traj_present": true
+  },
+  "sympy__sympy-15345": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 28,
+      "instance_cost": 1.1416769999999998,
+      "tokens_received": 4748,
+      "tokens_sent": 356819,
+      "total_cost": 177.53636999999983
+    },
+    "n_trajectory_steps": 28,
+    "submission_chars": 1404,
+    "traj_present": true
+  },
+  "sympy__sympy-15346": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 78,
+      "instance_cost": 4.059527999999999,
+      "tokens_received": 8924,
+      "tokens_sent": 1308556,
+      "total_cost": 68.30090400000002
+    },
+    "n_trajectory_steps": 78,
+    "submission_chars": 7747,
+    "traj_present": true
+  },
+  "sympy__sympy-15609": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 47,
+      "instance_cost": 2.033502,
+      "tokens_received": 6270,
+      "tokens_sent": 646484,
+      "total_cost": 195.46690500000014
+    },
+    "n_trajectory_steps": 47,
+    "submission_chars": 3367,
+    "traj_present": true
+  },
+  "sympy__sympy-15678": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.5020530000000001,
+      "tokens_received": 2431,
+      "tokens_sent": 155196,
+      "total_cost": 358.00939799999895
+    },
+    "n_trajectory_steps": 13,
+    "submission_chars": 2784,
+    "traj_present": true
+  },
+  "sympy__sympy-16106": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 8,
+      "instance_cost": 0.23656500000000003,
+      "tokens_received": 936,
+      "tokens_sent": 74175,
+      "total_cost": 281.33600100000035
+    },
+    "n_trajectory_steps": 8,
+    "submission_chars": 1692,
+    "traj_present": true
+  },
+  "sympy__sympy-16281": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 17,
+      "instance_cost": 0.682335,
+      "tokens_received": 2194,
+      "tokens_sent": 216475,
+      "total_cost": 82.93644000000005
+    },
+    "n_trajectory_steps": 17,
+    "submission_chars": 2489,
+    "traj_present": true
+  },
+  "sympy__sympy-16503": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.638085,
+      "tokens_received": 1746,
+      "tokens_sent": 203965,
+      "total_cost": 68.97928200000017
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 1575,
+    "traj_present": true
+  },
+  "sympy__sympy-16792": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 13,
+      "instance_cost": 0.421752,
+      "tokens_received": 1835,
+      "tokens_sent": 131409,
+      "total_cost": 228.32653499999955
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 2481,
+    "traj_present": true
+  },
+  "sympy__sympy-16988": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 67,
+      "instance_cost": 4.035341999999998,
+      "tokens_received": 16610,
+      "tokens_sent": 1262064,
+      "total_cost": 80.85176399999999
+    },
+    "n_trajectory_steps": 67,
+    "submission_chars": 5008,
+    "traj_present": true
+  },
+  "sympy__sympy-17022": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 72,
+      "instance_cost": 4.064484000000001,
+      "tokens_received": 12503,
+      "tokens_sent": 1292313,
+      "total_cost": 22.958028000000002
+    },
+    "n_trajectory_steps": 72,
+    "submission_chars": 4495,
+    "traj_present": true
+  },
+  "sympy__sympy-17139": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 9,
+      "instance_cost": 0.31205099999999997,
+      "tokens_received": 780,
+      "tokens_sent": 100117,
+      "total_cost": 68.61820199999991
+    },
+    "n_trajectory_steps": 9,
+    "submission_chars": 830,
+    "traj_present": true
+  },
+  "sympy__sympy-17630": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 43,
+      "instance_cost": 2.6399519999999996,
+      "tokens_received": 11086,
+      "tokens_sent": 824554,
+      "total_cost": 298.639134000001
+    },
+    "n_trajectory_steps": 43,
+    "submission_chars": 5748,
+    "traj_present": true
+  },
+  "sympy__sympy-17655": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 14,
+      "instance_cost": 0.482886,
+      "tokens_received": 1684,
+      "tokens_sent": 152542,
+      "total_cost": 47.34316199999995
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 1850,
+    "traj_present": true
+  },
+  "sympy__sympy-18057": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.721581,
+      "tokens_received": 2498,
+      "tokens_sent": 228037,
+      "total_cost": 87.57811799999992
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 1401,
+    "traj_present": true
+  },
+  "sympy__sympy-18087": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 80,
+      "instance_cost": 4.053102000000001,
+      "tokens_received": 8638,
+      "tokens_sent": 1307844,
+      "total_cost": 8.376210000000002
+    },
+    "n_trajectory_steps": 80,
+    "submission_chars": 3170,
+    "traj_present": true
+  },
+  "sympy__sympy-18189": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 43,
+      "instance_cost": 2.2218780000000002,
+      "tokens_received": 10119,
+      "tokens_sent": 690031,
+      "total_cost": 36.638949000000025
+    },
+    "n_trajectory_steps": 43,
+    "submission_chars": 12986,
+    "traj_present": true
+  },
+  "sympy__sympy-18199": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 17,
+      "instance_cost": 0.595341,
+      "tokens_received": 1421,
+      "tokens_sent": 191342,
+      "total_cost": 373.0525829999989
+    },
+    "n_trajectory_steps": 17,
+    "submission_chars": 574,
+    "traj_present": true
+  },
+  "sympy__sympy-18532": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 16,
+      "instance_cost": 0.5126850000000001,
+      "tokens_received": 1476,
+      "tokens_sent": 163515,
+      "total_cost": 113.05094700000005
+    },
+    "n_trajectory_steps": 16,
+    "submission_chars": 1455,
+    "traj_present": true
+  },
+  "sympy__sympy-18621": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 31,
+      "instance_cost": 1.248051,
+      "tokens_received": 4294,
+      "tokens_sent": 394547,
+      "total_cost": 123.81583500000006
+    },
+    "n_trajectory_steps": 31,
+    "submission_chars": 3805,
+    "traj_present": true
+  },
+  "sympy__sympy-18698": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 83,
+      "instance_cost": 4.018338,
+      "tokens_received": 6904,
+      "tokens_sent": 1304926,
+      "total_cost": 83.26921800000017
+    },
+    "n_trajectory_steps": 83,
+    "submission_chars": 646,
+    "traj_present": true
+  },
+  "sympy__sympy-18835": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 20,
+      "instance_cost": 0.795597,
+      "tokens_received": 3546,
+      "tokens_sent": 247469,
+      "total_cost": 82.34634600000011
+    },
+    "n_trajectory_steps": 20,
+    "submission_chars": 2715,
+    "traj_present": true
+  },
+  "sympy__sympy-19007": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 17,
+      "instance_cost": 0.62019,
+      "tokens_received": 2254,
+      "tokens_sent": 195460,
+      "total_cost": 112.48387799999998
+    },
+    "n_trajectory_steps": 17,
+    "submission_chars": 1946,
+    "traj_present": true
+  },
+  "sympy__sympy-19254": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 21,
+      "instance_cost": 0.9723989999999999,
+      "tokens_received": 5434,
+      "tokens_sent": 296963,
+      "total_cost": 66.17901600000008
+    },
+    "n_trajectory_steps": 21,
+    "submission_chars": 2491,
+    "traj_present": true
+  },
+  "sympy__sympy-19487": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 29,
+      "instance_cost": 1.0712550000000003,
+      "tokens_received": 2696,
+      "tokens_sent": 343605,
+      "total_cost": 211.5115199999998
+    },
+    "n_trajectory_steps": 29,
+    "submission_chars": 1257,
+    "traj_present": true
+  },
+  "sympy__sympy-20049": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 22,
+      "instance_cost": 0.8923830000000001,
+      "tokens_received": 3635,
+      "tokens_sent": 279286,
+      "total_cost": 95.41115700000013
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 2432,
+    "traj_present": true
+  },
+  "sympy__sympy-20154": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.44945999999999997,
+      "tokens_received": 1758,
+      "tokens_sent": 141030,
+      "total_cost": 196.8740489999998
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 3290,
+    "traj_present": true
+  },
+  "sympy__sympy-20212": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 22,
+      "instance_cost": 0.7846229999999998,
+      "tokens_received": 1760,
+      "tokens_sent": 252741,
+      "total_cost": 111.14779500000003
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 954,
+    "traj_present": true
+  },
+  "sympy__sympy-20322": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 77,
+      "instance_cost": 4.033353,
+      "tokens_received": 11120,
+      "tokens_sent": 1288851,
+      "total_cost": 19.688499
+    },
+    "n_trajectory_steps": 77,
+    "submission_chars": 9174,
+    "traj_present": true
+  },
+  "sympy__sympy-20442": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 19,
+      "instance_cost": 0.747279,
+      "tokens_received": 4072,
+      "tokens_sent": 228733,
+      "total_cost": 371.07352799999956
+    },
+    "n_trajectory_steps": 19,
+    "submission_chars": 1483,
+    "traj_present": true
+  },
+  "sympy__sympy-20590": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 38,
+      "instance_cost": 1.4107260000000004,
+      "tokens_received": 3314,
+      "tokens_sent": 453672,
+      "total_cost": 46.186317
+    },
+    "n_trajectory_steps": 38,
+    "submission_chars": 1683,
+    "traj_present": true
+  },
+  "sympy__sympy-20639": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 78,
+      "instance_cost": 4.026747,
+      "tokens_received": 8785,
+      "tokens_sent": 1298324,
+      "total_cost": 12.11687400000001
+    },
+    "n_trajectory_steps": 78,
+    "submission_chars": 2863,
+    "traj_present": true
+  },
+  "sympy__sympy-21055": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 15,
+      "instance_cost": 0.5231669999999999,
+      "tokens_received": 1977,
+      "tokens_sent": 164504,
+      "total_cost": 156.80154000000007
+    },
+    "n_trajectory_steps": 15,
+    "submission_chars": 1794,
+    "traj_present": true
+  },
+  "sympy__sympy-21171": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 24,
+      "instance_cost": 1.080846,
+      "tokens_received": 2764,
+      "tokens_sent": 346462,
+      "total_cost": 122.59456500000005
+    },
+    "n_trajectory_steps": 24,
+    "submission_chars": 1631,
+    "traj_present": true
+  },
+  "sympy__sympy-21379": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 64,
+      "instance_cost": 2.9119379999999997,
+      "tokens_received": 7792,
+      "tokens_sent": 931686,
+      "total_cost": 81.98085900000001
+    },
+    "n_trajectory_steps": 64,
+    "submission_chars": 3442,
+    "traj_present": true
+  },
+  "sympy__sympy-21612": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 22,
+      "instance_cost": 0.805551,
+      "tokens_received": 2816,
+      "tokens_sent": 254437,
+      "total_cost": 116.37621600000007
+    },
+    "n_trajectory_steps": 22,
+    "submission_chars": 1944,
+    "traj_present": true
+  },
+  "sympy__sympy-21614": {
+    "traj_present": false
+  },
+  "sympy__sympy-21627": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 89,
+      "instance_cost": 4.031687999999999,
+      "tokens_received": 6768,
+      "tokens_sent": 1310056,
+      "total_cost": 160.43059500000035
+    },
+    "n_trajectory_steps": 89,
+    "submission_chars": 415,
+    "traj_present": true
+  },
+  "sympy__sympy-21847": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.39470099999999997,
+      "tokens_received": 1199,
+      "tokens_sent": 125572,
+      "total_cost": 164.6015880000004
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 1636,
+    "traj_present": true
+  },
+  "sympy__sympy-22005": {
+    "exit_status": "submitted (exit_cost)",
+    "model_stats": {
+      "api_calls": 71,
+      "instance_cost": 4.025345999999998,
+      "tokens_received": 10607,
+      "tokens_sent": 1288747,
+      "total_cost": 4.025345999999998
+    },
+    "n_trajectory_steps": 71,
+    "submission_chars": 10805,
+    "traj_present": true
+  },
+  "sympy__sympy-22714": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 39,
+      "instance_cost": 1.8062820000000002,
+      "tokens_received": 6266,
+      "tokens_sent": 570764,
+      "total_cost": 23.712734999999988
+    },
+    "n_trajectory_steps": 39,
+    "submission_chars": 2032,
+    "traj_present": true
+  },
+  "sympy__sympy-22840": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 25,
+      "instance_cost": 1.1457330000000003,
+      "tokens_received": 3409,
+      "tokens_sent": 364866,
+      "total_cost": 89.94795299999997
+    },
+    "n_trajectory_steps": 25,
+    "submission_chars": 2788,
+    "traj_present": true
+  },
+  "sympy__sympy-23117": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 15,
+      "instance_cost": 0.5207849999999999,
+      "tokens_received": 1564,
+      "tokens_sent": 165775,
+      "total_cost": 172.4994000000002
+    },
+    "n_trajectory_steps": 15,
+    "submission_chars": 1775,
+    "traj_present": true
+  },
+  "sympy__sympy-23191": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 42,
+      "instance_cost": 2.6570249999999995,
+      "tokens_received": 15299,
+      "tokens_sent": 809180,
+      "total_cost": 32.180511
+    },
+    "n_trajectory_steps": 41,
+    "submission_chars": 5833,
+    "traj_present": true
+  },
+  "sympy__sympy-23262": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 15,
+      "instance_cost": 0.513222,
+      "tokens_received": 1317,
+      "tokens_sent": 164489,
+      "total_cost": 121.279368
+    },
+    "n_trajectory_steps": 15,
+    "submission_chars": 1205,
+    "traj_present": true
+  },
+  "sympy__sympy-24066": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 12,
+      "instance_cost": 0.42733199999999993,
+      "tokens_received": 1389,
+      "tokens_sent": 135499,
+      "total_cost": 269.2143269999995
+    },
+    "n_trajectory_steps": 12,
+    "submission_chars": 1603,
+    "traj_present": true
+  },
+  "sympy__sympy-24102": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 37,
+      "instance_cost": 1.483959,
+      "tokens_received": 3839,
+      "tokens_sent": 475458,
+      "total_cost": 61.72474200000005
+    },
+    "n_trajectory_steps": 37,
+    "submission_chars": 1648,
+    "traj_present": true
+  },
+  "sympy__sympy-24152": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 41,
+      "instance_cost": 2.021082,
+      "tokens_received": 8192,
+      "tokens_sent": 632734,
+      "total_cost": 190.677558
+    },
+    "n_trajectory_steps": 41,
+    "submission_chars": 17643,
+    "traj_present": true
+  },
+  "sympy__sympy-24213": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 14,
+      "instance_cost": 0.5270190000000001,
+      "tokens_received": 2054,
+      "tokens_sent": 165403,
+      "total_cost": 312.9491429999996
+    },
+    "n_trajectory_steps": 14,
+    "submission_chars": 2496,
+    "traj_present": true
+  },
+  "sympy__sympy-24909": {
+    "exit_status": "submitted",
+    "model_stats": {
+      "api_calls": 17,
+      "instance_cost": 0.5607120000000001,
+      "tokens_received": 1949,
+      "tokens_sent": 177159,
+      "total_cost": 94.29894300000018
+    },
+    "n_trajectory_steps": 17,
+    "submission_chars": 1028,
+    "traj_present": true
+  }
+}

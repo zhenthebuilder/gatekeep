@@ -86,12 +86,94 @@ def _indent_of(line: str) -> int:
 
 
 def yaml_load(text: str) -> Any:
-    lines = [
-        l for l in text.split("\n") if l.strip() and not l.strip().startswith("#")
-    ]
+    # Keep raw (pre-strip) lines so we can detect comment-like '#' inside
+    # block scalars vs real comments; for gatekeep's contract format a
+    # simpler safe rule suffices: strip full-line comments and blank lines
+    # up front, EXCEPT we must not do that inside a block scalar body. We
+    # handle this by first splitting into raw lines, then filtering only
+    # top-level blank/comment lines via a pre-pass that respects block
+    # scalar regions.
+    raw_lines = text.split("\n")
+    lines: list[str] = []
+    i = 0
+    while i < len(raw_lines):
+        line = raw_lines[i]
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            i += 1
+            continue
+        lines.append(line)
+        # If this line opens a block scalar (key: > or key: |, optionally
+        # with chomping indicators +/-), consume its body verbatim (no
+        # comment/blank stripping) so indentation-sensitive content and
+        # literal '#' characters survive.
+        m = re.search(r":\s*([|>][+-]?)\s*$", line)
+        if m:
+            body_indent = None
+            i += 1
+            while i < len(raw_lines):
+                nxt = raw_lines[i]
+                if not nxt.strip():
+                    lines.append(nxt)
+                    i += 1
+                    continue
+                nxt_indent = _indent_of(nxt)
+                if body_indent is None:
+                    if nxt_indent <= _indent_of(line):
+                        break
+                    body_indent = nxt_indent
+                if nxt_indent < body_indent:
+                    break
+                lines.append(nxt)
+                i += 1
+            continue
+        i += 1
+
     if not lines:
         return {}
     pos = [0]
+
+    def consume_block_scalar(key_line_indent: int, style: str) -> str:
+        body_lines = []
+        body_indent = None
+        while pos[0] < len(lines):
+            nxt = lines[pos[0]]
+            if not nxt.strip():
+                body_lines.append("")
+                pos[0] += 1
+                continue
+            nxt_indent = _indent_of(nxt)
+            if body_indent is None:
+                if nxt_indent <= key_line_indent:
+                    break
+                body_indent = nxt_indent
+            if nxt_indent < body_indent:
+                break
+            body_lines.append(nxt[body_indent:])
+            pos[0] += 1
+        while body_lines and body_lines[-1] == "":
+            body_lines.pop()
+        if style == "|":
+            return "\n".join(body_lines)
+        # folded style '>': join non-blank runs with spaces, blank line -> \n
+        out, buf = [], []
+        for bl in body_lines:
+            if bl == "":
+                if buf:
+                    out.append(" ".join(buf))
+                    buf = []
+                out.append("")
+            else:
+                buf.append(bl.strip())
+        if buf:
+            out.append(" ".join(buf))
+        return "\n".join(out).strip()
+
+    def parse_value(indent: int, val: str) -> Any:
+        m = re.fullmatch(r"([|>][+-]?)", val)
+        if m:
+            return consume_block_scalar(indent, m.group(1)[0])
+        return _parse_scalar(val)
 
     def parse_block(min_indent: int) -> Any:
         if pos[0] >= len(lines):
@@ -121,7 +203,7 @@ def yaml_load(text: str) -> Any:
                 val = val.strip()
                 item: dict[str, Any] = {}
                 if val:
-                    item[key] = _parse_scalar(val)
+                    item[key] = parse_value(indent, val)
                 else:
                     item[key] = parse_block(indent + 2)
                 # continue reading sibling keys at indent+2
@@ -135,7 +217,7 @@ def yaml_load(text: str) -> Any:
                     v2 = v2.strip()
                     pos[0] += 1
                     if v2:
-                        item[k2] = _parse_scalar(v2)
+                        item[k2] = parse_value(indent + 2, v2)
                     else:
                         item[k2] = parse_block(indent + 4)
                 result.append(item)
@@ -158,7 +240,7 @@ def yaml_load(text: str) -> Any:
             val = val.strip()
             pos[0] += 1
             if val:
-                result[key] = _parse_scalar(val)
+                result[key] = parse_value(indent, val)
             else:
                 nxt = lines[pos[0]] if pos[0] < len(lines) else ""
                 nxt_indent = _indent_of(nxt) if nxt.strip() else -1

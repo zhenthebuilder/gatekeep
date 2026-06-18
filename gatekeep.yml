@@ -1,0 +1,118 @@
+# Self-application: this is gatekeep's own deliverable contract for THIS
+# research run, derived directly from BRIEF.md's 5 required deliverables.
+# Run `gatekeep check` (or `python3 gatekeep/gatekeep_single.py check`) from
+# the repo root to verify this run's deliverables before declaring it done.
+# See DECISIONS.md (D4) for why this is included and what it does/doesn't
+# prove.
+
+name: govern-deliverables-run
+version: 1
+deliverables:
+  - id: deployable-system
+    description: >
+      A deployable form of the system exists: pip-installable package
+      and a zero-dependency single-file fallback, both with their own
+      test coverage, installable/runnable in under 5 minutes.
+    severity: required
+    checks:
+      - kind: file_exists
+        path: "gatekeep/pyproject.toml"
+      - kind: file_exists
+        path: "gatekeep/gatekeep_single.py"
+      - kind: min_size
+        path: "gatekeep/gatekeep_single.py"
+        min_bytes: 2000
+      - kind: file_exists
+        path: "gatekeep/src/gatekeep/engine.py"
+      - kind: file_exists
+        path: "gatekeep/tests/*.py"
+        min_count: 2
+      - kind: file_exists
+        path: "gatekeep/README.md"
+      - kind: min_words
+        path: "gatekeep/README.md"
+        min_words: 200
+      - kind: no_placeholder_text
+        path: "gatekeep/README.md"
+        # README documents the placeholder-detector's own vocabulary
+        # (TODO/FIXME/placeholder/etc as words describing the feature),
+        # which is a textbook self-referential false positive. Use the
+        # allow-list escape hatch rather than weakening the check itself.
+        allow:
+          - "flags TODO/FIXME"
+          - "`no_placeholder_text`"
+          - "non-placeholder"
+
+  - id: research-paper
+    description: >
+      A NeurIPS-format LaTeX paper exists with a Results section grounded
+      in real numbers from our own benchmark run.
+    severity: required
+    checks:
+      - kind: file_exists
+        path: "paper/paper.tex"
+      - kind: min_words
+        path: "paper/paper.tex"
+        min_words: 800
+      - kind: regex_required
+        path: "paper/paper.tex"
+        pattern: "\\\\section\\{Results\\}"
+      - kind: no_placeholder_text
+        path: "paper/paper.tex"
+        allow:
+          - "TODO list"   # escape hatch example, unused in practice
+
+  - id: public-benchmark-ab
+    description: >
+      An A/B run on a public recognized benchmark with reproducible
+      scoring code and raw logs present in the workspace.
+    severity: required
+    checks:
+      - kind: file_exists
+        path: "benchmark/scripts/*.py"
+        min_count: 2
+      - kind: file_exists
+        path: "benchmark/results/*.json"
+        min_count: 1
+      - kind: file_exists
+        path: "benchmark/data/raw/*/*/report.json"
+        min_count: 100
+
+  - id: marketing-plan
+    description: "A marketing plan exists as markdown."
+    severity: required
+    checks:
+      - kind: file_exists
+        path: "marketing/MARKETING.md"
+      - kind: min_words
+        path: "marketing/MARKETING.md"
+        min_words: 400
+      - kind: no_placeholder_text
+        path: "marketing/MARKETING.md"
+        allow:
+          - "not a placeholder"
+
+  - id: landing-page
+    description: >
+      A landing page exists as index.html, openable directly without a
+      build step, linking to the install path.
+    severity: required
+    checks:
+      - kind: file_exists
+        path: "index.html"
+      - kind: regex_required
+        path: "index.html"
+        pattern: "curl|pip install"
+      - kind: min_size
+        path: "index.html"
+        min_bytes: 1000
+
+  - id: decisions-trail
+    description: "A documented decision log exists (process quality, advisory)."
+    severity: advisory
+    checks:
+      - kind: file_exists
+        path: "DECISIONS.md"
+      - kind: min_words
+        path: "DECISIONS.md"
+        min_words: 300

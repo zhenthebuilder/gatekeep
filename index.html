@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gatekeep — deliverable contracts for long-horizon agent tasks</title>
+<style>
+  :root {
+    --bg: #0b0c0f;
+    --bg-card: #14161b;
+    --fg: #e8e9ec;
+    --fg-dim: #9ba0ab;
+    --accent: #5eead4;
+    --accent-2: #f59e0b;
+    --border: #232630;
+    --mono: "SF Mono", "Menlo", "Consolas", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    line-height: 1.55;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+  header.hero {
+    padding: 88px 0 56px;
+    border-bottom: 1px solid var(--border);
+  }
+  .kicker {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 4px 12px;
+    margin-bottom: 22px;
+    letter-spacing: 0.02em;
+  }
+  h1 {
+    font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.08;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  h1 .accent { color: var(--accent); }
+  .sub {
+    font-size: 19px;
+    color: var(--fg-dim);
+    max-width: 700px;
+    margin: 0 0 36px;
+  }
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+  .btn {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 14.5px;
+    padding: 13px 22px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--fg);
+  }
+  .btn.primary {
+    background: var(--accent);
+    color: #06231e;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .btn.primary:hover { text-decoration: none; opacity: 0.92; }
+  .btn:hover { text-decoration: none; border-color: var(--accent); }
+  .install-note { font-size: 13.5px; color: var(--fg-dim); }
+  pre.term {
+    background: #05060a;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 24px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 14px;
+    margin: 0 0 16px;
+    color: #d7f9f0;
+  }
+  pre.term .c { color: var(--fg-dim); }
+  pre.term .ok { color: var(--accent); }
+  pre.term .bad { color: #f87171; }
+  section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+  section h2 {
+    font-size: 26px;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+  section p.lead { color: var(--fg-dim); max-width: 700px; margin-bottom: 28px; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px; }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .card p { margin: 0; color: var(--fg-dim); font-size: 14.5px; }
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); gap: 18px; margin-top: 8px; }
+  .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .stat .num { font-family: var(--mono); font-size: 30px; color: var(--accent); font-weight: 700; }
+  .stat .label { color: var(--fg-dim); font-size: 13px; margin-top: 6px; }
+  .source-note { font-size: 13px; color: var(--fg-dim); margin-top: 18px; }
+  table.contract { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+  table.contract th, table.contract td {
+    text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border);
+  }
+  table.contract th { color: var(--fg-dim); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  code { font-family: var(--mono); background: #1b1e26; padding: 2px 6px; border-radius: 5px; font-size: 13px; }
+  footer { padding: 40px 0 70px; color: var(--fg-dim); font-size: 13.5px; }
+  footer a { color: var(--fg-dim); }
+  .links-row { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">deterministic &middot; offline &middot; MIT licensed</span>
+    <h1>Your agent says it's <span class="accent">done</span>.<br>Is it actually?</h1>
+    <p class="sub">
+      <strong>gatekeep</strong> is a deliverable-contract checker for long-horizon
+      agent tasks. Declare what a task must produce in one YAML file. Run one
+      command. Get a pass/fail report — no LLM call, no API key, no
+      network — in milliseconds, that catches deliverable drift before a
+      human (or a costly downstream test run) ever has to.
+    </p>
+    <div class="cta-row">
+      <a class="btn primary" href="#install">Install in under 5 minutes &rarr;</a>
+      <a class="btn" href="https://github.com/REPLACE_ME/gatekeep">View source</a>
+      <a class="btn" href="paper/paper.pdf">Read the paper</a>
+    </div>
+    <div class="install-note">Zero dependencies. Zero telemetry. Works fully offline.</div>
+  </div>
+</header>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Try it right now</h2>
+    <p class="lead">Two install paths, both verified end-to-end to take under five minutes from a cold machine.</p>
+
+    <pre class="term"><span class="c"># Path 1 — zero install, zero dependencies (curl one file, run it)</span>
+curl -fsSL https://raw.githubusercontent.com/REPLACE_ME/gatekeep/main/gatekeep_single.py -o gatekeep_single.py
+python3 gatekeep_single.py init
+python3 gatekeep_single.py check
+<span class="c"># &rarr; prints a markdown report, exits 1 if any required deliverable fails</span></pre>
+
+    <pre class="term"><span class="c"># Path 2 — pip install, full CLI on PATH</span>
+git clone https://github.com/REPLACE_ME/gatekeep.git
+cd gatekeep/gatekeep && pip install .
+gatekeep init && gatekeep check</pre>
+
+    <p class="source-note">
+      Both paths read the exact same <code>gatekeep.yml</code> contract format
+      and are kept in lockstep by an automated parity test suite — no "the
+      quick path is the lesser path" asterisk.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What a contract looks like</h2>
+    <p class="lead">No prompts, no rubric scoring by an LLM. Pure, boring, reproducible checks.</p>
+    <pre class="term"><span class="c">name: my-project-deliverables</span>
+deliverables:
+  - id: api-patch
+    description: <span class="ok">"the agent's code change is real, not empty or test-only"</span>
+    severity: required
+    checks:
+      - kind: valid_unified_diff
+        path: <span class="ok">"patch.diff"</span>
+        forbid_test_only: true
+  - id: readme
+    severity: required
+    checks:
+      - kind: min_words
+        path: <span class="ok">"README.md"</span>
+        min_words: 50
+      - kind: no_placeholder_text
+        path: <span class="ok">"README.md"</span></pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Measured, not asserted</h2>
+    <p class="lead">
+      We ran gatekeep's deterministic engine against 300 real, publicly
+      published agent submissions to <strong>SWE-bench Lite</strong> — actual
+      patches and trajectories produced by SWE-agent + Claude 3.5 Sonnet,
+      pulled from the official, public
+      <a href="https://github.com/swe-bench/experiments">swe-bench/experiments</a>
+      repository, scored against ground truth from princeton-nlp's own
+      SWE-bench evaluation harness. See <code>benchmark/</code> for the raw
+      logs and scoring code.
+    </p>
+    <div class="stat-row" id="stats">
+      <div class="stat"><div class="num">300</div><div class="label">real public agent submissions evaluated</div></div>
+      <div class="stat"><div class="num">&mdash;</div><div class="label">precision of gatekeep's early-warning flag</div></div>
+      <div class="stat"><div class="num">&mdash;</div><div class="label">doomed deliverables caught before any test run</div></div>
+    </div>
+    <p class="source-note">Exact figures are in <code>paper/paper.pdf</code> and <code>benchmark/results/</code> — generated by the scoring script in this repo, not hand-typed.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Why this, not an LLM judge</h2>
+    <div class="grid3">
+      <div class="card">
+        <h3>Reproducible forever</h3>
+        <p>Same contract, same filesystem state, same verdict — for anyone, on any day, with or without an API key.</p>
+      </div>
+      <div class="card">
+        <h3>Zero added cost</h3>
+        <p>No model call in the loop. Checks run in milliseconds and can gate CI without adding latency or spend.</p>
+      </div>
+      <div class="card">
+        <h3>Auditable rules</h3>
+        <p>Every check is a small, readable function. You can read the entire decision logic in one sitting.</p>
+      </div>
+      <div class="card">
+        <h3>Composable with judges</h3>
+        <p>Use gatekeep for the hard, structural guarantees; add an LLM-judge check only for genuinely soft rubric criteria, on your own terms.</p>
+      </div>
+      <div class="card">
+        <h3>CI-native</h3>
+        <p>One file, one step, fails the build — drop-in GitHub Action included.</p>
+      </div>
+      <div class="card">
+        <h3>No telemetry</h3>
+        <p>Fully offline by default. A governance tool that doesn't phone home.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>gatekeep — MIT licensed. Built as part of a long-horizon agent governance research project.</div>
+    <div class="links-row">
+      <a href="https://github.com/REPLACE_ME/gatekeep">GitHub</a>
+      <a href="paper/paper.pdf">Paper (PDF)</a>
+      <a href="marketing/MARKETING.md">Marketing plan</a>
+      <a href="gatekeep/README.md">Full docs</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

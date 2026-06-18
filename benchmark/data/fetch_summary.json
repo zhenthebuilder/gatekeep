@@ -1,0 +1,45 @@
+{
+  "run": "20240620_sweagent_claude3.5sonnet",
+  "fetched": 300,
+  "missing_report": [
+    "django__django-13315",
+    "django__django-13768",
+    "pytest-dev__pytest-11148",
+    "psf__requests-863",
+    "scikit-learn__scikit-learn-13439",
+    "scikit-learn__scikit-learn-13584",
+    "scikit-learn__scikit-learn-25570",
+    "sphinx-doc__sphinx-11445",
+    "sphinx-doc__sphinx-7686",
+    "sphinx-doc__sphinx-7738",
+    "sphinx-doc__sphinx-8627",
+    "sympy__sympy-14817",
+    "sympy__sympy-21614"
+  ],
+  "missing_patch": [
+    "django__django-13315",
+    "pytest-dev__pytest-11148",
+    "scikit-learn__scikit-learn-13439",
+    "scikit-learn__scikit-learn-13584",
+    "scikit-learn__scikit-learn-25570",
+    "sphinx-doc__sphinx-11445",
+    "sphinx-doc__sphinx-7686",
+    "sphinx-doc__sphinx-7738",
+    "sphinx-doc__sphinx-8627",
+    "sympy__sympy-14817",
+    "sympy__sympy-21614"
+  ],
+  "missing_traj": [
+    "django__django-13315",
+    "pytest-dev__pytest-11148",
+    "scikit-learn__scikit-learn-13439",
+    "scikit-learn__scikit-learn-13584",
+    "scikit-learn__scikit-learn-25570",
+    "sphinx-doc__sphinx-11445",
+    "sphinx-doc__sphinx-7686",
+    "sphinx-doc__sphinx-7738",
+    "sphinx-doc__sphinx-8627",
+    "sympy__sympy-14817",
+    "sympy__sympy-21614"
+  ]
+}

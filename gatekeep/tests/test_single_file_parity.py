@@ -92,3 +92,54 @@ def test_yaml_loader_handles_nested_lists():
     assert parsed["deliverables"][0]["id"] == "a"
     assert parsed["deliverables"][0]["checks"][0]["kind"] == "file_exists"
     assert parsed["deliverables"][0]["checks"][0]["min_count"] == 2
+
+
+def test_yaml_loader_handles_folded_block_scalar_then_more_siblings():
+    """Regression test: a `description: >` folded block scalar inside a
+    list item must not swallow subsequent sibling deliverables. This bug
+    was caught by dogfooding gatekeep's own self-check contract.
+    """
+    text = textwrap.dedent(
+        """\
+        name: x
+        deliverables:
+          - id: a
+            description: >
+              This is a long description
+              that wraps across lines.
+            severity: required
+            checks:
+              - kind: file_exists
+                path: "a.txt"
+          - id: b
+            description: "short one"
+            severity: required
+            checks:
+              - kind: file_exists
+                path: "b.txt"
+        """
+    )
+    parsed = single.yaml_load(text)
+    assert len(parsed["deliverables"]) == 2
+    assert parsed["deliverables"][0]["id"] == "a"
+    assert "long description" in parsed["deliverables"][0]["description"]
+    assert "wraps across lines" in parsed["deliverables"][0]["description"]
+    assert parsed["deliverables"][1]["id"] == "b"
+    assert parsed["deliverables"][1]["description"] == "short one"
+
+
+def test_yaml_loader_literal_block_scalar_preserves_newlines():
+    text = textwrap.dedent(
+        """\
+        name: x
+        deliverables:
+          - id: a
+            description: |
+              line one
+              line two
+            severity: advisory
+            checks: []
+        """
+    )
+    parsed = single.yaml_load(text)
+    assert parsed["deliverables"][0]["description"] == "line one\nline two"
