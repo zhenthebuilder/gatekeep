@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gatekeep-cli"
+version = "0.1.0"
+description = "Deliverable contracts for long-horizon agent tasks: deterministic, sub-second governance checks against a contract you declare."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "gatekeep contributors" }]
+dependencies = [
+    "PyYAML>=5.1",
+]
+
+[project.scripts]
+gatekeep = "gatekeep.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,18 @@
+name: gatekeep
+on: [push, pull_request]
+jobs:
+  check-deliverables:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run gatekeep (zero-dependency fallback, no install step)
+        run: python3 gatekeep/gatekeep_single.py check --json --out gatekeep_report.json
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatekeep-report
+          path: gatekeep_report.json
