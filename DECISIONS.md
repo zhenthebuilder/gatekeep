@@ -98,6 +98,45 @@ repo before declaring the run complete. Included as `SELF_CHECK.md` +
 (not used for the paper's headline quantitative numbers, which come solely
 from the SWE-bench-derived experiment in D3).
 
+## D4a. Dogfooding found real bugs (update during execution)
+
+Running `gatekeep check` against this repo's own `gatekeep.yml` (D4) found
+four real, distinct bugs, three in the zero-dependency `gatekeep_single.py`
+YAML-subset parser and one in the `valid_unified_diff`/`no_placeholder_text`
+check semantics (found via the benchmark experiment, not the self-check).
+All four are fixed, each with a dedicated regression test:
+
+1. Folded/literal block scalars (`description: >` / `|`) were not
+   supported by the mini YAML parser and silently truncated parsing of
+   subsequent list siblings. Fixed in `gatekeep_single.py::yaml_load`.
+2. Double-quoted scalar escapes (`"\\\\section\\{Results\\}"`) were not
+   unescaped the way PyYAML does -- the mini parser just stripped outer
+   quotes verbatim, doubling backslashes. Fixed with a small
+   `_unescape_double_quoted` helper, parity-tested directly against
+   PyYAML's own output for the exact string our own contract uses.
+3. Trailing inline `# comments` after a quoted scalar were not stripped
+   (e.g. `- "TODO list"   # example` kept the comment as part of the
+   value). Fixed with a quote-aware `_strip_inline_comment` helper.
+4. (Found via the SWE-bench benchmark experiment, not self-check) a naive
+   substring check for "is this a test file" misclassified
+   `src/_pytest/assertion/rewrite.py` as a test file, and the placeholder
+   scanner flagged FIXME/TODO markers on lines a patch *removes* (not
+   introduces). Both fixed; see paper.tex Section 6 for the full writeup,
+   since these directly affected the paper's reported numbers (the
+   numbers in the paper are post-fix).
+
+We also hit a clean self-referential case: the contract's
+`no_placeholder_text` check, run against `gatekeep/README.md`,
+`marketing/MARKETING.md`, and `paper/paper.tex`, fired on those files'
+own *descriptions* of the feature (the word "TODO" appearing in a sentence
+that documents what the TODO-detector detects). For the README and
+marketing plan this was resolved with the `allow` escape hatch (a handful
+of exact phrases). For the paper, the hit rate was too high and too
+inherent to the subject matter (~20 legitimate mentions across one
+section) for an allow-list to be the right tool, so we deliberately do not
+run that check against `paper.tex` at all, and say so in the contract
+comment -- a documented non-use, not a silently weakened check.
+
 ## D5. Distribution shape
 
 Primary: pip-installable package (`pyproject.toml`, src layout) so

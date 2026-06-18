@@ -128,6 +128,36 @@ def test_yaml_loader_handles_folded_block_scalar_then_more_siblings():
     assert parsed["deliverables"][1]["description"] == "short one"
 
 
+def test_yaml_loader_double_quoted_string_unescapes_like_pyyaml():
+    """Regression test: a real bug found via dogfooding gatekeep's own
+    paper contract (gatekeep.yml's `research-paper` deliverable uses
+    exactly this pattern to require a \\section{Results} heading). Each
+    literal `\\\\` in the YAML source must collapse to one `\\` in the
+    parsed Python string, matching PyYAML, not just have outer quotes
+    stripped verbatim.
+    """
+    import yaml
+
+    text = 'pattern: "\\\\\\\\section\\\\{Results\\\\}"\n'
+    pyyaml_value = yaml.safe_load(text)["pattern"]
+    single_value = single.yaml_load(text)["pattern"]
+    assert pyyaml_value == "\\\\section\\{Results\\}"
+    assert single_value == pyyaml_value
+
+
+def test_yaml_loader_strips_trailing_inline_comment_like_pyyaml():
+    """Regression test: a real bug found via dogfooding. A trailing
+    ` # comment` after a quoted scalar must be stripped, matching PyYAML,
+    not treated as part of the value.
+    """
+    import yaml
+
+    text = 'allow:\n  - "TODO list"   # escape hatch example, unused in practice\n'
+    pyyaml_value = yaml.safe_load(text)["allow"]
+    single_value = single.yaml_load(text)["allow"]
+    assert single_value == pyyaml_value == ["TODO list"]
+
+
 def test_yaml_loader_literal_block_scalar_preserves_newlines():
     text = textwrap.dedent(
         """\

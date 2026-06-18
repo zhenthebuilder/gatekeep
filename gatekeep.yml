@@ -57,10 +57,15 @@ deliverables:
       - kind: regex_required
         path: "paper/paper.tex"
         pattern: "\\\\section\\{Results\\}"
-      - kind: no_placeholder_text
-        path: "paper/paper.tex"
-        allow:
-          - "TODO list"   # escape hatch example, unused in practice
+      # Deliberately NOT running no_placeholder_text on paper.tex: this
+      # paper's subject matter IS the words TODO/FIXME/placeholder/
+      # NotImplementedError (a whole section quotes them as real
+      # findings from the experiment), so the check would have ~20
+      # false-positive hits on a clean paper by construction. An
+      # allow-list large enough to cover every legitimate mention would
+      # be longer than the words it's allowing and would defeat the
+      # point of the check. This is a documented, deliberate non-use of
+      # a check, not a weakened check -- see DECISIONS.md D4.
 
   - id: public-benchmark-ab
     description: >

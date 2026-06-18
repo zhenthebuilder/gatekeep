@@ -38,13 +38,54 @@ from typing import Any
 # --------------------------------------------------------------------------
 
 
+_DOUBLE_QUOTE_ESCAPES = {
+    "n": "\n",
+    "t": "\t",
+    "r": "\r",
+    '"': '"',
+    "\\": "\\",
+    "/": "/",
+    "0": "\0",
+}
+
+
+def _unescape_double_quoted(inner: str) -> str:
+    """YAML double-quoted scalar escape handling (the subset gatekeep
+    contracts actually use): \\\\ -> \\, \\" -> ", \\n -> newline, etc.
+    Unknown escapes are left as-is (backslash + char) rather than raising,
+    since contract authors mostly use this for regex patterns like
+    \\section\\{Results\\} where every backslash is meaningful and YAML's
+    own spec would actually reject unknown escapes -- but failing closed
+    here would be worse for a governance tool than being lenient.
+    """
+    out = []
+    i = 0
+    while i < len(inner):
+        ch = inner[i]
+        if ch == "\\" and i + 1 < len(inner):
+            nxt = inner[i + 1]
+            if nxt in _DOUBLE_QUOTE_ESCAPES:
+                out.append(_DOUBLE_QUOTE_ESCAPES[nxt])
+                i += 2
+                continue
+            # Unknown escape (e.g. "\{", "\s" used inside a regex pattern):
+            # keep both characters verbatim so regex patterns round-trip.
+            out.append(ch)
+            out.append(nxt)
+            i += 2
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
 def _parse_scalar(s: str) -> Any:
     s = s.strip()
     if s == "":
         return None
-    if (s.startswith('"') and s.endswith('"')) or (
-        s.startswith("'") and s.endswith("'")
-    ):
+    if s.startswith('"') and s.endswith('"'):
+        return _unescape_double_quoted(s[1:-1])
+    if s.startswith("'") and s.endswith("'"):
         return s[1:-1]
     if s.lower() in ("true", "yes"):
         return True
@@ -85,6 +126,31 @@ def _indent_of(line: str) -> int:
     return len(line) - len(line.lstrip(" "))
 
 
+def _strip_inline_comment(line: str) -> str:
+    """Strip a trailing ` # comment` from a line, but only when the '#' is
+    not inside an open quote (so `pattern: "a#b"` survives intact). YAML
+    requires a comment-introducing '#' to be preceded by whitespace (or be
+    at start of token) when outside quotes; we approximate that rule.
+    """
+    in_quote = None
+    i = 0
+    while i < len(line):
+        ch = line[i]
+        if in_quote:
+            if ch == in_quote:
+                in_quote = None
+            i += 1
+            continue
+        if ch in ("'", '"'):
+            in_quote = ch
+            i += 1
+            continue
+        if ch == "#" and (i == 0 or line[i - 1] in (" ", "\t")):
+            return line[:i].rstrip()
+        i += 1
+    return line
+
+
 def yaml_load(text: str) -> Any:
     # Keep raw (pre-strip) lines so we can detect comment-like '#' inside
     # block scalars vs real comments; for gatekeep's contract format a
@@ -97,9 +163,13 @@ def yaml_load(text: str) -> Any:
     lines: list[str] = []
     i = 0
     while i < len(raw_lines):
-        line = raw_lines[i]
-        stripped = line.strip()
+        raw_line = raw_lines[i]
+        stripped = raw_line.strip()
         if not stripped or stripped.startswith("#"):
+            i += 1
+            continue
+        line = _strip_inline_comment(raw_line)
+        if not line.strip():
             i += 1
             continue
         lines.append(line)
