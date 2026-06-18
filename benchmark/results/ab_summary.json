@@ -1,0 +1,51 @@
+{
+  "run": "20240620_sweagent_claude3.5sonnet",
+  "n_instances_total": 300,
+  "n_instances_with_ground_truth": 287,
+  "n_skipped_no_ground_truth": 13,
+  "skipped_no_ground_truth": [
+    "django__django-13315",
+    "django__django-13768",
+    "psf__requests-863",
+    "pytest-dev__pytest-11148",
+    "scikit-learn__scikit-learn-13439",
+    "scikit-learn__scikit-learn-13584",
+    "scikit-learn__scikit-learn-25570",
+    "sphinx-doc__sphinx-11445",
+    "sphinx-doc__sphinx-7686",
+    "sphinx-doc__sphinx-7738",
+    "sphinx-doc__sphinx-8627",
+    "sympy__sympy-14817",
+    "sympy__sympy-21614"
+  ],
+  "note_skipped_no_generation_subset": "11 of the 13 skipped instances have no agent trajectory at all (the agent's harness never produced a submission). Both arms trivially agree these are not shippable; they are excluded from the precision/recall table above because there is no SWE-bench evaluation report to use as ground truth, not because either arm disagrees about them.",
+  "arm_a_baseline_metrics": {
+    "tp": 69,
+    "fp": 218,
+    "fn": 0,
+    "tn": 0,
+    "precision": 0.24041811846689895,
+    "recall": 1.0,
+    "f1": 0.38764044943820225,
+    "accuracy": 0.24041811846689895,
+    "n": 287
+  },
+  "arm_b_gatekeep_metrics": {
+    "tp": 69,
+    "fp": 214,
+    "fn": 0,
+    "tn": 4,
+    "precision": 0.24381625441696114,
+    "recall": 1.0,
+    "f1": 0.3920454545454546,
+    "accuracy": 0.25435540069686413,
+    "n": 287
+  },
+  "doomed_deliverables_total": 218,
+  "arm_a_doomed_let_through": 218,
+  "arm_a_doomed_caught": 0,
+  "arm_b_doomed_let_through": 214,
+  "arm_b_doomed_caught": 4,
+  "n_disagreements_a_shippable_b_not": 4,
+  "n_disagreements_where_b_correctly_flagged_doomed": 4
+}

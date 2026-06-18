@@ -1,0 +1,2298 @@
+[
+  {
+    "instance_id": "astropy__astropy-12907",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2281",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-14182",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=778",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-14365",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3566",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-14995",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=6072",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-6938",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=1795",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "astropy__astropy-7746",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1501",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-10914",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1594",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-10924",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2736",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11001",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2126",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11019",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2896",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11039",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=7111",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11049",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=715",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11099",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2003",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11133",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2316",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11179",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1615",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11283",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5224",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11422",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3681",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11564",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=6655",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11583",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5839",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11620",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3993",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11630",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4222",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11742",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=6893",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11797",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=8425",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11815",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=14948",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11848",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5235",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11905",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=981",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11910",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1813",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11964",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=7819",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-11999",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2381",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12113",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4945",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12125",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5546",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12184",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4079",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12284",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=10870",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12286",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=7370",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12308",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2286",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12453",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=933",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12470",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=44003",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12497",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1394",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12589",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=7109",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12700",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2104",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12708",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3066",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12747",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=5699",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12856",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4516",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12908",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=6167",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12915",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1280",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-12983",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2209",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13028",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2024",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13033",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=8769",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13158",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=8589",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13220",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3417",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13230",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1333",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13265",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2968",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13321",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2580",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13401",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=15744",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13447",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1743",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13448",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5606",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13551",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3048",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13590",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1484",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13658",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=20019",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13660",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3313",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13710",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2473",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13757",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=2814",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13925",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2126",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13933",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2726",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-13964",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3159",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14016",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2236",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14017",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=5404",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14155",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3543",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14238",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2618",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14382",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3085",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14411",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4041",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14534",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1965",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14580",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1246",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14608",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2398",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14667",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=6515",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14672",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=513",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14730",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3387",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14752",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1602",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14787",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1537",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14855",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=698",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14915",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1236",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14997",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3780",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-14999",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2506",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15061",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=725",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15202",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2460",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15213",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5283",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15252",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2868",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15320",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2070",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15347",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2105",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15388",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1276",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15400",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1224",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15498",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2127",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15695",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=6932",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15738",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2854",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15781",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1790",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15789",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3074",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15790",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4601",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15814",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4027",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15819",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2598",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15851",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=7661",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15902",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3928",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-15996",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2667",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16041",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2969",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16046",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2497",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16139",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=3970",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16229",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=5420",
+    "arm_b_shippable": false,
+    "arm_b_reason": "patch-deliverable:valid_unified_diff:1 problem(s)"
+  },
+  {
+    "instance_id": "django__django-16255",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=525",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16379",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1207",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16400",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1309",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16408",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=765",
+    "arm_b_shippable": false,
+    "arm_b_reason": "patch-deliverable:valid_unified_diff:1 problem(s)"
+  },
+  {
+    "instance_id": "django__django-16527",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=564",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16595",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4586",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16816",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=6197",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16820",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=8331",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16873",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1965",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-16910",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=5877",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-17051",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2687",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "django__django-17087",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=3801",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-18869",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=566",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-22711",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2111",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-22835",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1734",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23299",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=4999",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23314",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4929",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23476",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5613",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23562",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1205",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23563",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3491",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23913",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2472",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23964",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=14860",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-23987",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2155",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-24149",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1556",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-24265",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2596",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-24334",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1338",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-24970",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2319",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25079",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1691",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25311",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3492",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25332",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4284",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25433",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=7920",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25442",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2335",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-25498",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1412",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-26011",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1546",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "matplotlib__matplotlib-26020",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1552",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "mwaskom__seaborn-2848",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1319",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "mwaskom__seaborn-3010",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2370",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "mwaskom__seaborn-3190",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3636",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "mwaskom__seaborn-3407",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4846",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pallets__flask-4045",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1364",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pallets__flask-4992",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2610",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pallets__flask-5063",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2143",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-1963",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=6964",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-2148",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=769",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-2317",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=399",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-2674",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3707",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "psf__requests-3362",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2186",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-3364",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=10598",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-4094",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1670",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-4248",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5339",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-4493",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=5542",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pydata__xarray-5131",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1060",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-5859",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1125",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-6506",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=736",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-7080",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=848",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-7114",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1866",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-7228",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=688",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pylint-dev__pylint-7993",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1440",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-11143",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1158",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5103",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4208",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5221",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3902",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5227",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1178",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5413",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1131",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5495",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3821",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-5692",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1983",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-6116",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1181",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7168",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=759",
+    "arm_b_shippable": false,
+    "arm_b_reason": "patch-deliverable:valid_unified_diff:1 problem(s)"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7220",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3148",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7373",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2396",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7432",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1930",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-7490",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1670",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-8365",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1510",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-8906",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3647",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "pytest-dev__pytest-9359",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=1548",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-10297",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2916",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-10508",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1360",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-10949",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4422",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-11040",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2897",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-11281",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=25967",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-12471",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=8212",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13142",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1841",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13241",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3231",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13496",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2799",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13497",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3438",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-13779",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1351",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-14087",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2788",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-14092",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=22674",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-14894",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2351",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-14983",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2689",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-15512",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1831",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-15535",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=15777",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-25500",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1244",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-25638",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3437",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "scikit-learn__scikit-learn-25747",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1252",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-10325",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5369",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-10451",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4691",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-7975",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=5991",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8273",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=6351",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8282",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=9816",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8435",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3339",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8474",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=1793",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8506",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=5693",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8595",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=6830",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8713",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=5112",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8721",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3163",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sphinx-doc__sphinx-8801",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2640",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-11400",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1052",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-11870",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2601",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-11897",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2008",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12171",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2830",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12236",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=7891",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12419",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=3336",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12454",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1100",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-12481",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3736",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13031",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1829",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13043",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=4806",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13146",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1880",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13177",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1071",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13437",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2191",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13471",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1251",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13480",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1201",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13647",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=4513",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13773",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1798",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13895",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=3209",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13915",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2308",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-13971",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2766",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14024",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=4167",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14308",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=6487",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14317",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1983",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14396",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3467",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-14774",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=970",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15011",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2473",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15308",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1431",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15345",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1404",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15346",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=7747",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15609",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3367",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-15678",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2784",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16106",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1692",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16281",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2489",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16503",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1575",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16792",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2481",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-16988",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=5008",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-17022",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=4495",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-17139",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=830",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-17630",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5748",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-17655",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1850",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18057",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1401",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18087",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=3170",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18189",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=12986",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18199",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=574",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18532",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1455",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18621",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3805",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18698",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=646",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-18835",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2715",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-19007",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1946",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-19254",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2491",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-19487",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1257",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20049",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2432",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20154",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3290",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20212",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=954",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20322",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=9174",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20442",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1483",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20590",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1683",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-20639",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=2863",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21055",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1794",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21171",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1631",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21379",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=3442",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21612",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1944",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21627",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=415",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-21847",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1636",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-22005",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted (exit_cost)', submission_chars=10805",
+    "arm_b_shippable": false,
+    "arm_b_reason": "patch-deliverable:no_placeholder_text:9 placeholder marker(s) found"
+  },
+  {
+    "instance_id": "sympy__sympy-22714",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2032",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-22840",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2788",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-23117",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1775",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-23191",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=5833",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-23262",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1205",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24066",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1603",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24102",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1648",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24152",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=17643",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24213",
+    "resolved": true,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=2496",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  },
+  {
+    "instance_id": "sympy__sympy-24909",
+    "resolved": false,
+    "arm_a_shippable": true,
+    "arm_a_reason": "exit_status='submitted', submission_chars=1028",
+    "arm_b_shippable": true,
+    "arm_b_reason": "contract passed"
+  }
+]

@@ -319,6 +319,7 @@ def check_no_placeholder_text(root, spec):
     pattern = spec["path"]
     patterns = spec.get("patterns", DEFAULT_PLACEHOLDER_PATTERNS)
     allow = spec.get("allow", [])
+    diff_mode = spec.get("diff_added_lines_only", False)
     compiled = [re.compile(p, re.IGNORECASE) for p in patterns]
     matches = [m for m in _resolve(root, pattern) if m.is_file()]
     if not matches:
@@ -327,6 +328,10 @@ def check_no_placeholder_text(root, spec):
     for m in matches:
         text = m.read_text(errors="ignore")
         for lineno, line in enumerate(text.splitlines(), start=1):
+            if diff_mode:
+                if not line.startswith("+") or line.startswith("+++"):
+                    continue
+                line = line[1:]
             if any(a in line for a in allow):
                 continue
             for cre in compiled:
@@ -367,6 +372,29 @@ def check_regex_required(root, spec):
     return ok, ("pattern present" if ok else f"missing in {len(missing)} file(s)"), {"missing": missing}
 
 
+def _is_test_path(path):
+    """Path-component-aware test-file predicate (mirrors checks.py).
+
+    Not a raw substring search: that would misclassify e.g.
+    `src/_pytest/assertion/rewrite.py` as a test file purely because
+    "pytest" contains "test".
+    """
+    parts = path.replace("\\", "/").split("/")
+    for part in parts[:-1]:
+        if part.lower() in ("test", "tests"):
+            return True
+    filename = parts[-1]
+    stem = filename.rsplit(".", 1)[0]
+    stem_lower = stem.lower()
+    if stem_lower in ("test", "tests"):
+        return True
+    if re.match(r"^test[_-]", stem_lower):
+        return True
+    if re.search(r"[_-]test$", stem_lower):
+        return True
+    return False
+
+
 def check_valid_unified_diff(root, spec):
     pattern = spec["path"]
     min_files = spec.get("min_files", 1)
@@ -390,7 +418,7 @@ def check_valid_unified_diff(root, spec):
         if len(file_headers) < min_files:
             problems.append(f"{m.relative_to(root)}: touches {len(file_headers)} file(s), need >= {min_files}")
         touched = [f[1] if isinstance(f, tuple) else f for f in file_headers]
-        non_test = [f for f in touched if "test" not in f.lower()]
+        non_test = [f for f in touched if not _is_test_path(f)]
         if forbid_test_only and touched and not non_test:
             problems.append(f"{m.relative_to(root)}: only touches test file(s): {touched}")
     ok = len(problems) == 0

@@ -119,14 +119,24 @@ def check_min_words(root: Path, spec: dict) -> CheckResult:
 
 def check_no_placeholder_text(root: Path, spec: dict) -> CheckResult:
     """spec: {path: str, patterns: list[str] = DEFAULT_PLACEHOLDER_PATTERNS,
-    allow: list[str] = []}
+    allow: list[str] = [], diff_added_lines_only: bool = False}
     `allow` is a list of substrings; lines containing any allow-listed
     substring are skipped (escape hatch for legitimate uses of a word, e.g.
     this very file).
+
+    `diff_added_lines_only`: when the target file is a unified diff/patch,
+    a line like `-    # FIXME: ...` is *removed* code, not something the
+    patch introduces — flagging it as a fresh placeholder marker is a false
+    positive (found while running the SWE-bench benchmark in this repo; see
+    paper Limitations). When this option is set, only lines added by the
+    patch (starting with a single `+`, excluding the `+++ b/...` file
+    header line) are scanned; diff metadata/context/removed lines are
+    skipped entirely.
     """
     pattern = spec["path"]
     patterns = spec.get("patterns", DEFAULT_PLACEHOLDER_PATTERNS)
     allow = spec.get("allow", [])
+    diff_mode = spec.get("diff_added_lines_only", False)
     compiled = [re.compile(p, re.IGNORECASE) for p in patterns]
     matches = [m for m in _resolve(root, pattern) if m.is_file()]
     if not matches:
@@ -138,6 +148,10 @@ def check_no_placeholder_text(root: Path, spec: dict) -> CheckResult:
         except Exception:
             continue
         for lineno, line in enumerate(text.splitlines(), start=1):
+            if diff_mode:
+                if not line.startswith("+") or line.startswith("+++"):
+                    continue
+                line = line[1:]  # strip the leading '+' before matching
             if any(a in line for a in allow):
                 continue
             for cre in compiled:
@@ -191,6 +205,39 @@ def check_regex_required(root: Path, spec: dict) -> CheckResult:
     )
 
 
+def _is_test_path(path: str) -> bool:
+    """Path-component-aware test-file predicate.
+
+    Deliberately NOT a raw substring search on the full path: that would
+    misclassify e.g. `src/_pytest/assertion/rewrite.py` as a test file
+    purely because "pytest" contains the substring "test". (This is a real
+    false positive we found and fixed while running the SWE-bench
+    benchmark in this repo — see paper Results / Limitations.)
+
+    A path counts as a test path iff:
+      - any path *component* (directory or filename, split on '/') is
+        exactly "test" or "tests", or
+      - the filename (without extension) starts with "test_" / "test-",
+        or ends with "_test" / "-test" / "test" right before the
+        extension (e.g. test_foo.py, foo_test.py, footest.py is NOT
+        matched since there's no separator — intentionally conservative).
+    """
+    parts = path.replace("\\", "/").split("/")
+    for part in parts[:-1]:
+        if part.lower() in ("test", "tests"):
+            return True
+    filename = parts[-1]
+    stem = filename.rsplit(".", 1)[0]
+    stem_lower = stem.lower()
+    if stem_lower in ("test", "tests"):
+        return True
+    if re.match(r"^test[_-]", stem_lower):
+        return True
+    if re.search(r"[_-]test$", stem_lower):
+        return True
+    return False
+
+
 def check_valid_unified_diff(root: Path, spec: dict) -> CheckResult:
     """spec: {path: str, min_files: int = 1, forbid_test_only: bool = False}
     Validates the file looks like a syntactically coherent unified diff
@@ -222,7 +269,7 @@ def check_valid_unified_diff(root: Path, spec: dict) -> CheckResult:
                 f"{m.relative_to(root)}: touches {len(file_headers)} file(s), need >= {min_files}"
             )
         touched = [f[1] if isinstance(f, tuple) else f for f in file_headers]
-        non_test = [f for f in touched if "test" not in f.lower()]
+        non_test = [f for f in touched if not _is_test_path(f)]
         if forbid_test_only and touched and not non_test:
             problems.append(
                 f"{m.relative_to(root)}: only touches test file(s): {touched}"

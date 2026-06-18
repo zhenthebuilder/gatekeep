@@ -238,6 +238,124 @@ def test_forbid_test_only_patch(tmp_path):
     assert not report.passed
 
 
+def test_no_placeholder_diff_mode_ignores_removed_lines(tmp_path):
+    """Regression test for a real false positive found while running the
+    SWE-bench benchmark: a FIXME comment that the agent's patch *removes*
+    (a `-` line) should not count as the agent introducing a placeholder.
+    """
+    diff = textwrap.dedent(
+        """\
+        diff --git a/a.py b/a.py
+        --- a/a.py
+        +++ b/a.py
+        @@ -1,2 +1,2 @@
+        -    # FIXME: old broken thing
+        +    # this is now fixed and complete
+        """
+    )
+    write(tmp_path / "patch.diff", diff)
+    contract = Contract.from_dict(
+        {
+            "name": "t",
+            "deliverables": [
+                {
+                    "id": "patch",
+                    "severity": "required",
+                    "checks": [
+                        {
+                            "kind": "no_placeholder_text",
+                            "path": "patch.diff",
+                            "diff_added_lines_only": True,
+                        }
+                    ],
+                }
+            ],
+        }
+    )
+    report = run_contract(contract, tmp_path)
+    assert report.passed  # FIXME only appears on a removed line
+
+
+def test_no_placeholder_diff_mode_still_catches_added_markers(tmp_path):
+    diff = textwrap.dedent(
+        """\
+        diff --git a/a.py b/a.py
+        --- a/a.py
+        +++ b/a.py
+        @@ -1,1 +1,2 @@
+         x = 1
+        +raise NotImplementedError("TODO: finish this")
+        """
+    )
+    write(tmp_path / "patch.diff", diff)
+    contract = Contract.from_dict(
+        {
+            "name": "t",
+            "deliverables": [
+                {
+                    "id": "patch",
+                    "severity": "required",
+                    "checks": [
+                        {
+                            "kind": "no_placeholder_text",
+                            "path": "patch.diff",
+                            "diff_added_lines_only": True,
+                        }
+                    ],
+                }
+            ],
+        }
+    )
+    report = run_contract(contract, tmp_path)
+    assert not report.passed
+
+
+def test_forbid_test_only_does_not_misclassify_pytest_path(tmp_path):
+    """Regression test for a real false positive found while running the
+    SWE-bench benchmark: a naive substring check on "test" misclassifies
+    src/_pytest/assertion/rewrite.py as a test file because "pytest"
+    contains the substring "test". Path-component-aware matching must not
+    do this.
+    """
+    diff = textwrap.dedent(
+        """\
+        diff --git a/src/_pytest/assertion/rewrite.py b/src/_pytest/assertion/rewrite.py
+        --- a/src/_pytest/assertion/rewrite.py
+        +++ b/src/_pytest/assertion/rewrite.py
+        @@ -1,1 +1,2 @@
+         x = 1
+        +y = 2
+        diff --git a/test_rewrite.py b/test_rewrite.py
+        --- a/test_rewrite.py
+        +++ b/test_rewrite.py
+        @@ -1,1 +1,2 @@
+         x = 1
+        +y = 2
+        """
+    )
+    write(tmp_path / "real.diff", diff)
+    contract = Contract.from_dict(
+        {
+            "name": "t",
+            "deliverables": [
+                {
+                    "id": "patch",
+                    "severity": "required",
+                    "checks": [
+                        {
+                            "kind": "valid_unified_diff",
+                            "path": "real.diff",
+                            "forbid_test_only": True,
+                        }
+                    ],
+                }
+            ],
+        }
+    )
+    report = run_contract(contract, tmp_path)
+    assert report.passed  # src/_pytest/.../rewrite.py is real source, not a test file
+
+
 def test_unknown_check_kind_fails_closed(tmp_path):
     contract = Contract.from_dict(
         {

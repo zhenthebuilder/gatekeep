@@ -1,0 +1,46 @@
+# gatekeep contract used as "Arm B" in benchmark/scripts/run_ab.py.
+#
+# This declares what we consider a *structurally sound* coding-agent
+# deliverable for a SWE-bench-style task: a real patch that touches real
+# source (not just tests), is a syntactically valid unified diff, is
+# non-trivial in size, and carries no obvious placeholder/error markers.
+#
+# It deliberately does NOT run the project's test suite (that's what
+# SWE-bench's own evaluation harness does, slowly and expensively, in a
+# sandboxed container per instance). gatekeep's job here is the cheap,
+# instant, pre-flight check: would you even bother running the expensive
+# test suite on this delivery? This contract is run once per instance
+# against that instance's own logs/<id>/ directory as `root`.
+
+name: swebench-patch-deliverable
+version: 1
+deliverables:
+  - id: patch-deliverable
+    description: >
+      The agent produced a real, structurally sound code patch: present,
+      non-empty, a syntactically valid unified diff, touching at least one
+      non-test source file, with no obvious placeholder/error markers in
+      the diff text itself.
+    severity: required
+    checks:
+      - kind: file_exists
+        path: "patch.diff"
+      - kind: min_size
+        path: "patch.diff"
+        min_bytes: 30
+      - kind: valid_unified_diff
+        path: "patch.diff"
+        min_files: 1
+        forbid_test_only: true
+      - kind: no_placeholder_text
+        path: "patch.diff"
+        diff_added_lines_only: true   # only scan lines the patch *adds*;
+        # a FIXME/TODO the patch *removes* is not the agent introducing a
+        # placeholder (see gatekeep/tests/test_engine.py for the
+        # regression test this fixes).
+        patterns:
+          - "\\bTODO: implement\\b"
+          - "NotImplementedError"
+          - "raise NotImplementedError"
+          - "\\bFIXME\\b"
+          - "as an AI language model"
